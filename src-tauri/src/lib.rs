@@ -8,19 +8,29 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .setup(|app| {
-            TrayIconBuilder::new()
-                .icon(app.default_window_icon().unwrap().clone())
-                .on_tray_icon_event(|tray, event| match event {
-                    TrayIconEvent::Click { .. } => {
-                        let app = tray.app_handle();
-                        let win = app.get_webview_window("clip-mark").unwrap();
+            #[cfg(desktop)]
+            {
+                let _ = app.handle().plugin(tauri_plugin_positioner::init());
 
-                        win.show().unwrap();
-                        win.set_focus().unwrap();
-                    }
-                    _ => {}
-                })
-                .build(app)?;
+                TrayIconBuilder::new()
+                    .icon(app.default_window_icon().unwrap().clone())
+                    .on_tray_icon_event(|tray, event| match event {
+                        TrayIconEvent::Click { .. } => {
+                            use tauri_plugin_positioner::{Position, WindowExt};
+
+                            tauri_plugin_positioner::on_tray_event(tray.app_handle(), &event);
+                            let app = tray.app_handle();
+
+                            let win = app.get_webview_window("clip-mark").unwrap();
+                            let _ = win.as_ref().window().move_window(Position::TrayCenter);
+
+                            win.show().unwrap();
+                            win.set_focus().unwrap();
+                        }
+                        _ => {}
+                    })
+                    .build(app)?;
+            }
 
             if let Some(win) = app.get_webview_window("clip-mark") {
                 let win_clone = win.clone();
