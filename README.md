@@ -1,2 +1,3 @@
-# clip-mark
-Quickly note down important moments in your recording.
+# Clip Mark
+
+Quickly capture important moments in your recordings.
