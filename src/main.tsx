@@ -11,6 +11,20 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
       theme={{
         activeClassName: "",
         defaultRadius: "md",
+        components: {
+          Button: {
+            styles: () => ({
+              root: {
+                cursor: "default",
+                transition:
+                  "background-color 100ms ease-out, color 100ms ease-out, border-color 100ms ease-out",
+              },
+            }),
+            defaultProps: {
+              size: "xs",
+            },
+          },
+        },
       }}
     >
       <App />
