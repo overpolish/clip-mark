@@ -1,10 +1,9 @@
-import { Button } from "@mantine/core";
+import ObsWebsocket from "./features/obs-websocket/ObsWebsocket";
 
 function App() {
   return (
     <main className="container">
-      <h1>Welcome to Tauri + React</h1>
-      <Button>Hello Mantine Button</Button>
+      <ObsWebsocket />
     </main>
   );
 }
