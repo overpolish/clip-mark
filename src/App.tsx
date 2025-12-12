@@ -1,4 +1,4 @@
-import ObsWebsocket from "./features/obs-websocket/ObsWebsocket";
+import ObsWebsocket from "./features/obs-websocket/obs-websocket";
 
 function App() {
   return (
