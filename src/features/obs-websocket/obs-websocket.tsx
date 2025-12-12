@@ -11,6 +11,8 @@ import z from "zod";
 
 import { Book, EthernetPort, KeyRound, Plug } from "lucide-react";
 import { openUrl } from "@tauri-apps/plugin-opener";
+import { invoke } from "@tauri-apps/api/core";
+import { commands } from "@/lib/constants";
 
 const schema = z.object({
   address: z.string().min(1, "Address is required"),
@@ -19,6 +21,10 @@ const schema = z.object({
 });
 
 type Schema = z.infer<typeof schema>;
+
+const updateServerDetails = async (data: Schema) => {
+  invoke(commands.UpdateServerDetails);
+};
 
 function ObsWebsocket() {
   const { register, handleSubmit } = useForm({
@@ -31,7 +37,7 @@ function ObsWebsocket() {
   });
 
   const onSubmit: SubmitHandler<Schema> = (data) => {
-    console.log(data);
+    updateServerDetails(data);
   };
 
   return (

@@ -2,6 +2,13 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
   "description": "Capability for the main window",
-  "windows": ["clip-mark"],
-  "permissions": ["core:default", "opener:default", "positioner:default"]
+  "windows": [
+    "clip-mark"
+  ],
+  "permissions": [
+    "core:default",
+    "opener:default",
+    "positioner:default",
+    "store:default"
+  ]
 }
