@@ -2,6 +2,28 @@ use tauri_plugin_store::StoreExt;
 
 use crate::ObsServerData;
 
+#[derive(serde::Serialize)]
+pub struct ObsServerDataResponse {
+    address: String,
+    port: u16,
+    password: String,
+}
+
+#[tauri::command]
+pub async fn get_server_details(
+    obs_server_data: tauri::State<'_, std::sync::Mutex<ObsServerData>>,
+) -> Result<ObsServerDataResponse, String> {
+    if let Ok(state) = obs_server_data.lock() {
+        Ok(ObsServerDataResponse {
+            address: state.address.clone(),
+            port: state.port,
+            password: state.password.clone(),
+        })
+    } else {
+        Err("Failed to acquire lock on OBS server data".to_string())
+    }
+}
+
 #[tauri::command]
 pub async fn update_server_details(
     app: tauri::AppHandle,

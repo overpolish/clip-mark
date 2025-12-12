@@ -13,6 +13,7 @@ import { Book, EthernetPort, KeyRound, Plug } from "lucide-react";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { invoke } from "@tauri-apps/api/core";
 import { commands } from "@/lib/constants";
+import { useEffect } from "react";
 
 const schema = z.object({
   address: z.string().min(1, "Address is required"),
@@ -22,12 +23,17 @@ const schema = z.object({
 
 type Schema = z.infer<typeof schema>;
 
+const getServerDetails = async (): Promise<Schema> => {
+  const details = await invoke(commands.GetServerDetails);
+  return schema.parse(details);
+};
+
 const updateServerDetails = async (data: Schema) => {
-  invoke(commands.UpdateServerDetails);
+  invoke(commands.UpdateServerDetails, data);
 };
 
 function ObsWebsocket() {
-  const { register, handleSubmit } = useForm({
+  const { register, handleSubmit, reset } = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
       address: "localhost",
@@ -39,6 +45,12 @@ function ObsWebsocket() {
   const onSubmit: SubmitHandler<Schema> = (data) => {
     updateServerDetails(data);
   };
+
+  useEffect(() => {
+    getServerDetails().then((details) => {
+      reset(details);
+    });
+  }, []);
 
   return (
     <div>
@@ -63,7 +75,11 @@ function ObsWebsocket() {
             <InputGroupAddon>
               <EthernetPort />
             </InputGroupAddon>
-            <InputGroupInput {...register("address")} id="address" />
+            <InputGroupInput
+              autoComplete="off"
+              {...register("address")}
+              id="address"
+            />
             <p>:</p>
             <InputGroupInput
               {...register("port")}
@@ -71,6 +87,7 @@ function ObsWebsocket() {
               type="number"
               className="max-w-20 text-center"
               aria-label="Port"
+              autoComplete="false"
             />
           </InputGroup>
         </div>

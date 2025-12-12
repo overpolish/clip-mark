@@ -1,4 +1,4 @@
-mod obs_websocket;
+mod obs_websocket_configuration;
 
 use std::sync::Mutex;
 
@@ -18,10 +18,12 @@ struct ObsServerData {
 pub fn run() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
-            obs_websocket::commands::update_server_details,
+            obs_websocket_configuration::commands::get_server_details,
+            obs_websocket_configuration::commands::update_server_details,
         ])
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_websocket::init())
         .setup(|app| {
             let store = app
                 .store("obs-server-store.json")
