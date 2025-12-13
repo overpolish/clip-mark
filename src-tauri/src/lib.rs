@@ -6,8 +6,13 @@ use std::sync::Mutex;
 
 use tauri::Manager;
 use tauri_plugin_store::StoreExt;
+use tokio::sync::watch;
 
 use crate::system_tray::service::init_system_tray;
+
+pub struct CredentialsWatcher {
+    pub credentials_tx: watch::Sender<()>,
+}
 
 #[derive(Clone)]
 struct ObsServerData {
@@ -25,6 +30,9 @@ pub fn run() {
         ])
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
+        .manage(CredentialsWatcher {
+            credentials_tx: watch::channel(()).0,
+        })
         .setup(|app| {
             let store = app
                 .store("obs-server-store.json")

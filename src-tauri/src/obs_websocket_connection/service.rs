@@ -5,11 +5,14 @@ use tauri::Manager;
 
 use crate::{
     system_tray::service::{update_system_tray_icon, SystemTrayIcon},
-    ObsServerData,
+    CredentialsWatcher, ObsServerData,
 };
 
 pub async fn websocket_connection(app_handle: tauri::AppHandle) {
     let mut interval = tokio::time::interval(Duration::from_secs(1));
+
+    let credentials_tx = app_handle.state::<CredentialsWatcher>();
+    let mut credentials_rx = credentials_tx.credentials_tx.subscribe();
 
     loop {
         update_system_tray_icon(&app_handle, SystemTrayIcon::Default);
@@ -34,8 +37,17 @@ pub async fn websocket_connection(app_handle: tauri::AppHandle) {
                 if let Ok(events) = client.events() {
                     futures::pin_mut!(events);
 
-                    while let Some(event) = events.next().await {
-                        println!("{event:#?}");
+                    loop {
+                        tokio::select! {
+                                Some(event) = events.next() => {
+                                    println!("{event:#?}");
+                                }
+                                _ = credentials_rx.changed() => {
+                                    println!("Credentials changed, reconnecting...");
+                                    drop(client);
+                                    break;
+                            }
+                        }
                     }
                 }
             } else {

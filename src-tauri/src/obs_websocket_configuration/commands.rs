@@ -28,6 +28,7 @@ pub async fn get_server_details(
 pub async fn update_server_details(
     app: tauri::AppHandle,
     obs_server_data: tauri::State<'_, std::sync::Mutex<ObsServerData>>,
+    credentials_watcher: tauri::State<'_, crate::CredentialsWatcher>,
     address: String,
     port: u16,
     password: String,
@@ -44,6 +45,8 @@ pub async fn update_server_details(
         state.address = address;
         state.port = port;
         state.password = password;
+
+        let _ = credentials_watcher.credentials_tx.send(());
     }
 
     Ok(())
