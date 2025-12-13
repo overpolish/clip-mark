@@ -1,6 +1,7 @@
 use std::{sync::Mutex, time::Duration};
 
 use futures::StreamExt;
+use log::{info, warn};
 use tauri::Manager;
 
 use crate::{
@@ -24,7 +25,7 @@ pub async fn websocket_connection(app_handle: tauri::AppHandle) {
         let client = match connect_to_obs(server_config).await {
             Ok(client) => client,
             Err(err) => {
-                println!("Failed to connect to OBS WebSocket: {:?}", err);
+                warn!("Failed to connect to OBS WebSocket: {:?}", err);
                 continue;
             }
         };
@@ -56,7 +57,7 @@ async fn handle_client_connection(
     server_config_changed_rx: &mut tokio::sync::watch::Receiver<()>,
 ) {
     if let Ok(version) = client.general().version().await {
-        println!("Connected to OBS Version {}", version.obs_version);
+        info!("Connected to OBS Version {}", version.obs_version);
     }
 
     update_system_tray_icon(app_handle, SystemTrayIcon::Connected);
@@ -72,12 +73,12 @@ async fn handle_client_connection(
         tokio::select! {
             Some(event) = events.next() => {
                 if let Err(e) = event_handler(event) {
-                    println!("Event handler error: {}", e);
+                    warn!("Event handler error: {}", e);
                     break;
                 }
             }
             _ = server_config_changed_rx.changed() => {
-                println!("Server config changed, reconnecting...");
+                warn!("Server config changed, reconnecting...");
                 break;
             }
         }
@@ -89,7 +90,7 @@ fn event_handler(event: obws::events::Event) -> Result<(), String> {
     match event {
         Event::ServerStopped => Err("OBS WebSocket server has stopped.".to_string()),
         _ => {
-            println!("Event: {event:#?}");
+            info!("Event: {event:#?}");
             Ok(())
         }
     }
