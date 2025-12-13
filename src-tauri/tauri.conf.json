@@ -10,11 +10,20 @@
     "frontendDist": "../dist"
   },
   "app": {
+    "trayIcon": {
+      "id": "tray-icon",
+      "iconPath": "icons/icon.ico"
+    },
     "windows": [
       {
-        "title": "clip-mark",
-        "width": 800,
-        "height": 600
+        "label": "clip-mark",
+        "title": "Clip Mark",
+        "width": 300,
+        "height": 200,
+        "decorations": false,
+        "visible": false,
+        "skipTaskbar": true,
+        "resizable": false
       }
     ],
     "security": {

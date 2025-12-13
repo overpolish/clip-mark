@@ -1,19 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
-import { MantineProvider } from "@mantine/core";
-import "@mantine/core/styles.css";
+import "./index.css";
+import { ThemeProvider } from "./components/theme-provider";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <MantineProvider
-      defaultColorScheme="auto"
-      theme={{
-        activeClassName: "",
-        defaultRadius: "md",
-      }}
-    >
+    <ThemeProvider defaultTheme="system">
       <App />
-    </MantineProvider>
+    </ThemeProvider>
   </React.StrictMode>
 );
