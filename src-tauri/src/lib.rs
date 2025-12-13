@@ -1,13 +1,15 @@
 mod obs_websocket_configuration;
+mod obs_websocket_connection;
+mod system_tray;
 
 use std::sync::Mutex;
 
-use tauri::{
-    tray::{TrayIconBuilder, TrayIconEvent},
-    Manager,
-};
+use tauri::Manager;
 use tauri_plugin_store::StoreExt;
 
+use crate::system_tray::service::init_system_tray;
+
+#[derive(Clone)]
 struct ObsServerData {
     address: String,
     port: u16,
@@ -23,7 +25,6 @@ pub fn run() {
         ])
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
-        .plugin(tauri_plugin_websocket::init())
         .setup(|app| {
             let store = app
                 .store("obs-server-store.json")
@@ -44,29 +45,8 @@ pub fn run() {
                     .unwrap_or_default(),
             }));
 
-            #[cfg(desktop)]
-            {
-                let _ = app.handle().plugin(tauri_plugin_positioner::init());
-
-                TrayIconBuilder::new()
-                    .icon(app.default_window_icon().unwrap().clone())
-                    .on_tray_icon_event(|tray, event| match event {
-                        TrayIconEvent::Click { .. } => {
-                            use tauri_plugin_positioner::{Position, WindowExt};
-
-                            tauri_plugin_positioner::on_tray_event(tray.app_handle(), &event);
-                            let app = tray.app_handle();
-
-                            let win = app.get_webview_window("clip-mark").unwrap();
-                            let _ = win.as_ref().window().move_window(Position::TrayCenter);
-
-                            win.show().unwrap();
-                            win.set_focus().unwrap();
-                        }
-                        _ => {}
-                    })
-                    .build(app)?;
-            }
+            let _ = app.handle().plugin(tauri_plugin_positioner::init());
+            init_system_tray(&app.handle());
 
             if let Some(win) = app.get_webview_window("clip-mark") {
                 let win_clone = win.clone();
@@ -78,6 +58,11 @@ pub fn run() {
                     }
                 });
             }
+
+            let app_handle_for_ws = app.handle().clone();
+            tauri::async_runtime::spawn(async move {
+                obs_websocket_connection::service::websocket_connection(app_handle_for_ws).await;
+            });
 
             Ok(())
         })
