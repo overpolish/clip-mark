@@ -10,12 +10,12 @@ use tokio::sync::watch;
 
 use crate::system_tray::service::init_system_tray;
 
-pub struct CredentialsWatcher {
-    pub credentials_tx: watch::Sender<()>,
+pub struct GlobalState {
+    pub server_config_changed_tx: watch::Sender<()>,
 }
 
 #[derive(Clone)]
-struct ObsServerData {
+struct ServerConfig {
     address: String,
     port: u16,
     password: String,
@@ -30,15 +30,15 @@ pub fn run() {
         ])
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
-        .manage(CredentialsWatcher {
-            credentials_tx: watch::channel(()).0,
+        .manage(GlobalState {
+            server_config_changed_tx: watch::channel(()).0,
         })
         .setup(|app| {
             let store = app
-                .store("obs-server-store.json")
+                .store("obs-server-config.json")
                 .expect("Failed to load Obs Server store");
 
-            app.manage(Mutex::new(ObsServerData {
+            app.manage(Mutex::new(ServerConfig {
                 address: store
                     .get("address")
                     .and_then(|v| v.as_str().map(|s| s.to_string()))
