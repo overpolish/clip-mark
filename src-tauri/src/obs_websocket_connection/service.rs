@@ -70,13 +70,27 @@ async fn handle_client_connection(
 
     loop {
         tokio::select! {
-                Some(event) = events.next() => {
-                        println!("Event: {event:#?}");
+            Some(event) = events.next() => {
+                if let Err(e) = event_handler(event) {
+                    println!("Event handler error: {}", e);
+                    break;
                 }
-                _ = server_config_changed_rx.changed() => {
-                        println!("Server config changed, reconnecting...");
-                        break;
-                }
+            }
+            _ = server_config_changed_rx.changed() => {
+                println!("Server config changed, reconnecting...");
+                break;
+            }
+        }
+    }
+}
+
+fn event_handler(event: obws::events::Event) -> Result<(), String> {
+    use obws::events::Event;
+    match event {
+        Event::ServerStopped => Err("OBS WebSocket server has stopped.".to_string()),
+        _ => {
+            println!("Event: {event:#?}");
+            Ok(())
         }
     }
 }
