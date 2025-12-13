@@ -24,6 +24,11 @@ struct ServerConfig {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(
+            tauri_plugin_log::Builder::new()
+                .level(tauri_plugin_log::log::LevelFilter::Info)
+                .build(),
+        )
         .invoke_handler(tauri::generate_handler![
             obs_websocket_configuration::commands::get_server_details,
             obs_websocket_configuration::commands::update_server_details,
