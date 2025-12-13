@@ -54,7 +54,7 @@ pub fn run() {
             }));
 
             let _ = app.handle().plugin(tauri_plugin_positioner::init());
-            init_system_tray(&app.handle());
+            init_system_tray(app.handle());
 
             if let Some(win) = app.get_webview_window("clip-mark") {
                 let win_clone = win.clone();

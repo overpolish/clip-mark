@@ -59,7 +59,7 @@ async fn handle_client_connection(
         println!("Connected to OBS Version {}", version.obs_version);
     }
 
-    update_system_tray_icon(&app_handle, SystemTrayIcon::Connected);
+    update_system_tray_icon(app_handle, SystemTrayIcon::Connected);
 
     let Ok(events) = client.events() else {
         return;

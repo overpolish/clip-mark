@@ -2,8 +2,8 @@ use tauri::{tray::TrayIconEvent, Manager};
 
 pub fn init_system_tray(app_handle: &tauri::AppHandle) {
     let tray = app_handle.tray_by_id("tray-icon").unwrap();
-    tray.on_tray_icon_event(|tray, event| match event {
-        TrayIconEvent::Click { .. } => {
+    tray.on_tray_icon_event(|tray, event| {
+        if let TrayIconEvent::Click { .. } = event {
             use tauri_plugin_positioner::{Position, WindowExt};
 
             tauri_plugin_positioner::on_tray_event(tray.app_handle(), &event);
@@ -15,7 +15,6 @@ pub fn init_system_tray(app_handle: &tauri::AppHandle) {
             win.show().unwrap();
             win.set_focus().unwrap();
         }
-        _ => {}
     })
 }
 
