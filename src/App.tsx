@@ -1,9 +1,11 @@
-import ObsWebsocket from "./features/obs-websocket/obs-websocket";
+import ConnectionStatus from "./features/connection-status/connection-status";
+import ObsWebsocketConfiguration from "./features/obs-websocket-configuration/obs-websocket-configuration";
 
 function App() {
   return (
     <main className="container">
-      <ObsWebsocket />
+      <ConnectionStatus />
+      <ObsWebsocketConfiguration />
     </main>
   );
 }

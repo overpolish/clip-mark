@@ -35,7 +35,7 @@ pub async fn update_server_details(
 ) -> Result<(), String> {
     let store = app
         .store("obs-server-config.json")
-        .expect("Failed to load Obs Server store");
+        .expect("Failed to load OBS Server store");
 
     store.set("address", address.clone());
     store.set("port", port);
