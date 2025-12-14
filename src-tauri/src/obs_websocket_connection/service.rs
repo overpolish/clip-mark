@@ -2,12 +2,21 @@ use std::{sync::Mutex, time::Duration};
 
 use futures::StreamExt;
 use log::{info, warn};
-use tauri::Manager;
+use serde::Serialize;
+use tauri::{Emitter, Manager};
 
 use crate::{
     system_tray::service::{update_system_tray_icon, SystemTrayIcon},
     GlobalState, ServerConfig,
 };
+
+#[derive(Serialize, Debug, Clone)]
+#[serde(rename_all = "camelCase")]
+pub enum ConnectionStatus {
+    Connected,
+    Disconnected,
+    Retrying,
+}
 
 pub async fn websocket_connection(app_handle: tauri::AppHandle) {
     let mut interval = tokio::time::interval(Duration::from_secs(1));
@@ -17,6 +26,7 @@ pub async fn websocket_connection(app_handle: tauri::AppHandle) {
     loop {
         update_system_tray_icon(&app_handle, SystemTrayIcon::Default);
         interval.tick().await;
+        // TODO respond to credentials changes instantly
 
         let Some(server_config) = get_server_config(&app_handle) else {
             continue;
@@ -26,6 +36,7 @@ pub async fn websocket_connection(app_handle: tauri::AppHandle) {
             Ok(client) => client,
             Err(err) => {
                 warn!("Failed to connect to OBS WebSocket: {:?}", err);
+                connection_changed(&app_handle, ConnectionStatus::Disconnected);
                 continue;
             }
         };
@@ -58,6 +69,7 @@ async fn handle_client_connection(
 ) {
     if let Ok(version) = client.general().version().await {
         info!("Connected to OBS Version {}", version.obs_version);
+        connection_changed(app_handle, ConnectionStatus::Connected);
     }
 
     update_system_tray_icon(app_handle, SystemTrayIcon::Connected);
@@ -74,11 +86,13 @@ async fn handle_client_connection(
             Some(event) = events.next() => {
                 if let Err(e) = event_handler(event) {
                     warn!("Event handler error: {}", e);
+                    connection_changed(app_handle, ConnectionStatus::Disconnected);
                     break;
                 }
             }
             _ = server_config_changed_rx.changed() => {
                 warn!("Server config changed, reconnecting...");
+                connection_changed(app_handle, ConnectionStatus::Retrying);
                 break;
             }
         }
@@ -94,4 +108,9 @@ fn event_handler(event: obws::events::Event) -> Result<(), String> {
             Ok(())
         }
     }
+}
+
+fn connection_changed(app_handle: &tauri::AppHandle, status: ConnectionStatus) {
+    info!("Connection status changed: {:?}", status);
+    let _ = app_handle.emit(crate::constants::Events::ConnectionStatus.as_ref(), status);
 }
