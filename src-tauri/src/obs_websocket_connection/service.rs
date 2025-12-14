@@ -10,7 +10,7 @@ use crate::{
     GlobalState, ServerConfig,
 };
 
-#[derive(Serialize, Debug, Clone)]
+#[derive(Serialize, Debug, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub enum ConnectionStatus {
     Connected,
@@ -19,15 +19,10 @@ pub enum ConnectionStatus {
 }
 
 pub async fn websocket_connection(app_handle: tauri::AppHandle) {
-    let mut interval = tokio::time::interval(Duration::from_secs(1));
     let global_state = app_handle.state::<GlobalState>();
     let mut server_config_changed_rx = global_state.server_config_changed_tx.subscribe();
 
     loop {
-        update_system_tray_icon(&app_handle, SystemTrayIcon::Default);
-        interval.tick().await;
-        // TODO respond to credentials changes instantly
-
         let Some(server_config) = get_server_config(&app_handle) else {
             continue;
         };
@@ -42,6 +37,13 @@ pub async fn websocket_connection(app_handle: tauri::AppHandle) {
         };
 
         handle_client_connection(&app_handle, client, &mut server_config_changed_rx).await;
+
+        tokio::select! {
+            _ = tokio::time::sleep(Duration::from_secs(1)) => {},
+            _ = server_config_changed_rx.changed() => {
+                info!("Server config changed, retrying connection");
+            }
+        }
     }
 }
 
@@ -54,11 +56,16 @@ fn get_server_config(app_handle: &tauri::AppHandle) -> Option<ServerConfig> {
 }
 
 async fn connect_to_obs(server_config: ServerConfig) -> Result<obws::Client, obws::error::Error> {
-    obws::Client::connect(
-        server_config.address,
-        server_config.port,
-        Some(server_config.password),
-    )
+    obws::Client::connect_with_config(obws::client::ConnectConfig {
+        host: server_config.address,
+        port: server_config.port,
+        password: Some(server_config.password),
+        event_subscriptions: Some(obws::requests::EventSubscription::NONE),
+        dangerous: None,
+        broadcast_capacity: obws::client::DEFAULT_BROADCAST_CAPACITY,
+        // Allows faster reconnection attempts
+        connect_timeout: Duration::from_secs(1),
+    })
     .await
 }
 
@@ -71,8 +78,6 @@ async fn handle_client_connection(
         info!("Connected to OBS Version {}", version.obs_version);
         connection_changed(app_handle, ConnectionStatus::Connected);
     }
-
-    update_system_tray_icon(app_handle, SystemTrayIcon::Connected);
 
     let Ok(events) = client.events() else {
         return;
@@ -91,7 +96,7 @@ async fn handle_client_connection(
                 }
             }
             _ = server_config_changed_rx.changed() => {
-                warn!("Server config changed, reconnecting...");
+                warn!("Server config changed, retrying connection");
                 connection_changed(app_handle, ConnectionStatus::Retrying);
                 break;
             }
@@ -112,5 +117,14 @@ fn event_handler(event: obws::events::Event) -> Result<(), String> {
 
 fn connection_changed(app_handle: &tauri::AppHandle, status: ConnectionStatus) {
     info!("Connection status changed: {:?}", status);
+
+    update_system_tray_icon(
+        app_handle,
+        match status {
+            ConnectionStatus::Connected => SystemTrayIcon::Connected,
+            _ => SystemTrayIcon::Default,
+        },
+    );
+
     let _ = app_handle.emit(crate::constants::Events::ConnectionStatus.as_ref(), status);
 }

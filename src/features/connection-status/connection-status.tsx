@@ -14,6 +14,8 @@ type ConnectionStatus =
 function ConnectionStatus() {
   const [status, setStatus] = useState<ConnectionStatus>("disconnected");
 
+  // TODO fetch initial status
+
   useEffect(() => {
     const unlisten = listen<ConnectionStatus>(
       events.ConnectionStatus,
