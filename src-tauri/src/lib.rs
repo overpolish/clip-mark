@@ -42,7 +42,7 @@ pub fn run() {
         .setup(|app| {
             let store = app
                 .store("obs-server-config.json")
-                .expect("Failed to load Obs Server store");
+                .expect("Failed to load OBS Server store");
 
             app.manage(Mutex::new(ServerConfig {
                 address: store

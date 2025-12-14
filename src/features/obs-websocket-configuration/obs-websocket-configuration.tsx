@@ -32,7 +32,7 @@ const updateServerDetails = async (data: Schema) => {
   invoke(commands.UpdateServerDetails, data);
 };
 
-function ObsWebsocket() {
+function ObsWebsocketConfiguration() {
   const { register, handleSubmit, reset } = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -116,4 +116,4 @@ function ObsWebsocket() {
   );
 }
 
-export default ObsWebsocket;
+export default ObsWebsocketConfiguration;
