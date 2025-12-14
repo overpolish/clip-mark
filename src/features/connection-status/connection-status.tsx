@@ -1,4 +1,5 @@
-import { events } from "@/lib/constants";
+import { commands, events } from "@/lib/constants";
+import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { useEffect, useState } from "react";
 
@@ -11,10 +12,17 @@ const connectionStatus = {
 type ConnectionStatus =
   (typeof connectionStatus)[keyof typeof connectionStatus];
 
+const getConnectionStatus = async (): Promise<ConnectionStatus> =>
+  await invoke<ConnectionStatus>(commands.GetServerConnectionStatus);
+
 function ConnectionStatus() {
   const [status, setStatus] = useState<ConnectionStatus>("disconnected");
 
-  // TODO fetch initial status
+  useEffect(() => {
+    getConnectionStatus().then((initialStatus) => {
+      setStatus(initialStatus);
+    });
+  }, []);
 
   useEffect(() => {
     const unlisten = listen<ConnectionStatus>(

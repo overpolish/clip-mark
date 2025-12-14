@@ -30,8 +30,16 @@ pub async fn websocket_connection(app_handle: tauri::AppHandle) {
         let client = match connect_to_obs(server_config).await {
             Ok(client) => client,
             Err(err) => {
-                warn!("Failed to connect to OBS WebSocket: {:?}", err);
-                connection_changed(&app_handle, ConnectionStatus::Disconnected);
+                let is_connected = global_state
+                    .server_connection_status
+                    .lock()
+                    .map(|s| *s == ConnectionStatus::Connected)
+                    .unwrap_or(false);
+
+                if is_connected {
+                    warn!("Failed to connect to OBS WebSocket: {}", err);
+                    connection_changed(&app_handle, ConnectionStatus::Disconnected);
+                }
                 continue;
             }
         };
@@ -125,6 +133,15 @@ fn connection_changed(app_handle: &tauri::AppHandle, status: ConnectionStatus) {
             _ => SystemTrayIcon::Default,
         },
     );
+
+    {
+        app_handle
+            .state::<GlobalState>()
+            .server_connection_status
+            .lock()
+            .map(|mut s| *s = status.clone())
+            .expect("Failed to lock server_connection_status mutex");
+    }
 
     let _ = app_handle.emit(crate::constants::Events::ConnectionStatus.as_ref(), status);
 }
