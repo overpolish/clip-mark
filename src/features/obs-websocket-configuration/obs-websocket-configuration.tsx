@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/input-group";
 import { Label } from "@/components/ui/label";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import z from "zod";
 
 import { Book, EthernetPort, KeyRound, Plug } from "lucide-react";
@@ -23,14 +23,14 @@ const schema = z.object({
 
 type Schema = z.infer<typeof schema>;
 
-const getServerDetails = async (): Promise<Schema> => {
+async function getServerDetails(): Promise<Schema> {
   const details = await invoke(commands.GetServerDetails);
   return schema.parse(details);
-};
+}
 
-const updateServerDetails = async (data: Schema) => {
+async function updateServerDetails(data: Schema) {
   invoke(commands.UpdateServerDetails, data);
-};
+}
 
 function ObsWebsocketConfiguration() {
   const { register, handleSubmit, reset } = useForm({
@@ -42,9 +42,9 @@ function ObsWebsocketConfiguration() {
     },
   });
 
-  const onSubmit: SubmitHandler<Schema> = (data) => {
+  function onSubmit(data: Schema) {
     updateServerDetails(data);
-  };
+  }
 
   useEffect(() => {
     getServerDetails().then((details) => {
