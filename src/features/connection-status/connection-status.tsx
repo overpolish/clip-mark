@@ -1,7 +1,14 @@
-import { commands, events } from "@/lib/constants";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { useEffect, useState } from "react";
+
+const commands = {
+  GetServerConnectionStatus: "get_server_connection_status",
+} as const;
+
+const connectionEvents = {
+  Status: "connection:status",
+} as const;
 
 const _connectionStatus = {
   connected: "connected",
@@ -27,7 +34,7 @@ function ConnectionStatus() {
 
   useEffect(() => {
     const unlisten = listen<ConnectionStatus>(
-      events.ConnectionStatus,
+      connectionEvents.Status,
       (event) => {
         if (event.payload !== status) {
           setStatus(event.payload);
