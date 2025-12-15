@@ -1,4 +1,4 @@
-use tauri::{tray::TrayIconEvent, Manager, PhysicalSize};
+use tauri::{tray::TrayIconEvent, LogicalSize, Manager};
 
 pub fn init_system_tray(app_handle: &tauri::AppHandle) {
     let tray = app_handle.tray_by_id("tray-icon").unwrap();
@@ -11,7 +11,7 @@ pub fn init_system_tray(app_handle: &tauri::AppHandle) {
 
             let win = app.get_webview_window("clip-mark").unwrap();
             let _ = win.as_ref().window().move_window(Position::TrayCenter);
-            let _ = win.set_size(PhysicalSize::new(300.0, 200.0));
+            let _ = win.set_size(LogicalSize::new(300.0, 200.0));
 
             win.show().unwrap();
             win.set_focus().unwrap();

@@ -16,6 +16,7 @@
     },
     "windows": [
       {
+        "url": "/configuration",
         "label": "clip-mark",
         "title": "Clip Mark",
         "width": 300,
