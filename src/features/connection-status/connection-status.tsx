@@ -15,7 +15,7 @@ type ConnectionStatus =
 const getConnectionStatus = async (): Promise<ConnectionStatus> =>
   await invoke<ConnectionStatus>(commands.GetServerConnectionStatus);
 
-function ConnectionStatus() {
+const ConnectionStatus = () => {
   const [status, setStatus] = useState<ConnectionStatus>("disconnected");
 
   useEffect(() => {
@@ -40,6 +40,6 @@ function ConnectionStatus() {
   }, [status]);
 
   return <div>connection status: {status}</div>;
-}
+};
 
 export default ConnectionStatus;
