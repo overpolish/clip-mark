@@ -2,6 +2,7 @@ import js from "@eslint/js";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 import pluginReact from "eslint-plugin-react";
+import pluginBoundaries from "eslint-plugin-boundaries";
 import { defineConfig } from "eslint/config";
 
 export default defineConfig([
@@ -28,6 +29,40 @@ export default defineConfig([
   {
     rules: {
       "func-style": ["error", "declaration"],
+    },
+  },
+  {
+    plugins: { boundaries: pluginBoundaries },
+    settings: {
+      "import/resolver": {
+        typescript: {
+          alwaysTryTypes: true,
+        },
+      },
+      "boundaries/elements": [
+        { type: "features", pattern: "features/*", capture: ["featureName"] },
+        { type: "components", pattern: "components/*" },
+        { type: "lib", pattern: "lib/*" },
+      ],
+    },
+    rules: {
+      "boundaries/element-types": [
+        "error",
+        {
+          default: "disallow",
+          rules: [
+            { from: "components", allow: ["lib"], disallow: ["features"] },
+            {
+              from: "features",
+              allow: [
+                "components",
+                "lib",
+                ["features", { featureName: "${from.featureName}" }],
+              ],
+            },
+          ],
+        },
+      ],
     },
   },
 ]);
