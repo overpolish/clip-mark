@@ -12,8 +12,12 @@ import z from "zod";
 import { Book, EthernetPort, KeyRound, Plug } from "lucide-react";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { invoke } from "@tauri-apps/api/core";
-import { commands } from "@/lib/constants";
 import { useEffect } from "react";
+
+const commands = {
+  GetServerDetails: "get_server_details",
+  UpdateServerDetails: "update_server_details",
+} as const;
 
 const schema = z.object({
   address: z.string().min(1, "Address is required"),

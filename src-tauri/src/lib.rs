@@ -1,4 +1,3 @@
-mod constants;
 mod obs_websocket_configuration;
 mod obs_websocket_connection;
 mod system_tray;

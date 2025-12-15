@@ -3,12 +3,19 @@ use std::{sync::Mutex, time::Duration};
 use futures::StreamExt;
 use log::{info, warn};
 use serde::Serialize;
+use strum::{AsRefStr, Display, EnumString};
 use tauri::{Emitter, Manager};
 
 use crate::{
     system_tray::service::{update_system_tray_icon, SystemTrayIcon},
     GlobalState, ServerConfig,
 };
+
+#[derive(EnumString, AsRefStr, Display, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum ConnectionEvents {
+    #[strum(serialize = "connection:status")]
+    Status,
+}
 
 #[derive(Serialize, Debug, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
@@ -143,5 +150,5 @@ fn connection_changed(app_handle: &tauri::AppHandle, status: ConnectionStatus) {
             .expect("Failed to lock server_connection_status mutex");
     }
 
-    let _ = app_handle.emit(crate::constants::Events::ConnectionStatus.as_ref(), status);
+    let _ = app_handle.emit(ConnectionEvents::Status.as_ref(), status);
 }
