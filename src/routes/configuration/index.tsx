@@ -11,8 +11,13 @@ export const Route = createFileRoute("/configuration/")({
 
 function Configuration() {
   return (
-    <div>
-      <Button variant="ghost" onClick={() => exit(0)} size="sm">
+    <div className="grid grid-cols-2 gap-3 p-4 relative">
+      <Button
+        className="absolute left-1 top-1"
+        variant="ghost"
+        onClick={() => exit(0)}
+        size="sm"
+      >
         Quit
       </Button>
 

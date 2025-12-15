@@ -13,6 +13,7 @@ import { Book, EthernetPort, KeyRound, Plug } from "lucide-react";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect } from "react";
+import { cn } from "@/lib/utils";
 
 const commands = {
   GetServerDetails: "get_server_details",
@@ -36,7 +37,13 @@ async function updateServerDetails(data: Schema) {
   invoke(commands.UpdateServerDetails, data);
 }
 
-function ObsWebsocketConfiguration() {
+type ObsWebsocketConfigurationProps = {
+  className?: string;
+};
+
+function ObsWebsocketConfiguration({
+  className,
+}: ObsWebsocketConfigurationProps) {
   const { register, handleSubmit, reset } = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -58,7 +65,10 @@ function ObsWebsocketConfiguration() {
 
   return (
     <div>
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className={cn("flex flex-col gap-4", className)}
+      >
         <div className="flex flex-col gap-2">
           <div className="flex flex-row items-end w-full justify-between">
             <Label htmlFor="address">OBS Address</Label>
@@ -89,7 +99,7 @@ function ObsWebsocketConfiguration() {
               {...register("port")}
               id="port"
               type="number"
-              className="max-w-20 text-center"
+              className="max-w-15 text-center"
               aria-label="Port"
               autoComplete="false"
             />
