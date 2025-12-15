@@ -1,3 +1,13 @@
 {
-  "rust-analyzer.check.command": "clippy"
+  "git.inputValidation": true,
+  "git.inputValidationSubjectLength": 50,
+  "git.inputValidationLength": 72,
+  "rust-analyzer.check.command": "clippy",
+  "[javascript][typescript][typescriptreact]": {
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "always"
+    }
+  },
+  "eslint.validate": ["javascript", "typescript", "typescriptreact"]
 }

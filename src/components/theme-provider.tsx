@@ -44,10 +44,10 @@ export function ThemeProvider({
       root.classList.add(systemTheme);
 
       const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-      const handleChange = (e: MediaQueryListEvent) => {
+      function handleChange(e: MediaQueryListEvent) {
         root.classList.remove("light", "dark");
         root.classList.add(e.matches ? "dark" : "light");
-      };
+      }
 
       mediaQuery.addEventListener("change", handleChange);
 
@@ -72,11 +72,11 @@ export function ThemeProvider({
   );
 }
 
-export const useTheme = () => {
+export function useTheme() {
   const context = useContext(ThemeProviderContext);
 
   if (context === undefined)
     throw new Error("useTheme must be used within a ThemeProvider");
 
   return context;
-};
+}

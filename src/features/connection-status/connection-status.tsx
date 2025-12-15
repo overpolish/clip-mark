@@ -3,17 +3,18 @@ import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { useEffect, useState } from "react";
 
-const connectionStatus = {
+const _connectionStatus = {
   connected: "connected",
   disconnected: "disconnected",
   retrying: "retrying",
 } as const;
 
 type ConnectionStatus =
-  (typeof connectionStatus)[keyof typeof connectionStatus];
+  (typeof _connectionStatus)[keyof typeof _connectionStatus];
 
-const getConnectionStatus = async (): Promise<ConnectionStatus> =>
-  await invoke<ConnectionStatus>(commands.GetServerConnectionStatus);
+async function getConnectionStatus(): Promise<ConnectionStatus> {
+  return await invoke<ConnectionStatus>(commands.GetServerConnectionStatus);
+}
 
 function ConnectionStatus() {
   const [status, setStatus] = useState<ConnectionStatus>("disconnected");
