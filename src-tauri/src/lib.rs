@@ -4,15 +4,17 @@ mod system_tray;
 
 use std::sync::Mutex;
 
-use tauri::Manager;
+use tauri::{Manager, PhysicalPosition};
+use tauri_plugin_positioner::{Position, WindowExt};
 use tauri_plugin_store::StoreExt;
 use tokio::sync::watch;
 
 use crate::system_tray::service::init_system_tray;
 
 pub struct GlobalState {
-    pub server_connection_status: Mutex<crate::obs_websocket_connection::service::ConnectionStatus>,
+    pub server_connection_status: Mutex<crate::obs_websocket_connection::models::ConnectionStatus>,
     pub server_config_changed_tx: watch::Sender<()>,
+    pub recording_status: Mutex<crate::obs_websocket_connection::models::RecordingStatus>,
 }
 
 #[derive(Clone)]
@@ -34,15 +36,22 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             obs_websocket_configuration::commands::get_server_details,
             obs_websocket_configuration::commands::update_server_details,
-            obs_websocket_connection::commands::get_server_connection_status
+            obs_websocket_connection::commands::get_server_connection_status,
+            obs_websocket_connection::commands::get_recording_status,
         ])
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
         .manage(GlobalState {
             server_connection_status: Mutex::new(
-                crate::obs_websocket_connection::service::ConnectionStatus::Disconnected,
+                crate::obs_websocket_connection::models::ConnectionStatus::Disconnected,
             ),
             server_config_changed_tx: watch::channel(()).0,
+            recording_status: Mutex::new(
+                crate::obs_websocket_connection::models::RecordingStatus {
+                    active: false,
+                    paused: false,
+                },
+            ),
         })
         .setup(|app| {
             let store = app
@@ -83,8 +92,31 @@ pub fn run() {
                 obs_websocket_connection::service::websocket_connection(app_handle_for_ws).await;
             });
 
+            let win = app.get_webview_window("recording-status").unwrap();
+            let _ = win.as_ref().window().move_window(Position::BottomLeft);
+            let _ = win.set_ignore_cursor_events(true);
+            position_above_taskbar(&win);
+
             Ok(())
         })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+}
+
+/// Adjusts the window position to be above the taskbar
+fn position_above_taskbar(win: &tauri::WebviewWindow) {
+    if let Ok(Some(monitor)) = win.current_monitor() {
+        let taskbar_top = monitor.work_area().size.height;
+        let window_size = win.outer_size().unwrap_or_default();
+
+        // Window size excludes taskbar height, we treat bottom of work area as top of taskbar
+        let y = taskbar_top.saturating_sub(window_size.height);
+
+        let window_position = PhysicalPosition {
+            x: win.outer_position().unwrap_or_default().x,
+            y: y as i32,
+        };
+
+        let _ = win.as_ref().window().set_position(window_position);
+    }
 }

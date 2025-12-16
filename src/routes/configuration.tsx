@@ -1,20 +1,27 @@
+import { useEffect } from "react";
+
 import { createFileRoute } from "@tanstack/react-router";
 import { exit } from "@tauri-apps/plugin-process";
 
 import { Button } from "@/components/ui/button";
 import { DotPattern } from "@/components/ui/dot-pattern";
 import { Kbd } from "@/components/ui/kbd";
-
-import "./styles.css";
 import ConnectionStatus from "@/features/connection-status/connection-status";
 import ObsWebsocketConfiguration from "@/features/obs-websocket-configuration/obs-websocket-configuration";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/configuration/")({
+export const Route = createFileRoute("/configuration")({
   component: Configuration,
 });
 
 function Configuration() {
+  useEffect(() => {
+    document.body.classList.add("overflow-hidden");
+    return () => {
+      document.body.classList.remove("overflow-hidden");
+    };
+  }, []);
+
   return (
     <div className="relative grid grid-cols-2 gap-3 p-4">
       <Button

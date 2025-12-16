@@ -17,7 +17,7 @@ pub fn init_system_tray(app_handle: &tauri::AppHandle) {
             win.show().unwrap();
             win.set_focus().unwrap();
         }
-    })
+    });
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

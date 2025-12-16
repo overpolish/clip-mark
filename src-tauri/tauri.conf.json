@@ -25,6 +25,19 @@
         "visible": false,
         "skipTaskbar": true,
         "resizable": false
+      },
+      {
+        "url": "/recording-status",
+        "label": "recording-status",
+        "title": "Recording Status",
+        "width": 175,
+        "height": 175,
+        "decorations": false,
+        "skipTaskbar": true,
+        "resizable": false,
+        "alwaysOnTop": true,
+        "transparent": true,
+        "shadow": false
       }
     ],
     "security": {
