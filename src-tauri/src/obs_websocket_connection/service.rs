@@ -117,7 +117,10 @@ fn event_handler(event: obws::events::Event, app_handle: &tauri::AppHandle) -> R
         Event::RecordStateChanged { state, path, .. } => {
             info!("Recording state changed: {:?}, path: {:?}", state, path);
 
-            let active = matches!(state, obws::events::OutputState::Started);
+            let active = matches!(
+                state,
+                obws::events::OutputState::Started | obws::events::OutputState::Resumed
+            );
             let paused = matches!(state, obws::events::OutputState::Paused);
             update_recording_status(app_handle, active, paused);
 

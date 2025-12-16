@@ -3,7 +3,13 @@ import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
+import { Circle, Pause } from "lucide-react";
+import { AnimatePresence } from "motion/react";
 import z from "zod";
+
+import Breathe from "@/components/motion/breathe";
+import Flip from "@/components/motion/flip";
+import ShadowPulse from "@/components/motion/shadow-pulse";
 
 export const Route = createFileRoute("/recording-status")({
   component: RouteComponent,
@@ -57,13 +63,24 @@ function RouteComponent() {
   }, []);
 
   return (
-    <div>
-      Recording Status:{" "}
-      {status
-        ? `${status.active ? "Active" : "Inactive"}${
-            status.paused ? " (Paused)" : ""
-          }`
-        : "Unknown"}
+    <div className="flex h-dvh items-center justify-center">
+      <AnimatePresence mode="popLayout">
+        {status?.active && !status?.paused && (
+          <Flip key="recording">
+            <Breathe>
+              <Circle className="fill-red-500 stroke-red-500 text-6xl drop-shadow-[0_0_8px_rgba(239,68,68,0.6)]" />
+            </Breathe>
+          </Flip>
+        )}
+
+        {status?.paused && (
+          <Flip key="paused">
+            <ShadowPulse>
+              <Pause className="fill-amber-400 stroke-amber-400 text-6xl" />
+            </ShadowPulse>
+          </Flip>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
