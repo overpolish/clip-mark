@@ -9,12 +9,12 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as RecordingStatusIndexRouteImport } from './routes/recording-status/index'
+import { Route as RecordingStatusRouteImport } from './routes/recording-status'
 import { Route as ConfigurationIndexRouteImport } from './routes/configuration/index'
 
-const RecordingStatusIndexRoute = RecordingStatusIndexRouteImport.update({
-  id: '/recording-status/',
-  path: '/recording-status/',
+const RecordingStatusRoute = RecordingStatusRouteImport.update({
+  id: '/recording-status',
+  path: '/recording-status',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ConfigurationIndexRoute = ConfigurationIndexRouteImport.update({
@@ -24,38 +24,38 @@ const ConfigurationIndexRoute = ConfigurationIndexRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/recording-status': typeof RecordingStatusRoute
   '/configuration': typeof ConfigurationIndexRoute
-  '/recording-status': typeof RecordingStatusIndexRoute
 }
 export interface FileRoutesByTo {
+  '/recording-status': typeof RecordingStatusRoute
   '/configuration': typeof ConfigurationIndexRoute
-  '/recording-status': typeof RecordingStatusIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/recording-status': typeof RecordingStatusRoute
   '/configuration/': typeof ConfigurationIndexRoute
-  '/recording-status/': typeof RecordingStatusIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/configuration' | '/recording-status'
+  fullPaths: '/recording-status' | '/configuration'
   fileRoutesByTo: FileRoutesByTo
-  to: '/configuration' | '/recording-status'
-  id: '__root__' | '/configuration/' | '/recording-status/'
+  to: '/recording-status' | '/configuration'
+  id: '__root__' | '/recording-status' | '/configuration/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  RecordingStatusRoute: typeof RecordingStatusRoute
   ConfigurationIndexRoute: typeof ConfigurationIndexRoute
-  RecordingStatusIndexRoute: typeof RecordingStatusIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/recording-status/': {
-      id: '/recording-status/'
+    '/recording-status': {
+      id: '/recording-status'
       path: '/recording-status'
       fullPath: '/recording-status'
-      preLoaderRoute: typeof RecordingStatusIndexRouteImport
+      preLoaderRoute: typeof RecordingStatusRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/configuration/': {
@@ -69,8 +69,8 @@ declare module '@tanstack/react-router' {
 }
 
 const rootRouteChildren: RootRouteChildren = {
+  RecordingStatusRoute: RecordingStatusRoute,
   ConfigurationIndexRoute: ConfigurationIndexRoute,
-  RecordingStatusIndexRoute: RecordingStatusIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

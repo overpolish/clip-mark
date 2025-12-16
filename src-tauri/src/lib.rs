@@ -12,8 +12,9 @@ use tokio::sync::watch;
 use crate::system_tray::service::init_system_tray;
 
 pub struct GlobalState {
-    pub server_connection_status: Mutex<crate::obs_websocket_connection::service::ConnectionStatus>,
+    pub server_connection_status: Mutex<crate::obs_websocket_connection::models::ConnectionStatus>,
     pub server_config_changed_tx: watch::Sender<()>,
+    pub recording_status: Mutex<crate::obs_websocket_connection::models::RecordingStatus>,
 }
 
 #[derive(Clone)]
@@ -35,15 +36,22 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             obs_websocket_configuration::commands::get_server_details,
             obs_websocket_configuration::commands::update_server_details,
-            obs_websocket_connection::commands::get_server_connection_status
+            obs_websocket_connection::commands::get_server_connection_status,
+            obs_websocket_connection::commands::get_recording_status,
         ])
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
         .manage(GlobalState {
             server_connection_status: Mutex::new(
-                crate::obs_websocket_connection::service::ConnectionStatus::Disconnected,
+                crate::obs_websocket_connection::models::ConnectionStatus::Disconnected,
             ),
             server_config_changed_tx: watch::channel(()).0,
+            recording_status: Mutex::new(
+                crate::obs_websocket_connection::models::RecordingStatus {
+                    active: false,
+                    paused: false,
+                },
+            ),
         })
         .setup(|app| {
             let store = app
