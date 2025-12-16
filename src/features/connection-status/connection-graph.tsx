@@ -2,7 +2,7 @@ import { forwardRef, useRef } from "react";
 import ConnectionStatus, { connectionStatus } from "./connection-status";
 import { cn } from "@/lib/utils";
 import ClipMarkLogo from "@/assets/clip-mark.png";
-import ObsLogo from "@/assets/OBS_Studio_Logo.svg";
+import ObsLogo from "@/assets/obsstudio.svg";
 import { AnimatedBeam } from "@/components/ui/animated-beam";
 
 const Circle = forwardRef<HTMLDivElement, { children?: React.ReactNode }>(
@@ -11,7 +11,7 @@ const Circle = forwardRef<HTMLDivElement, { children?: React.ReactNode }>(
       <div
         ref={ref}
         className={cn(
-          "z-10 flex size-12 items-center justify-center rounded-full border-2 bg-white dark:bg-background text-background p-3 shadow-xl shadow-border/20"
+          "relative z-10 flex size-12 items-center justify-center rounded-full border-2 bg-white dark:bg-background text-background p-3 shadow-xl shadow-border/20"
         )}
       >
         {props.children}
@@ -40,7 +40,8 @@ function ConnectionGraph({ status }: ConnectionGraphProps) {
             <img src={ClipMarkLogo} />
           </Circle>
           <Circle ref={obsRef}>
-            <img src={ObsLogo} />
+            <div className="size-5 rounded-full bg-[#302E31] absolute" />
+            <img src={ObsLogo} className="invert" />
           </Circle>
         </div>
       </div>
