@@ -10,43 +10,43 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as RecordingStatusRouteImport } from './routes/recording-status'
-import { Route as ConfigurationIndexRouteImport } from './routes/configuration/index'
+import { Route as ConfigurationRouteImport } from './routes/configuration'
 
 const RecordingStatusRoute = RecordingStatusRouteImport.update({
   id: '/recording-status',
   path: '/recording-status',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ConfigurationIndexRoute = ConfigurationIndexRouteImport.update({
-  id: '/configuration/',
-  path: '/configuration/',
+const ConfigurationRoute = ConfigurationRouteImport.update({
+  id: '/configuration',
+  path: '/configuration',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/configuration': typeof ConfigurationRoute
   '/recording-status': typeof RecordingStatusRoute
-  '/configuration': typeof ConfigurationIndexRoute
 }
 export interface FileRoutesByTo {
+  '/configuration': typeof ConfigurationRoute
   '/recording-status': typeof RecordingStatusRoute
-  '/configuration': typeof ConfigurationIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/configuration': typeof ConfigurationRoute
   '/recording-status': typeof RecordingStatusRoute
-  '/configuration/': typeof ConfigurationIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/recording-status' | '/configuration'
+  fullPaths: '/configuration' | '/recording-status'
   fileRoutesByTo: FileRoutesByTo
-  to: '/recording-status' | '/configuration'
-  id: '__root__' | '/recording-status' | '/configuration/'
+  to: '/configuration' | '/recording-status'
+  id: '__root__' | '/configuration' | '/recording-status'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  ConfigurationRoute: typeof ConfigurationRoute
   RecordingStatusRoute: typeof RecordingStatusRoute
-  ConfigurationIndexRoute: typeof ConfigurationIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -58,19 +58,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RecordingStatusRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/configuration/': {
-      id: '/configuration/'
+    '/configuration': {
+      id: '/configuration'
       path: '/configuration'
       fullPath: '/configuration'
-      preLoaderRoute: typeof ConfigurationIndexRouteImport
+      preLoaderRoute: typeof ConfigurationRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
+  ConfigurationRoute: ConfigurationRoute,
   RecordingStatusRoute: RecordingStatusRoute,
-  ConfigurationIndexRoute: ConfigurationIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

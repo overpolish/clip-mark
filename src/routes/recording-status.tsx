@@ -49,10 +49,10 @@ function RouteComponent() {
   }, []);
 
   useEffect(() => {
-    document.body.classList.add("bg-red-500");
+    document.body.classList.add("bg-transparent");
 
     return () => {
-      document.body.classList.remove("bg-red-500");
+      document.body.classList.remove("bg-transparent");
     };
   }, []);
 
