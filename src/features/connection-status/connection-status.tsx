@@ -1,6 +1,8 @@
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { useEffect, useState } from "react";
+import StatusText from "./status-text";
+import ConnectionGraph from "./connection-graph";
 
 const commands = {
   GetServerConnectionStatus: "get_server_connection_status",
@@ -10,21 +12,24 @@ const connectionEvents = {
   Status: "connection:status",
 } as const;
 
-const _connectionStatus = {
+export const connectionStatus = {
   connected: "connected",
   disconnected: "disconnected",
   retrying: "retrying",
 } as const;
 
 type ConnectionStatus =
-  (typeof _connectionStatus)[keyof typeof _connectionStatus];
+  (typeof connectionStatus)[keyof typeof connectionStatus];
 
 async function getConnectionStatus(): Promise<ConnectionStatus> {
   return await invoke<ConnectionStatus>(commands.GetServerConnectionStatus);
 }
 
 function ConnectionStatus() {
-  const [status, setStatus] = useState<ConnectionStatus>("disconnected");
+  // Prevent flash of disconnected state on initial load - maybe react query?
+  const [status, setStatus] = useState<ConnectionStatus>(
+    connectionStatus.disconnected
+  );
 
   useEffect(() => {
     getConnectionStatus().then((initialStatus) => {
@@ -45,9 +50,14 @@ function ConnectionStatus() {
     return () => {
       unlisten.then((f) => f());
     };
-  }, [status]);
+  }, []);
 
-  return <div>connection status: {status}</div>;
+  return (
+    <div className="flex flex-col items-center justify-center">
+      <ConnectionGraph status={status} />
+      <StatusText>{status}</StatusText>
+    </div>
+  );
 }
 
 export default ConnectionStatus;

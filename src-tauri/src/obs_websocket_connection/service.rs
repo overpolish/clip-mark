@@ -37,13 +37,13 @@ pub async fn websocket_connection(app_handle: tauri::AppHandle) {
         let client = match connect_to_obs(server_config).await {
             Ok(client) => client,
             Err(err) => {
-                let is_connected = global_state
+                let is_disconnected = global_state
                     .server_connection_status
                     .lock()
-                    .map(|s| *s == ConnectionStatus::Connected)
+                    .map(|s| *s == ConnectionStatus::Disconnected)
                     .unwrap_or(false);
 
-                if is_connected {
+                if !is_disconnected {
                     warn!("Failed to connect to OBS WebSocket: {}", err);
                     connection_changed(&app_handle, ConnectionStatus::Disconnected);
                 }
