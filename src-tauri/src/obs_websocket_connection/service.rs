@@ -12,6 +12,12 @@ use crate::{
 };
 
 #[derive(EnumString, AsRefStr, Display, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum RecordingEvents {
+    #[strum(serialize = "recording:status")]
+    Status,
+}
+
+#[derive(EnumString, AsRefStr, Display, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum ConnectionEvents {
     #[strum(serialize = "connection:status")]
     Status,
@@ -75,7 +81,7 @@ async fn connect_to_obs(server_config: ServerConfig) -> Result<obws::Client, obw
         host: server_config.address,
         port: server_config.port,
         password: Some(server_config.password),
-        event_subscriptions: Some(obws::requests::EventSubscription::NONE),
+        event_subscriptions: Some(obws::requests::EventSubscription::ALL),
         dangerous: None,
         broadcast_capacity: obws::client::DEFAULT_BROADCAST_CAPACITY,
         // Allows faster reconnection attempts
@@ -104,7 +110,7 @@ async fn handle_client_connection(
     loop {
         tokio::select! {
             Some(event) = events.next() => {
-                if let Err(e) = event_handler(event) {
+                if let Err(e) = event_handler(	event, app_handle) {
                     warn!("Event handler error: {}", e);
                     connection_changed(app_handle, ConnectionStatus::Disconnected);
                     break;
@@ -119,10 +125,14 @@ async fn handle_client_connection(
     }
 }
 
-fn event_handler(event: obws::events::Event) -> Result<(), String> {
+fn event_handler(event: obws::events::Event, app_handle: &tauri::AppHandle) -> Result<(), String> {
     use obws::events::Event;
     match event {
         Event::ServerStopped => Err("OBS WebSocket server has stopped.".to_string()),
+        Event::RecordStateChanged { state, .. } => {
+            let _ = app_handle.emit(RecordingEvents::Status.as_ref(), state);
+            Ok(())
+        }
         _ => {
             info!("Event: {event:#?}");
             Ok(())
