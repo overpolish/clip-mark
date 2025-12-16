@@ -1,12 +1,14 @@
-import { Button } from "@/components/ui/button";
-import ConnectionStatus from "@/features/connection-status/connection-status";
-import ObsWebsocketConfiguration from "@/features/obs-websocket-configuration/obs-websocket-configuration";
 import { createFileRoute } from "@tanstack/react-router";
 import { exit } from "@tauri-apps/plugin-process";
-import "./styles.css";
+
+import { Button } from "@/components/ui/button";
 import { DotPattern } from "@/components/ui/dot-pattern";
-import { cn } from "@/lib/utils";
 import { Kbd } from "@/components/ui/kbd";
+
+import "./styles.css";
+import ConnectionStatus from "@/features/connection-status/connection-status";
+import ObsWebsocketConfiguration from "@/features/obs-websocket-configuration/obs-websocket-configuration";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/configuration/")({
   component: Configuration,
@@ -14,19 +16,19 @@ export const Route = createFileRoute("/configuration/")({
 
 function Configuration() {
   return (
-    <div className="grid grid-cols-2 gap-3 p-4 relative">
+    <div className="relative grid grid-cols-2 gap-3 p-4">
       <Button
-        className="absolute left-1 top-1"
-        variant="ghost"
+        className="absolute top-1 left-1"
         onClick={() => exit(0)}
         size="sm"
+        variant="ghost"
       >
         Quit
       </Button>
-      <div className="flex flex-col h-full items-center justify-center w-full">
+      <div className="flex h-full w-full flex-col items-center justify-center">
         <ConnectionStatus />
-        <div className="flex gap-2 items-center">
-          <span className="text-muted-foreground italic text-sm">
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted-foreground italic">
             New note:
           </span>
           <Kbd>Ctrl + Shift + N</Kbd>
@@ -34,11 +36,11 @@ function Configuration() {
       </div>
       <ObsWebsocketConfiguration />
       <DotPattern
-        width={20}
-        height={20}
+        cr={1}
         cx={1}
         cy={1}
-        cr={1}
+        height={20}
+        width={20}
         className={cn(
           "-z-1",
           "mask-[linear-gradient(to_top_right,white,transparent,transparent)]"

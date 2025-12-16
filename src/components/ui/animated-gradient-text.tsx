@@ -4,21 +4,25 @@ import { cn } from "@/lib/utils";
 
 export interface AnimatedGradientTextProps
   extends ComponentPropsWithoutRef<"div"> {
-  speed?: number;
   colorFrom?: string;
   colorTo?: string;
+  speed?: number;
 }
 
 export function AnimatedGradientText({
   children,
   className,
-  speed = 1,
   colorFrom = "#ffaa40",
   colorTo = "#9c40ff",
+  speed = 1,
   ...props
 }: AnimatedGradientTextProps) {
   return (
     <span
+      className={cn(
+        `inline animate-gradient bg-linear-to-r from-(--color-from) via-(--color-to) to-(--color-from) bg-size-[var(--bg-size)_100%] bg-clip-text text-transparent`,
+        className
+      )}
       style={
         {
           "--bg-size": `${speed * 300}%`,
@@ -26,10 +30,6 @@ export function AnimatedGradientText({
           "--color-to": colorTo,
         } as React.CSSProperties
       }
-      className={cn(
-        `animate-gradient inline bg-linear-to-r from-(--color-from) via-(--color-to) to-(--color-from) bg-size-[var(--bg-size)_100%] bg-clip-text text-transparent`,
-        className
-      )}
       {...props}
     >
       {children}

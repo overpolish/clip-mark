@@ -1,8 +1,10 @@
+import { useEffect, useState } from "react";
+
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
-import { useEffect, useState } from "react";
-import StatusText from "./status-text";
+
 import ConnectionGraph from "./connection-graph";
+import StatusText from "./status-text";
 
 const commands = {
   GetServerConnectionStatus: "get_server_connection_status",
@@ -50,7 +52,7 @@ function ConnectionStatus() {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center w-full">
+    <div className="flex w-full flex-col items-center justify-center">
       {status && (
         <>
           <ConnectionGraph status={status} />
