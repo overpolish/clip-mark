@@ -4,6 +4,8 @@ import ObsWebsocketConfiguration from "@/features/obs-websocket-configuration/ob
 import { createFileRoute } from "@tanstack/react-router";
 import { exit } from "@tauri-apps/plugin-process";
 import "./styles.css";
+import { DotPattern } from "@/components/ui/dot-pattern";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/configuration/")({
   component: Configuration,
@@ -20,9 +22,18 @@ function Configuration() {
       >
         Quit
       </Button>
-
       <ConnectionStatus />
       <ObsWebsocketConfiguration />
+      <DotPattern
+        width={20}
+        height={20}
+        cx={1}
+        cy={1}
+        cr={1}
+        className={cn(
+          "mask-[linear-gradient(to_top_right,white,transparent,transparent)]"
+        )}
+      />
     </div>
   );
 }
