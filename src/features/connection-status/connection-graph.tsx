@@ -1,4 +1,4 @@
-import { forwardRef, useRef } from "react";
+import { ComponentProps, forwardRef, useRef } from "react";
 import ConnectionStatus, { connectionStatus } from "./connection-status";
 import { cn } from "@/lib/utils";
 import ClipMarkLogo from "@/assets/clip-mark.png";
@@ -19,6 +19,51 @@ const Circle = forwardRef<HTMLDivElement, { children?: React.ReactNode }>(
     );
   }
 );
+
+type BeamProps = Pick<
+  ComponentProps<typeof AnimatedBeam>,
+  | "containerRef"
+  | "fromRef"
+  | "toRef"
+  | "startYOffset"
+  | "endYOffset"
+  | "curvature"
+  | "reverse"
+> & {
+  status: ConnectionStatus;
+};
+
+function Beam({
+  containerRef,
+  toRef,
+  fromRef,
+  startYOffset,
+  endYOffset,
+  curvature,
+  status,
+  reverse,
+}: BeamProps) {
+  return (
+    <AnimatedBeam
+      containerRef={containerRef}
+      fromRef={fromRef}
+      toRef={toRef}
+      gradientStartColor="var(--color-green-300)"
+      gradientStopColor="var(--color-green-400)"
+      pathClassName={
+        status === connectionStatus.disconnected
+          ? "stroke-red-500 dark:stroke-red-400"
+          : undefined
+      }
+      pathOpacity={status === connectionStatus.disconnected ? 0.5 : undefined}
+      disable={status !== connectionStatus.connected}
+      startYOffset={startYOffset}
+      endYOffset={endYOffset}
+      curvature={curvature}
+      reverse={reverse}
+    />
+  );
+}
 
 type ConnectionGraphProps = {
   status: ConnectionStatus;
@@ -46,36 +91,21 @@ function ConnectionGraph({ status }: ConnectionGraphProps) {
         </div>
       </div>
 
-      <AnimatedBeam
+      <Beam
         containerRef={containerRef}
         fromRef={clipMarkRef}
         toRef={obsRef}
-        gradientStartColor="var(--color-green-300)"
-        gradientStopColor="var(--color-green-400)"
-        pathClassName={
-          status === connectionStatus.disconnected
-            ? "stroke-red-500 dark:stroke-red-400"
-            : undefined
-        }
-        pathOpacity={status === connectionStatus.disconnected ? 0.5 : undefined}
-        disable={status !== connectionStatus.connected}
+        status={status}
         startYOffset={10}
         endYOffset={10}
         curvature={-20}
       />
-      <AnimatedBeam
+
+      <Beam
+        containerRef={containerRef}
         fromRef={obsRef}
         toRef={clipMarkRef}
-        containerRef={containerRef}
-        gradientStartColor="var(--color-green-300)"
-        gradientStopColor="var(--color-green-400)"
-        pathClassName={
-          status === connectionStatus.disconnected
-            ? "stroke-red-500 dark:stroke-red-400"
-            : undefined
-        }
-        pathOpacity={status === connectionStatus.disconnected ? 0.5 : undefined}
-        disable={status !== connectionStatus.connected}
+        status={status}
         startYOffset={-10}
         endYOffset={-10}
         curvature={20}
