@@ -1,4 +1,5 @@
 import js from "@eslint/js";
+import eslintPluginBetterTailwindcss from "eslint-plugin-better-tailwindcss";
 import pluginBoundaries from "eslint-plugin-boundaries";
 import perfectionist from "eslint-plugin-perfectionist";
 import pluginReact from "eslint-plugin-react";
@@ -43,6 +44,28 @@ export default defineConfig([
     settings: {
       react: {
         version: "detect",
+      },
+    },
+  },
+  {
+    languageOptions: {
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
+    },
+    plugins: {
+      "better-tailwindcss": eslintPluginBetterTailwindcss,
+    },
+    rules: {
+      ...eslintPluginBetterTailwindcss.configs["recommended-warn"].rules,
+      ...eslintPluginBetterTailwindcss.configs["recommended-error"].rules,
+      "better-tailwindcss/enforce-consistent-line-wrapping": "off",
+    },
+    settings: {
+      "better-tailwindcss": {
+        entryPoint: "src/index.css",
       },
     },
   },

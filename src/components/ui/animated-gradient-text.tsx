@@ -20,7 +20,7 @@ export function AnimatedGradientText({
   return (
     <span
       className={cn(
-        `animate-gradient inline bg-linear-to-r from-(--color-from) via-(--color-to) to-(--color-from) bg-size-[var(--bg-size)_100%] bg-clip-text text-transparent`,
+        `inline animate-gradient bg-linear-to-r from-(--color-from) via-(--color-to) to-(--color-from) bg-size-[var(--bg-size)_100%] bg-clip-text text-transparent`,
         className
       )}
       style={

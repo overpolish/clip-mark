@@ -13,7 +13,7 @@ const Circle = forwardRef<HTMLDivElement, { children?: React.ReactNode }>(
       <div
         ref={ref}
         className={cn(
-          "relative z-10 flex size-12 items-center justify-center rounded-full border-2 bg-white dark:bg-background text-background p-3 shadow-xl shadow-border/20"
+          "relative z-10 flex size-12 items-center justify-center rounded-full border-2 bg-white p-3 text-background shadow-xl shadow-border/20 dark:bg-background"
         )}
       >
         {props.children}
@@ -87,7 +87,7 @@ function ConnectionGraph({ status }: ConnectionGraphProps) {
             <img src={ClipMarkLogo} />
           </Circle>
           <Circle ref={obsRef}>
-            <div className="size-5 rounded-full bg-[#302E31] absolute" />
+            <div className="absolute size-5 rounded-full bg-[#302E31]" />
             <img className="invert" src={ObsLogo} />
           </Circle>
         </div>

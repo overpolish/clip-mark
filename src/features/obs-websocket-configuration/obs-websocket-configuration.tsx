@@ -71,7 +71,7 @@ function ObsWebsocketConfiguration({
         onSubmit={handleSubmit(onSubmit)}
       >
         <div className="flex flex-col gap-2">
-          <div className="flex flex-row items-end w-full justify-between">
+          <div className="flex w-full flex-row items-end justify-between">
             <Label htmlFor="address">OBS Address</Label>
             <Button
               size="icon-xs"

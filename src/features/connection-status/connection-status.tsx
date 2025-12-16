@@ -52,7 +52,7 @@ function ConnectionStatus() {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center w-full">
+    <div className="flex w-full flex-col items-center justify-center">
       {status && (
         <>
           <ConnectionGraph status={status} />

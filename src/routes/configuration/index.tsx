@@ -16,19 +16,19 @@ export const Route = createFileRoute("/configuration/")({
 
 function Configuration() {
   return (
-    <div className="grid grid-cols-2 gap-3 p-4 relative">
+    <div className="relative grid grid-cols-2 gap-3 p-4">
       <Button
-        className="absolute left-1 top-1"
+        className="absolute top-1 left-1"
         onClick={() => exit(0)}
         size="sm"
         variant="ghost"
       >
         Quit
       </Button>
-      <div className="flex flex-col h-full items-center justify-center w-full">
+      <div className="flex h-full w-full flex-col items-center justify-center">
         <ConnectionStatus />
-        <div className="flex gap-2 items-center">
-          <span className="text-muted-foreground italic text-sm">
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted-foreground italic">
             New note:
           </span>
           <Kbd>Ctrl + Shift + N</Kbd>
