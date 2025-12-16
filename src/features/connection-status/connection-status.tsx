@@ -26,10 +26,7 @@ async function getConnectionStatus(): Promise<ConnectionStatus> {
 }
 
 function ConnectionStatus() {
-  // Prevent flash of disconnected state on initial load - maybe react query?
-  const [status, setStatus] = useState<ConnectionStatus>(
-    connectionStatus.disconnected
-  );
+  const [status, setStatus] = useState<ConnectionStatus>();
 
   useEffect(() => {
     getConnectionStatus().then((initialStatus) => {
@@ -54,8 +51,12 @@ function ConnectionStatus() {
 
   return (
     <div className="flex flex-col items-center justify-center">
-      <ConnectionGraph status={status} />
-      <StatusText>{status}</StatusText>
+      {status && (
+        <>
+          <ConnectionGraph status={status} />
+          <StatusText>{status}</StatusText>
+        </>
+      )}
     </div>
   );
 }
