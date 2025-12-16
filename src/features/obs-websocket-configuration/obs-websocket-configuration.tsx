@@ -1,3 +1,12 @@
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { invoke } from "@tauri-apps/api/core";
+import { openUrl } from "@tauri-apps/plugin-opener";
+import { Book, EthernetPort, KeyRound, Plug } from "lucide-react";
+import z from "zod";
+
 import { Button } from "@/components/ui/button";
 import {
   InputGroup,
@@ -5,14 +14,6 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group";
 import { Label } from "@/components/ui/label";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import z from "zod";
-
-import { Book, EthernetPort, KeyRound, Plug } from "lucide-react";
-import { openUrl } from "@tauri-apps/plugin-opener";
-import { invoke } from "@tauri-apps/api/core";
-import { useEffect } from "react";
 import { cn } from "@/lib/utils";
 
 const commands = {
@@ -22,8 +23,8 @@ const commands = {
 
 const schema = z.object({
   address: z.string().min(1, "Address is required"),
-  port: z.coerce.number().min(1),
   password: z.string().min(1, "Password is required"),
+  port: z.coerce.number().min(1),
 });
 
 type Schema = z.infer<typeof schema>;
@@ -44,13 +45,13 @@ type ObsWebsocketConfigurationProps = {
 function ObsWebsocketConfiguration({
   className,
 }: ObsWebsocketConfigurationProps) {
-  const { register, handleSubmit, reset } = useForm({
-    resolver: zodResolver(schema),
+  const { handleSubmit, register, reset } = useForm({
     defaultValues: {
       address: "localhost",
-      port: 4455,
       password: "",
+      port: 4455,
     },
+    resolver: zodResolver(schema),
   });
 
   function onSubmit(data: Schema) {
@@ -66,20 +67,20 @@ function ObsWebsocketConfiguration({
   return (
     <div>
       <form
-        onSubmit={handleSubmit(onSubmit)}
         className={cn("flex flex-col gap-4", className)}
+        onSubmit={handleSubmit(onSubmit)}
       >
         <div className="flex flex-col gap-2">
           <div className="flex flex-row items-end w-full justify-between">
             <Label htmlFor="address">OBS Address</Label>
             <Button
               size="icon-xs"
+              type="button"
               variant="outline"
               onClick={() => {
                 // TODO link to specific header
                 openUrl("https://github.com/domingasp/clip-mark");
               }}
-              type="button"
             >
               <Book />
             </Button>
@@ -97,11 +98,11 @@ function ObsWebsocketConfiguration({
             <p>:</p>
             <InputGroupInput
               {...register("port")}
-              id="port"
-              type="number"
-              className="max-w-15 text-center"
               aria-label="Port"
               autoComplete="false"
+              className="max-w-15 text-center"
+              id="port"
+              type="number"
             />
           </InputGroup>
         </div>

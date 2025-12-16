@@ -1,54 +1,55 @@
 import { RefObject, useEffect, useId, useState } from "react";
+
 import { motion } from "motion/react";
 
 import { cn } from "@/lib/utils";
 
 export interface AnimatedBeamProps {
-  className?: string;
   containerRef: RefObject<HTMLElement | null>; // Container ref
   fromRef: RefObject<HTMLElement | null>;
   toRef: RefObject<HTMLElement | null>;
+  className?: string;
   curvature?: number;
-  reverse?: boolean;
-  pathColor?: string;
-  pathClassName?: string;
-  pathWidth?: number;
-  pathOpacity?: number;
-  gradientStartColor?: string;
-  gradientStopColor?: string;
   delay?: number;
+  disable?: boolean;
   duration?: number;
-  startXOffset?: number;
-  startYOffset?: number;
   endXOffset?: number;
   endYOffset?: number;
-  disable?: boolean;
+  gradientStartColor?: string;
+  gradientStopColor?: string;
+  pathClassName?: string;
+  pathColor?: string;
+  pathOpacity?: number;
+  pathWidth?: number;
+  reverse?: boolean;
+  startXOffset?: number;
+  startYOffset?: number;
 }
 
 export function AnimatedBeam({
   className,
   containerRef,
-  fromRef,
-  toRef,
   curvature = 0,
-  reverse = false, // Include the reverse prop
-  duration = Math.random() * 3 + 4,
   delay = 0,
-  pathColor = "gray",
-  pathClassName,
-  pathWidth = 2,
-  pathOpacity = 0.2,
-  gradientStartColor = "#ffaa40",
-  gradientStopColor = "#9c40ff",
-  startXOffset = 0,
-  startYOffset = 0,
+  disable = false,
+  duration = Math.random() * 3 + 4,
   endXOffset = 0,
   endYOffset = 0,
-  disable = false,
+  fromRef,
+  gradientStartColor = "#ffaa40",
+  gradientStopColor = "#9c40ff",
+  pathClassName,
+  pathColor = "gray",
+  pathOpacity = 0.2,
+  pathWidth = 2,
+  reverse = false, // Include the reverse prop
+  startXOffset = 0,
+  startYOffset = 0,
+  toRef,
 }: AnimatedBeamProps) {
   const id = useId();
   const [pathD, setPathD] = useState("");
-  const [svgDimensions, setSvgDimensions] = useState({ width: 0, height: 0 });
+  const [svgDimensions, setSvgDimensions] = useState({ height: 0, width: 0 });
 
   // Calculate the gradient coordinates based on the reverse prop
   const gradientCoordinates = reverse
@@ -74,7 +75,7 @@ export function AnimatedBeam({
 
         const svgWidth = containerRect.width;
         const svgHeight = containerRect.height;
-        setSvgDimensions({ width: svgWidth, height: svgHeight });
+        setSvgDimensions({ height: svgHeight, width: svgWidth });
 
         const startX =
           rectA.left - containerRect.left + rectA.width / 2 + startXOffset;
@@ -124,47 +125,47 @@ export function AnimatedBeam({
   return (
     <svg
       fill="none"
-      width={svgDimensions.width}
       height={svgDimensions.height}
+      viewBox={`0 0 ${svgDimensions.width} ${svgDimensions.height}`}
+      width={svgDimensions.width}
       xmlns="http://www.w3.org/2000/svg"
       className={cn(
         "pointer-events-none absolute top-0 left-0 transform-gpu stroke-2",
         className
       )}
-      viewBox={`0 0 ${svgDimensions.width} ${svgDimensions.height}`}
     >
       <path
+        className={cn("transition-[stroke,stroke-opacity]", pathClassName)}
         d={pathD}
         stroke={pathColor}
-        strokeWidth={pathWidth}
-        strokeOpacity={pathOpacity}
         strokeLinecap="round"
-        className={cn("transition-[stroke,stroke-opacity]", pathClassName)}
+        strokeOpacity={pathOpacity}
+        strokeWidth={pathWidth}
       />
       <path
         d={pathD}
-        strokeWidth={pathWidth}
         stroke={`url(#${id})`}
-        strokeOpacity="1"
         strokeLinecap="round"
+        strokeOpacity="1"
+        strokeWidth={pathWidth}
       />
       <defs>
         <motion.linearGradient
           // Hidden when disabled to prevent rendering issues
           className={cn("transform-gpu", disable && "hidden")}
-          id={id}
           gradientUnits={"userSpaceOnUse"}
-          initial={{
-            x1: "0%",
-            x2: "0%",
-            y1: "0%",
-            y2: "0%",
-          }}
+          id={id}
           animate={{
             x1: gradientCoordinates.x1,
             x2: gradientCoordinates.x2,
             y1: gradientCoordinates.y1,
             y2: gradientCoordinates.y2,
+          }}
+          initial={{
+            x1: "0%",
+            x2: "0%",
+            y1: "0%",
+            y2: "0%",
           }}
           transition={{
             delay,

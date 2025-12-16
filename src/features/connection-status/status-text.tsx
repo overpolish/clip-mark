@@ -1,6 +1,8 @@
 import { ComponentProps } from "react";
-import ConnectionStatus, { connectionStatus } from "./connection-status";
+
 import { AnimatedGradientText } from "@/components/ui/animated-gradient-text";
+
+import ConnectionStatus, { connectionStatus } from "./connection-status";
 
 type StatusTextProps = {
   children: ConnectionStatus;

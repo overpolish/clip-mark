@@ -1,8 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+
 import "./index.css";
-import { ThemeProvider } from "./components/theme-provider";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
+
+import { ThemeProvider } from "./components/theme-provider";
 import { routeTree } from "./routeTree.gen";
 
 const router = createRouter({ routeTree });

@@ -1,12 +1,14 @@
-import { Button } from "@/components/ui/button";
-import ConnectionStatus from "@/features/connection-status/connection-status";
-import ObsWebsocketConfiguration from "@/features/obs-websocket-configuration/obs-websocket-configuration";
 import { createFileRoute } from "@tanstack/react-router";
 import { exit } from "@tauri-apps/plugin-process";
-import "./styles.css";
+
+import { Button } from "@/components/ui/button";
 import { DotPattern } from "@/components/ui/dot-pattern";
-import { cn } from "@/lib/utils";
 import { Kbd } from "@/components/ui/kbd";
+
+import "./styles.css";
+import ConnectionStatus from "@/features/connection-status/connection-status";
+import ObsWebsocketConfiguration from "@/features/obs-websocket-configuration/obs-websocket-configuration";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/configuration/")({
   component: Configuration,
@@ -17,9 +19,9 @@ function Configuration() {
     <div className="grid grid-cols-2 gap-3 p-4 relative">
       <Button
         className="absolute left-1 top-1"
-        variant="ghost"
         onClick={() => exit(0)}
         size="sm"
+        variant="ghost"
       >
         Quit
       </Button>
@@ -34,11 +36,11 @@ function Configuration() {
       </div>
       <ObsWebsocketConfiguration />
       <DotPattern
-        width={20}
-        height={20}
+        cr={1}
         cx={1}
         cy={1}
-        cr={1}
+        height={20}
+        width={20}
         className={cn(
           "-z-1",
           "mask-[linear-gradient(to_top_right,white,transparent,transparent)]"

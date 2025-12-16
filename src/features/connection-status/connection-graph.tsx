@@ -1,9 +1,11 @@
 import { ComponentProps, forwardRef, useRef } from "react";
-import ConnectionStatus, { connectionStatus } from "./connection-status";
-import { cn } from "@/lib/utils";
+
 import ClipMarkLogo from "@/assets/clip-mark.png";
 import ObsLogo from "@/assets/obsstudio.svg";
 import { AnimatedBeam } from "@/components/ui/animated-beam";
+import { cn } from "@/lib/utils";
+
+import ConnectionStatus, { connectionStatus } from "./connection-status";
 
 const Circle = forwardRef<HTMLDivElement, { children?: React.ReactNode }>(
   (props, ref) => {
@@ -35,32 +37,32 @@ type BeamProps = Pick<
 
 function Beam({
   containerRef,
-  toRef,
-  fromRef,
-  startYOffset,
-  endYOffset,
   curvature,
-  status,
+  endYOffset,
+  fromRef,
   reverse,
+  startYOffset,
+  status,
+  toRef,
 }: BeamProps) {
   return (
     <AnimatedBeam
       containerRef={containerRef}
+      curvature={curvature}
+      disable={status !== connectionStatus.connected}
+      endYOffset={endYOffset}
       fromRef={fromRef}
-      toRef={toRef}
       gradientStartColor="var(--color-green-300)"
       gradientStopColor="var(--color-green-400)"
+      pathOpacity={status === connectionStatus.disconnected ? 0.5 : undefined}
+      reverse={reverse}
+      startYOffset={startYOffset}
+      toRef={toRef}
       pathClassName={
         status === connectionStatus.disconnected
           ? "stroke-red-500 dark:stroke-red-400"
           : undefined
       }
-      pathOpacity={status === connectionStatus.disconnected ? 0.5 : undefined}
-      disable={status !== connectionStatus.connected}
-      startYOffset={startYOffset}
-      endYOffset={endYOffset}
-      curvature={curvature}
-      reverse={reverse}
     />
   );
 }
@@ -86,29 +88,29 @@ function ConnectionGraph({ status }: ConnectionGraphProps) {
           </Circle>
           <Circle ref={obsRef}>
             <div className="size-5 rounded-full bg-[#302E31] absolute" />
-            <img src={ObsLogo} className="invert" />
+            <img className="invert" src={ObsLogo} />
           </Circle>
         </div>
       </div>
 
       <Beam
         containerRef={containerRef}
-        fromRef={clipMarkRef}
-        toRef={obsRef}
-        status={status}
-        startYOffset={10}
-        endYOffset={10}
         curvature={-20}
+        endYOffset={10}
+        fromRef={clipMarkRef}
+        startYOffset={10}
+        status={status}
+        toRef={obsRef}
       />
 
       <Beam
         containerRef={containerRef}
-        fromRef={obsRef}
-        toRef={clipMarkRef}
-        status={status}
-        startYOffset={-10}
-        endYOffset={-10}
         curvature={20}
+        endYOffset={-10}
+        fromRef={obsRef}
+        startYOffset={-10}
+        status={status}
+        toRef={clipMarkRef}
         reverse
       />
     </div>

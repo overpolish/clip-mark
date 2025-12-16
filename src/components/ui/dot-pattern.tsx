@@ -1,4 +1,5 @@
 import React, { useEffect, useId, useRef, useState } from "react";
+
 import { motion } from "motion/react";
 
 import { cn } from "@/lib/utils";
@@ -17,15 +18,15 @@ import { cn } from "@/lib/utils";
  * @param {boolean} [glow=false] - Whether dots should have a glowing animation effect
  */
 interface DotPatternProps extends React.SVGProps<SVGSVGElement> {
-  width?: number;
-  height?: number;
-  x?: number;
-  y?: number;
+  className?: string;
+  cr?: number;
   cx?: number;
   cy?: number;
-  cr?: number;
-  className?: string;
   glow?: boolean;
+  height?: number;
+  width?: number;
+  x?: number;
+  y?: number;
   [key: string]: unknown;
 }
 
@@ -60,24 +61,24 @@ interface DotPatternProps extends React.SVGProps<SVGSVGElement> {
  */
 
 export function DotPattern({
-  width = 16,
-  height = 16,
+  className,
+  cr = 1,
   cx = 1,
   cy = 1,
-  cr = 1,
-  className,
   glow = false,
+  height = 16,
+  width = 16,
   ...props
 }: DotPatternProps) {
   const id = useId();
   const containerRef = useRef<SVGSVGElement>(null);
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const [dimensions, setDimensions] = useState({ height: 0, width: 0 });
 
   useEffect(() => {
     function updateDimensions() {
       if (containerRef.current) {
-        const { width, height } = containerRef.current.getBoundingClientRect();
-        setDimensions({ width, height });
+        const { height, width } = containerRef.current.getBoundingClientRect();
+        setDimensions({ height, width });
       }
     }
 
@@ -96,10 +97,10 @@ export function DotPattern({
       const col = i % Math.ceil(dimensions.width / width);
       const row = Math.floor(i / Math.ceil(dimensions.width / width));
       return {
-        x: col * width + cx,
-        y: row * height + cy,
         delay: Math.random() * 5,
         duration: Math.random() * 3 + 2,
+        x: col * width + cx,
+        y: row * height + cy,
       };
     }
   );
@@ -125,9 +126,9 @@ export function DotPattern({
           key={`${dot.x}-${dot.y}`}
           cx={dot.x}
           cy={dot.y}
-          r={cr}
           fill={glow ? `url(#${id}-gradient)` : "currentColor"}
           initial={glow ? { opacity: 0.4, scale: 1 } : {}}
+          r={cr}
           animate={
             glow
               ? {
@@ -139,11 +140,11 @@ export function DotPattern({
           transition={
             glow
               ? {
+                  delay: dot.delay,
                   duration: dot.duration,
+                  ease: "easeInOut",
                   repeat: Infinity,
                   repeatType: "reverse",
-                  delay: dot.delay,
-                  ease: "easeInOut",
                 }
               : {}
           }
