@@ -9,8 +9,14 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as RecordingStatusIndexRouteImport } from './routes/recording-status/index'
 import { Route as ConfigurationIndexRouteImport } from './routes/configuration/index'
 
+const RecordingStatusIndexRoute = RecordingStatusIndexRouteImport.update({
+  id: '/recording-status/',
+  path: '/recording-status/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ConfigurationIndexRoute = ConfigurationIndexRouteImport.update({
   id: '/configuration/',
   path: '/configuration/',
@@ -19,28 +25,39 @@ const ConfigurationIndexRoute = ConfigurationIndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/configuration': typeof ConfigurationIndexRoute
+  '/recording-status': typeof RecordingStatusIndexRoute
 }
 export interface FileRoutesByTo {
   '/configuration': typeof ConfigurationIndexRoute
+  '/recording-status': typeof RecordingStatusIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/configuration/': typeof ConfigurationIndexRoute
+  '/recording-status/': typeof RecordingStatusIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/configuration'
+  fullPaths: '/configuration' | '/recording-status'
   fileRoutesByTo: FileRoutesByTo
-  to: '/configuration'
-  id: '__root__' | '/configuration/'
+  to: '/configuration' | '/recording-status'
+  id: '__root__' | '/configuration/' | '/recording-status/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   ConfigurationIndexRoute: typeof ConfigurationIndexRoute
+  RecordingStatusIndexRoute: typeof RecordingStatusIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/recording-status/': {
+      id: '/recording-status/'
+      path: '/recording-status'
+      fullPath: '/recording-status'
+      preLoaderRoute: typeof RecordingStatusIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/configuration/': {
       id: '/configuration/'
       path: '/configuration'
@@ -53,6 +70,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   ConfigurationIndexRoute: ConfigurationIndexRoute,
+  RecordingStatusIndexRoute: RecordingStatusIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
