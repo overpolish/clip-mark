@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
 
@@ -25,10 +25,12 @@ type ComboboxProps = {
   emptyMessage?: string;
   placeholder?: string;
   searchPlaceholder?: string;
+  onOpen?: () => void;
 };
 function Combobox({
   data,
   emptyMessage,
+  onOpen,
   placeholder,
   searchPlaceholder,
 }: ComboboxProps) {
@@ -41,10 +43,26 @@ function Combobox({
   const selected = data.find((item) => item.value === value);
 
   useLayoutEffect(() => {
-    if (triggerRef.current) {
-      setTriggerWidth(triggerRef.current.offsetWidth);
-    }
+    if (!triggerRef.current) return;
+
+    const observer = new ResizeObserver(([entry]) => {
+      const width =
+        entry.borderBoxSize?.[0]?.inlineSize ??
+        entry.target.getBoundingClientRect().width;
+
+      setTriggerWidth(width);
+    });
+
+    observer.observe(triggerRef.current);
+
+    return () => observer.disconnect();
   }, []);
+
+  useEffect(() => {
+    if (open && onOpen) {
+      onOpen();
+    }
+  }, [open, onOpen]);
 
   return (
     <Popover onOpenChange={setOpen} open={open}>
@@ -67,13 +85,14 @@ function Combobox({
       <PopoverContent className="p-0" style={{ width: triggerWidth }}>
         <Command>
           <CommandInput placeholder={searchPlaceholder} />
-          <CommandList>
+          <CommandList className="max-h-40">
             <CommandEmpty>{emptyMessage}</CommandEmpty>
             <CommandGroup>
               {data.map((item) => (
                 <CommandItem
                   key={item.value}
                   className="justify-between"
+                  keywords={[item.label.toLowerCase()]}
                   value={item.value}
                   onSelect={(currentValue) => {
                     setValue(currentValue === value ? "" : currentValue);

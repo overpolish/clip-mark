@@ -25,6 +25,13 @@ function Command({
         "flex h-full w-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground",
         className
       )}
+      filter={(_, search, keywords) => {
+        return keywords
+          ?.map((keyword) => keyword.includes(search))
+          .some((result) => !!result)
+          ? 1
+          : 0;
+      }}
       {...props}
     />
   );
