@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 const _windowInfoSchema = z.object({
   app_name: z.string(),
   hwnd: z.number(),
+  iconPath: z.string().optional(),
   title: z.string(),
 });
 

@@ -59,10 +59,10 @@ function Combobox({
   }, []);
 
   useEffect(() => {
-    if (open && onOpen) {
-      onOpen();
+    if (open) {
+      onOpen?.();
     }
-  }, [open, onOpen]);
+  }, [open]);
 
   return (
     <Popover onOpenChange={setOpen} open={open}>

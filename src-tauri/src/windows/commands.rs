@@ -1,31 +1,23 @@
+use std::path::PathBuf;
+
 use serde::Serialize;
-use windows::{
-    core::{BOOL, PWSTR},
-    Win32::{
-        Foundation::{CloseHandle, HWND, LPARAM},
-        Graphics::Dwm::{DwmGetWindowAttribute, DWMWA_CLOAKED},
-        System::Threading::{
-            OpenProcess, QueryFullProcessImageNameW, PROCESS_NAME_WIN32,
-            PROCESS_QUERY_LIMITED_INFORMATION,
-        },
-        UI::WindowsAndMessaging::{
-            EnumWindows, GetWindowLongW, GetWindowTextW, GetWindowThreadProcessId, IsWindowVisible,
-            GWL_EXSTYLE, WS_EX_TOOLWINDOW,
-        },
-    },
-};
+use tauri::Manager;
+
+use crate::windows::service::get_visible_windows;
 
 #[derive(Serialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct WindowInfo {
-    title: String,
-    app_name: String,
-    hwnd: isize,
+    pub title: String,
+    pub app_name: String,
+    pub hwnd: isize,
+    pub icon_path: Option<String>,
 }
 
 #[tauri::command]
-pub async fn list_windows() -> Result<Vec<WindowInfo>, String> {
-    let mut windows = get_visible_windows();
-
+pub async fn list_windows(app_handle: tauri::AppHandle) -> Result<Vec<WindowInfo>, String> {
+    let icons_dir = get_icons_dir(app_handle)?;
+    let mut windows = get_visible_windows(icons_dir);
     windows.sort_by(|a, b| {
         a.app_name
             .to_lowercase()
@@ -36,90 +28,16 @@ pub async fn list_windows() -> Result<Vec<WindowInfo>, String> {
     Ok(windows)
 }
 
-fn get_visible_windows() -> Vec<WindowInfo> {
-    unsafe {
-        let mut windows: Vec<WindowInfo> = Vec::new();
-        let _ = EnumWindows(
-            Some(enum_windows_callback),
-            LPARAM(&mut windows as *mut _ as isize),
-        );
+/// Create, if not exists, and return the path to the icons directory
+fn get_icons_dir(app_handle: tauri::AppHandle) -> Result<PathBuf, String> {
+    let cache_dir = app_handle
+        .path()
+        .app_cache_dir()
+        .map_err(|e| format!("Failed to get cache dir: {}", e))?;
 
-        windows
-    }
-}
+    let icons_dir = cache_dir.join("icons");
+    std::fs::create_dir_all(&icons_dir)
+        .map_err(|e| format!("Failed to create icons dir: {}", e))?;
 
-unsafe extern "system" fn enum_windows_callback(hwnd: HWND, lparam: LPARAM) -> BOOL {
-    let windows = &mut *(lparam.0 as *mut Vec<WindowInfo>);
-
-    if !IsWindowVisible(hwnd).as_bool() {
-        return true.into();
-    }
-
-    // Check if the window is cloaked (hidden by the Windows)
-    let mut cloaked: u32 = 0;
-    if DwmGetWindowAttribute(
-        hwnd,
-        DWMWA_CLOAKED,
-        &mut cloaked as *mut _ as *mut _,
-        std::mem::size_of::<u32>() as u32,
-    )
-    .is_ok()
-        && cloaked != 0
-    {
-        return true.into();
-    }
-
-    let mut title: [u16; 512] = [0; 512];
-    let len = GetWindowTextW(hwnd, &mut title);
-    let title = String::from_utf16_lossy(&title[..len as usize]);
-
-    if title.is_empty() {
-        return true.into();
-    }
-
-    // Filter out tool windows and other non-app windows
-    let ex_style = GetWindowLongW(hwnd, GWL_EXSTYLE);
-    if (ex_style & WS_EX_TOOLWINDOW.0 as i32) != 0 {
-        return true.into();
-    }
-
-    // PID to fetch executable name
-    let mut pid: u32 = 0;
-    GetWindowThreadProcessId(hwnd, Some(&mut pid));
-
-    let process_handle = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, false, pid);
-    let mut app_name = String::from("Unknown");
-
-    if let Ok(handle) = process_handle {
-        let mut exe_path: [u16; 512] = [0; 512];
-        let mut size = exe_path.len() as u32;
-
-        if QueryFullProcessImageNameW(
-            handle,
-            PROCESS_NAME_WIN32,
-            PWSTR(exe_path.as_mut_ptr()),
-            &mut size,
-        )
-        .is_ok()
-        {
-            let full_path = String::from_utf16_lossy(&exe_path[..size as usize]);
-            if let Some(name) = full_path.rsplit('\\').next() {
-                app_name = name.to_string();
-            }
-        }
-
-        let _ = CloseHandle(handle);
-    }
-
-    // Exclude this application itself
-    if app_name == "clip-mark.exe" {
-        return true.into();
-    }
-
-    windows.push(WindowInfo {
-        title,
-        app_name,
-        hwnd: hwnd.0 as isize,
-    });
-    true.into()
+    Ok(icons_dir)
 }
