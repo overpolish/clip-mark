@@ -35,7 +35,8 @@
         "resizable": false,
         "alwaysOnTop": true,
         "transparent": true,
-        "shadow": false
+        "shadow": false,
+        "visible": false
       }
     ],
     "security": {
