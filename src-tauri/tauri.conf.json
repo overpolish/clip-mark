@@ -19,8 +19,6 @@
         "url": "/configuration",
         "label": "clip-mark",
         "title": "Clip Mark",
-        "width": 450,
-        "height": 227,
         "decorations": false,
         "visible": false,
         "skipTaskbar": true,
