@@ -1,6 +1,7 @@
 mod obs_websocket_configuration;
 mod obs_websocket_connection;
 mod system_tray;
+mod windows;
 
 use std::sync::Mutex;
 
@@ -38,6 +39,7 @@ pub fn run() {
             obs_websocket_configuration::commands::update_server_details,
             obs_websocket_connection::commands::get_server_connection_status,
             obs_websocket_connection::commands::get_recording_status,
+            crate::windows::commands::list_windows,
         ])
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
@@ -95,6 +97,7 @@ pub fn run() {
             let win = app.get_webview_window("recording-status").unwrap();
             let _ = win.as_ref().window().move_window(Position::BottomLeft);
             let _ = win.set_ignore_cursor_events(true);
+            let _ = win.show();
             position_above_taskbar(&win);
 
             Ok(())

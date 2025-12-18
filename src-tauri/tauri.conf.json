@@ -10,6 +10,13 @@
     "frontendDist": "../dist"
   },
   "app": {
+    "security": {
+      "assetProtocol": {
+        "enable": true,
+        "scope": ["$CACHE/**"]
+      },
+      "csp": "asset: http://asset.localhost"
+    },
     "trayIcon": {
       "id": "tray-icon",
       "iconPath": "icons/icon.ico"
@@ -19,8 +26,6 @@
         "url": "/configuration",
         "label": "clip-mark",
         "title": "Clip Mark",
-        "width": 450,
-        "height": 227,
         "decorations": false,
         "visible": false,
         "skipTaskbar": true,
@@ -37,12 +42,10 @@
         "resizable": false,
         "alwaysOnTop": true,
         "transparent": true,
-        "shadow": false
+        "shadow": false,
+        "visible": false
       }
-    ],
-    "security": {
-      "csp": null
-    }
+    ]
   },
   "bundle": {
     "active": true,
