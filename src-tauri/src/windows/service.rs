@@ -34,7 +34,7 @@ use log::{info, warn};
 use windows::Win32::UI::WindowsAndMessaging::{
     SetWindowLongPtrW, SWP_FRAMECHANGED, SWP_NOACTIVATE, SWP_NOMOVE, WS_BORDER, WS_CAPTION,
     WS_DLGFRAME, WS_EX_CLIENTEDGE, WS_EX_DLGMODALFRAME, WS_EX_STATICEDGE, WS_EX_WINDOWEDGE,
-    WS_POPUP, WS_SYSMENU, WS_THICKFRAME, WS_VISIBLE,
+    WS_MAXIMIZEBOX, WS_MINIMIZEBOX, WS_POPUP, WS_SYSMENU, WS_THICKFRAME, WS_VISIBLE,
 };
 
 use crate::windows::commands::WindowInfo;
@@ -479,6 +479,38 @@ pub fn make_borderless(hwnd: isize) -> ::windows::core::Result<()> {
             width,
             height,
             SWP_FRAMECHANGED | SWP_NOACTIVATE | SWP_NOMOVE,
+        )?;
+
+        Ok(())
+    }
+}
+
+pub fn restore_border(hwnd: isize) -> ::windows::core::Result<()> {
+    unsafe {
+        info!("Restoring window border: {}", hwnd);
+        let hwnd = HWND(hwnd as _);
+
+        let style = GetWindowLongPtrW(hwnd, GWL_STYLE);
+        let new_style = (style as u32) & !(WS_POPUP.0)
+            | WS_CAPTION.0
+            | WS_THICKFRAME.0
+            | WS_SYSMENU.0
+            | WS_MINIMIZEBOX.0
+            | WS_MAXIMIZEBOX.0;
+        SetWindowLongPtrW(hwnd, GWL_STYLE, new_style as isize);
+
+        let ex_style = GetWindowLongPtrW(hwnd, GWL_EXSTYLE);
+        let new_ex_style = (ex_style as u32) | WS_EX_WINDOWEDGE.0 | WS_EX_CLIENTEDGE.0;
+        SetWindowLongPtrW(hwnd, GWL_EXSTYLE, new_ex_style as isize);
+
+        SetWindowPos(
+            hwnd,
+            None,
+            0,
+            0,
+            0,
+            0,
+            SWP_FRAMECHANGED | SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE,
         )?;
 
         Ok(())

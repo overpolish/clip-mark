@@ -39,8 +39,8 @@ pub async fn make_borderless(hwnd: isize) {
 }
 
 #[tauri::command]
-pub async fn restore_border(hwnd: isize) -> Result<(), String> {
-    todo!();
+pub async fn restore_border(hwnd: isize) {
+    let _ = service::restore_border(hwnd);
 }
 
 #[tauri::command]
