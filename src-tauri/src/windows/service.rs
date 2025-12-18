@@ -62,15 +62,10 @@ pub fn get_visible_windows(icons_dir: PathBuf) -> Vec<WindowInfo> {
                     if let Ok(icon_path) =
                         extract_exe_icon_to_png(exe_path, &window.app_name, &icons_dir)
                     {
-                        let icon_url = format!(
-                            "asset://icons/{}",
-                            icon_path
-                                .file_name()
-                                .and_then(|n| n.to_str())
-                                .unwrap_or("unknown.png")
+                        app_icons.insert(
+                            window.app_name.clone(),
+                            icon_path.to_str().unwrap_or_default().to_string(),
                         );
-
-                        app_icons.insert(window.app_name.clone(), icon_url);
                     };
                 }
             }

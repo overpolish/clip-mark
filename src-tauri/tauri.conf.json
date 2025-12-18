@@ -10,6 +10,13 @@
     "frontendDist": "../dist"
   },
   "app": {
+    "security": {
+      "assetProtocol": {
+        "enable": true,
+        "scope": ["$CACHE/**"]
+      },
+      "csp": "asset: http://asset.localhost"
+    },
     "trayIcon": {
       "id": "tray-icon",
       "iconPath": "icons/icon.ico"
@@ -38,10 +45,7 @@
         "shadow": false,
         "visible": false
       }
-    ],
-    "security": {
-      "csp": null
-    }
+    ]
   },
   "bundle": {
     "active": true,

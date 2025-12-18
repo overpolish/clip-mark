@@ -20,8 +20,14 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
+export type ComboboxData = {
+  label: string;
+  value: string;
+  left?: React.ReactNode;
+};
+
 type ComboboxProps = {
-  data: { label: string; value: string }[];
+  data: ComboboxData[];
   emptyMessage?: string;
   placeholder?: string;
   searchPlaceholder?: string;
@@ -70,16 +76,20 @@ function Combobox({
         <Button
           ref={triggerRef}
           aria-expanded={open}
-          className="w-full justify-between"
           role="combobox"
           variant="outline"
+          className={cn(
+            "w-full justify-between",
+            !selected && "text-muted-foreground"
+          )}
         >
-          <span
-            className={cn("truncate", !selected && "text-muted-foreground")}
-          >
-            {selected ? selected.label : placeholder}
-          </span>
-          <ChevronsUpDownIcon className="ml-auto shrink-0 text-[10px] opacity-50" />
+          <div className="flex w-full items-center gap-2">
+            {selected?.left && <div className="shrink-0">{selected.left}</div>}
+            <span className={"truncate"}>
+              {selected ? selected.label : placeholder}
+            </span>
+            <ChevronsUpDownIcon className="ml-auto shrink-0 text-[10px] opacity-50" />
+          </div>
         </Button>
       </PopoverTrigger>
       <PopoverContent className="p-0" style={{ width: triggerWidth }}>
@@ -99,10 +109,14 @@ function Combobox({
                     setOpen(false);
                   }}
                 >
-                  <span className="truncate">{item.label}</span>
+                  <div className="flex min-w-0 items-center gap-2">
+                    {item.left && <div className="shrink-0">{item.left}</div>}
+                    <span className="truncate">{item.label}</span>
+                  </div>
+
                   <CheckIcon
                     className={cn(
-                      "ml-2 text-[10px]",
+                      "text-[10px]",
                       value === item.value ? "opacity-100" : "opacity-0"
                     )}
                   />
