@@ -9,9 +9,10 @@ use ::windows::Win32::{
     Graphics::{
         Dwm::{DwmGetWindowAttribute, DWMWA_CLOAKED},
         Gdi::{
-            CreateCompatibleDC, CreateDIBSection, DeleteDC, DeleteObject, GetDC, GetObjectW,
-            ReleaseDC, SelectObject, BITMAP, BITMAPINFO, BITMAPINFOHEADER, BI_RGB, DIB_RGB_COLORS,
-            HDC, HGDIOBJ,
+            CreateCompatibleDC, CreateDIBSection, DeleteDC, DeleteObject, GetDC, GetMonitorInfoW,
+            GetObjectW, MonitorFromWindow, ReleaseDC, SelectObject, BITMAP, BITMAPINFO,
+            BITMAPINFOHEADER, BI_RGB, DIB_RGB_COLORS, HDC, HGDIOBJ, MONITORINFO,
+            MONITOR_DEFAULTTONEAREST,
         },
     },
     System::Threading::{
@@ -21,19 +22,23 @@ use ::windows::Win32::{
     UI::{
         Shell::ExtractIconW,
         WindowsAndMessaging::{
-            DestroyIcon, DrawIconEx, EnumWindows, GetIconInfo, GetWindowLongW, GetWindowTextW,
-            GetWindowThreadProcessId, IsWindowVisible, DI_NORMAL, GWL_EXSTYLE, HICON, ICONINFO,
-            WS_EX_TOOLWINDOW,
+            DestroyIcon, DrawIconEx, EnumWindows, GetIconInfo, GetWindowLongW, GetWindowRect,
+            GetWindowTextW, GetWindowThreadProcessId, IsWindowVisible, SetWindowPos, DI_NORMAL,
+            GWL_EXSTYLE, HICON, ICONINFO, SWP_NOSIZE, SWP_NOZORDER, WS_EX_TOOLWINDOW,
         },
     },
 };
 use image::{ImageBuffer, Rgba};
+use log::{info, warn};
+use windows::Win32::UI::WindowsAndMessaging::{GetSystemMetrics, SM_CXSCREEN, SM_CYSCREEN};
 
 use crate::windows::commands::WindowInfo;
 
 const MAX_WINDOW_TITLE_LEN: usize = 512;
 const MAX_PATH_LEN: usize = 512;
 const ICON_CACHE_DURATION: Duration = Duration::from_secs(60 * 60 * 24); // 24 hours
+
+// #region: Windows Enumeration and Icon Extraction
 
 pub fn get_visible_windows(icons_dir: PathBuf) -> Vec<WindowInfo> {
     unsafe {
@@ -360,3 +365,65 @@ unsafe fn get_exe_path_from_hwnd(hwnd: HWND) -> ::windows::core::Result<String> 
     let _ = CloseHandle(process_handle);
     result
 }
+
+// #endregion
+
+// #region Center, Borderless, Fullscreen Window Functions
+
+pub fn center_window(hwnd: isize) -> ::windows::core::Result<()> {
+    unsafe {
+        info!("Centering window: {}", hwnd);
+        let hwnd = HWND(hwnd as _);
+
+        // Window rect
+        let mut window_rect = ::windows::Win32::Foundation::RECT::default();
+        GetWindowRect(hwnd, &mut window_rect)?;
+
+        let window_width = window_rect.right - window_rect.left;
+        let window_height = window_rect.bottom - window_rect.top;
+
+        // Monitor info
+        let monitor = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
+        let mut monitor_info = MONITORINFO {
+            cbSize: std::mem::size_of::<MONITORINFO>() as u32,
+            ..Default::default()
+        };
+
+        let (center_x, center_y) =
+            if GetMonitorInfoW(monitor, &mut monitor_info as *mut _ as *mut _).as_bool() {
+                // Calculate centered position
+                let monitor_rect = monitor_info.rcWork;
+                let monitor_width = monitor_rect.right - monitor_rect.left;
+                let monitor_height = monitor_rect.bottom - monitor_rect.top;
+
+                (
+                    monitor_rect.left + (monitor_width - window_width) / 2,
+                    monitor_rect.top + (monitor_height - window_height) / 2,
+                )
+            } else {
+                warn!("Failed to get monitor info, using primary monitor");
+                let screen_width = GetSystemMetrics(SM_CXSCREEN);
+                let screen_height = GetSystemMetrics(SM_CYSCREEN);
+
+                (
+                    (screen_width - window_width) / 2,
+                    (screen_height - window_height) / 2,
+                )
+            };
+
+        // Center window
+        SetWindowPos(
+            hwnd,
+            Some(HWND(0 as _)),
+            center_x,
+            center_y,
+            0,
+            0,
+            SWP_NOSIZE | SWP_NOZORDER,
+        )?;
+
+        Ok(())
+    }
+}
+
+// #endregion

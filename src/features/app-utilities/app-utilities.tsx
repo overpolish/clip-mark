@@ -121,7 +121,7 @@ function AppUtilities({ className }: AppUtilitiesProps) {
           placeholder="Select a Window"
           searchPlaceholder="Search Windows..."
           setOpen={setComboboxOpen}
-          triggerClassName="shrink"
+          triggerClassName="shrink min-w-0"
           value={selectedWindow}
         />
 

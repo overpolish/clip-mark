@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use serde::Serialize;
 use tauri::Manager;
 
-use crate::windows::service::get_visible_windows;
+use crate::windows::service::{self, get_visible_windows};
 
 #[derive(Serialize, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -29,8 +29,8 @@ pub async fn list_windows(app_handle: tauri::AppHandle) -> Result<Vec<WindowInfo
 }
 
 #[tauri::command]
-pub async fn center_window(hwnd: isize) -> Result<(), String> {
-    todo!();
+pub async fn center_window(hwnd: isize) {
+    let _ = service::center_window(hwnd);
 }
 
 #[tauri::command]
