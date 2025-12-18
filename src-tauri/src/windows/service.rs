@@ -22,15 +22,20 @@ use ::windows::Win32::{
     UI::{
         Shell::ExtractIconW,
         WindowsAndMessaging::{
-            DestroyIcon, DrawIconEx, EnumWindows, GetIconInfo, GetWindowLongW, GetWindowRect,
-            GetWindowTextW, GetWindowThreadProcessId, IsWindowVisible, SetWindowPos, DI_NORMAL,
-            GWL_EXSTYLE, HICON, ICONINFO, SWP_NOSIZE, SWP_NOZORDER, WS_EX_TOOLWINDOW,
+            DestroyIcon, DrawIconEx, EnumWindows, GetIconInfo, GetSystemMetrics, GetWindowLongPtrW,
+            GetWindowLongW, GetWindowRect, GetWindowTextW, GetWindowThreadProcessId,
+            IsWindowVisible, SetWindowPos, DI_NORMAL, GWL_EXSTYLE, GWL_STYLE, HICON, ICONINFO,
+            SM_CXSCREEN, SM_CYSCREEN, SWP_NOSIZE, SWP_NOZORDER, WS_EX_TOOLWINDOW,
         },
     },
 };
 use image::{ImageBuffer, Rgba};
 use log::{info, warn};
-use windows::Win32::UI::WindowsAndMessaging::{GetSystemMetrics, SM_CXSCREEN, SM_CYSCREEN};
+use windows::Win32::UI::WindowsAndMessaging::{
+    SetWindowLongPtrW, SWP_FRAMECHANGED, SWP_NOACTIVATE, SWP_NOMOVE, WS_BORDER, WS_CAPTION,
+    WS_DLGFRAME, WS_EX_CLIENTEDGE, WS_EX_DLGMODALFRAME, WS_EX_STATICEDGE, WS_EX_WINDOWEDGE,
+    WS_POPUP, WS_SYSMENU, WS_THICKFRAME, WS_VISIBLE,
+};
 
 use crate::windows::commands::WindowInfo;
 
@@ -420,6 +425,60 @@ pub fn center_window(hwnd: isize) -> ::windows::core::Result<()> {
             0,
             0,
             SWP_NOSIZE | SWP_NOZORDER,
+        )?;
+
+        Ok(())
+    }
+}
+
+pub fn make_borderless(hwnd: isize) -> ::windows::core::Result<()> {
+    unsafe {
+        info!("Making window borderless: {}", hwnd);
+        let hwnd = HWND(hwnd as _);
+
+        let style = GetWindowLongPtrW(hwnd, GWL_STYLE);
+        let new_style = (style as u32)
+            & !(WS_CAPTION.0 | WS_THICKFRAME.0 | WS_BORDER.0 | WS_DLGFRAME.0 | WS_SYSMENU.0)
+            | WS_POPUP.0
+            | WS_VISIBLE.0;
+        SetWindowLongPtrW(hwnd, GWL_STYLE, new_style as isize);
+
+        // Remove extended window styles
+        let ex_style = GetWindowLongPtrW(hwnd, GWL_EXSTYLE);
+        let new_ex_style = (ex_style as u32)
+            & !(WS_EX_DLGMODALFRAME.0
+                | WS_EX_WINDOWEDGE.0
+                | WS_EX_CLIENTEDGE.0
+                | WS_EX_STATICEDGE.0);
+        SetWindowLongPtrW(hwnd, GWL_EXSTYLE, new_ex_style as isize);
+
+        // Resize to refresh window frame
+        let mut rect = ::windows::Win32::Foundation::RECT::default();
+        GetWindowRect(hwnd, &mut rect)?;
+
+        let width = rect.right - rect.left;
+        let height = rect.bottom - rect.top;
+
+        // Refresh window to apply changes
+        SetWindowPos(
+            hwnd,
+            None,
+            rect.left,
+            rect.top,
+            width - 1, // Removes stale window frame
+            height,
+            SWP_FRAMECHANGED | SWP_NOACTIVATE | SWP_NOMOVE,
+        )?;
+
+        // Restore original size
+        SetWindowPos(
+            hwnd,
+            None,
+            rect.left,
+            rect.top,
+            width,
+            height,
+            SWP_FRAMECHANGED | SWP_NOACTIVATE | SWP_NOMOVE,
         )?;
 
         Ok(())

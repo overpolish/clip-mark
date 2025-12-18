@@ -34,8 +34,8 @@ pub async fn center_window(hwnd: isize) {
 }
 
 #[tauri::command]
-pub async fn make_borderless(hwnd: isize) -> Result<(), String> {
-    todo!();
+pub async fn make_borderless(hwnd: isize) {
+    let _ = service::make_borderless(hwnd);
 }
 
 #[tauri::command]

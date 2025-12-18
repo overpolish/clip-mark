@@ -100,6 +100,8 @@ function AppUtilities({ className }: AppUtilitiesProps) {
     };
   }, []);
 
+  // TODO check if selected value exists when window is reopened
+
   return (
     <div className={className}>
       <div>
