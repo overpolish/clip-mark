@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { convertFileSrc, invoke } from "@tauri-apps/api/core";
+import { listen } from "@tauri-apps/api/event";
 import z from "zod";
 
 import Combobox, { ComboboxData } from "@/components/ui/combobox";
@@ -20,6 +21,10 @@ type AppUtilitiesProps = {
   className?: string;
 };
 
+const events = {
+  ConfigurationWillHide: "window:configuration_will_hide",
+} as const;
+
 const commands = {
   ListWindows: "list_windows",
 } as const;
@@ -30,6 +35,8 @@ async function listWindows(): Promise<WindowInfo[]> {
 
 function AppUtilities({ className }: AppUtilitiesProps) {
   const [windowOptions, setWindowOptions] = useState<ComboboxData[]>([]);
+
+  const [comboboxOpen, setComboboxOpen] = useState(false);
 
   function getWindows() {
     listWindows().then((wins) => {
@@ -50,7 +57,15 @@ function AppUtilities({ className }: AppUtilitiesProps) {
     });
   }
 
-  // TODO close combobox when window is hidden
+  useEffect(() => {
+    const unlisten = listen(events.ConfigurationWillHide, () => {
+      setComboboxOpen(false);
+    });
+
+    return () => {
+      unlisten.then((f) => f());
+    };
+  }, []);
 
   return (
     <div className={cn("", className)}>
@@ -66,8 +81,10 @@ function AppUtilities({ className }: AppUtilitiesProps) {
         data={windowOptions}
         emptyMessage="No Windows found."
         onOpen={getWindows}
+        open={comboboxOpen}
         placeholder="Select a Window"
         searchPlaceholder="Search Windows..."
+        setOpen={setComboboxOpen}
       />
     </div>
   );

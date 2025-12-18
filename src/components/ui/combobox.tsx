@@ -3,6 +3,10 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
+import {
+  OverlayScrollbarsComponent,
+  OverlayScrollbarsComponentRef,
+} from "overlayscrollbars-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -29,24 +33,42 @@ export type ComboboxData = {
 type ComboboxProps = {
   data: ComboboxData[];
   emptyMessage?: string;
+  open?: boolean;
   placeholder?: string;
   searchPlaceholder?: string;
   onOpen?: () => void;
+  setOpen?: (open: boolean) => void;
 };
 function Combobox({
   data,
   emptyMessage,
   onOpen,
+  open: controlledOpen,
   placeholder,
   searchPlaceholder,
+  setOpen: controlledSetOpen,
 }: ComboboxProps) {
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+
   const [value, setValue] = useState("");
+
+  const isControlled =
+    controlledOpen !== undefined && controlledSetOpen !== undefined;
+  const open = isControlled ? controlledOpen : internalOpen;
+  const setOpen = isControlled ? controlledSetOpen : setInternalOpen;
 
   const [triggerWidth, setTriggerWidth] = useState(0);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
+  const [hasOverflow, setHasOverflow] = useState(false);
+  const osRef = useRef<OverlayScrollbarsComponentRef>(null);
+
   const selected = data.find((item) => item.value === value);
+
+  function checkOverflow() {
+    const hasY = osRef.current?.osInstance()?.state().hasOverflow.y ?? false;
+    setHasOverflow(hasY);
+  }
 
   useLayoutEffect(() => {
     if (!triggerRef.current) return;
@@ -95,33 +117,49 @@ function Combobox({
       <PopoverContent className="p-0" style={{ width: triggerWidth }}>
         <Command>
           <CommandInput placeholder={searchPlaceholder} />
-          <CommandList className="max-h-40">
+          <CommandList className="">
             <CommandEmpty>{emptyMessage}</CommandEmpty>
             <CommandGroup>
-              {data.map((item) => (
-                <CommandItem
-                  key={item.value}
-                  className="justify-between"
-                  keywords={[item.label.toLowerCase()]}
-                  value={item.value}
-                  onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue);
-                    setOpen(false);
-                  }}
-                >
-                  <div className="flex min-w-0 items-center gap-2">
-                    {item.left && <div className="shrink-0">{item.left}</div>}
-                    <span className="truncate">{item.label}</span>
-                  </div>
+              <OverlayScrollbarsComponent
+                ref={osRef}
+                className={cn("max-h-40 w-full", hasOverflow && "pr-2.5")}
+                events={{
+                  initialized: checkOverflow,
+                  updated: checkOverflow,
+                }}
+                options={{
+                  scrollbars: {
+                    autoHide: "never",
+                    theme: "os-theme-clip-mark",
+                  },
+                }}
+                defer
+              >
+                {data.map((item) => (
+                  <CommandItem
+                    key={item.value}
+                    className="justify-between"
+                    keywords={[item.label.toLowerCase()]}
+                    value={item.value}
+                    onSelect={(currentValue) => {
+                      setValue(currentValue === value ? "" : currentValue);
+                      setOpen(false);
+                    }}
+                  >
+                    <div className="flex min-w-0 items-center gap-2">
+                      {item.left && <div className="shrink-0">{item.left}</div>}
+                      <span className="truncate">{item.label}</span>
+                    </div>
 
-                  <CheckIcon
-                    className={cn(
-                      "text-[10px]",
-                      value === item.value ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                </CommandItem>
-              ))}
+                    <CheckIcon
+                      className={cn(
+                        "text-[10px]",
+                        value === item.value ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                  </CommandItem>
+                ))}
+              </OverlayScrollbarsComponent>
             </CommandGroup>
           </CommandList>
         </Command>

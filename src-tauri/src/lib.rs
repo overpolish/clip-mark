@@ -5,12 +5,19 @@ mod windows;
 
 use std::sync::Mutex;
 
-use tauri::{Manager, PhysicalPosition};
+use strum::{AsRefStr, Display, EnumString};
+use tauri::{Emitter, Manager, PhysicalPosition};
 use tauri_plugin_positioner::{Position, WindowExt};
 use tauri_plugin_store::StoreExt;
 use tokio::sync::watch;
 
 use crate::system_tray::service::init_system_tray;
+
+#[derive(EnumString, AsRefStr, Display, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum WindowEvents {
+    #[strum(serialize = "window:configuration_will_hide")]
+    ConfigurationWillHide,
+}
 
 pub struct GlobalState {
     pub server_connection_status: Mutex<crate::obs_websocket_connection::models::ConnectionStatus>,
@@ -83,6 +90,8 @@ pub fn run() {
                 win.on_window_event(move |event| {
                     if let tauri::WindowEvent::Focused(focused) = event {
                         if !focused {
+                            let _ =
+                                win_clone.emit(WindowEvents::ConfigurationWillHide.as_ref(), ());
                             win_clone.hide().unwrap();
                         }
                     }
