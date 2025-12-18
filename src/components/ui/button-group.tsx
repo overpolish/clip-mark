@@ -5,7 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 
 const buttonGroupVariants = cva(
-  "flex w-fit items-stretch has-[>[data-slot=button-group]]:gap-2 [&>*]:focus-visible:relative [&>*]:focus-visible:z-10 has-[select[aria-hidden=true]:last-child]:[&>[data-slot=select-trigger]:last-of-type]:rounded-r-md [&>[data-slot=select-trigger]:not([class*='w-'])]:w-fit [&>input]:flex-1",
+  "relative flex w-fit items-stretch has-[>[data-slot=button-group]]:gap-2 has-[select[aria-hidden=true]:last-child]:[&>[data-slot=select-trigger]:last-of-type]:rounded-r-md [&>[data-slot=select-trigger]:not([classbutton='w-'])]:w-fit [&>button]:focus-visible:relative [&>button]:focus-visible:z-10 [&>input]:flex-1",
   {
     defaultVariants: {
       orientation: "horizontal",
@@ -13,9 +13,9 @@ const buttonGroupVariants = cva(
     variants: {
       orientation: {
         horizontal:
-          "[&>*:not(:first-child)]:rounded-l-none [&>*:not(:first-child)]:border-l-0 [&>*:not(:last-child)]:rounded-r-none",
+          "[&>button:not(:first-of-type)]:rounded-l-none [&>button:not(:first-of-type)]:border-l-0 [&>button:not(:last-child)]:rounded-r-none",
         vertical:
-          "flex-col [&>*:not(:first-child)]:rounded-t-none [&>*:not(:first-child)]:border-t-0 [&>*:not(:last-child)]:rounded-b-none",
+          "flex-col [&>button:not(:first-of-type)]:rounded-t-none [&>button:not(:first-of-type)]:border-t-0 [&>button:not(:last-child)]:rounded-b-none",
       },
     },
   }
@@ -24,8 +24,12 @@ const buttonGroupVariants = cva(
 function ButtonGroup({
   className,
   orientation,
+  pulsate,
   ...props
-}: React.ComponentProps<"div"> & VariantProps<typeof buttonGroupVariants>) {
+}: React.ComponentProps<"div"> &
+  VariantProps<typeof buttonGroupVariants> & {
+    pulsate?: boolean;
+  }) {
   return (
     <div
       className={cn(buttonGroupVariants({ orientation }), className)}
@@ -33,7 +37,22 @@ function ButtonGroup({
       data-slot="button-group"
       role="group"
       {...props}
-    />
+    >
+      {pulsate && (
+        <div
+          className="pointer-events-none absolute top-1/2 left-1/2 -z-1 size-full -translate-x-1/2 -translate-y-1/2 animate-pulse rounded-md"
+          id="button-group-pulsate"
+          style={
+            {
+              "--duration": "2000ms",
+              "--pulse-color": "var(--color-muted)",
+            } as React.CSSProperties
+          }
+        />
+      )}
+
+      {props.children}
+    </div>
   );
 }
 
@@ -49,7 +68,7 @@ function ButtonGroupText({
   return (
     <Comp
       className={cn(
-        "flex items-center gap-2 rounded-md border bg-muted px-4 text-sm font-medium shadow-xs [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4",
+        "flex items-center gap-2 rounded-md border bg-muted px-4 text-sm font-medium shadow-xs [&_svg]:pointer-events-none [&_svg:not([classbutton='size-'])]:size-4",
         className
       )}
       {...props}

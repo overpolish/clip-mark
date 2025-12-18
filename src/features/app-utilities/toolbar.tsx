@@ -39,7 +39,7 @@ function Toolbar({
 }: ToolbarProps) {
   return (
     <TooltipProvider>
-      <ButtonGroup aria-label="Utilities">
+      <ButtonGroup aria-label="Window Utilities" pulsate>
         <ToolButton
           icon={<SquareDot />}
           onClick={onClickCenter}
