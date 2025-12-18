@@ -33,19 +33,29 @@ export type ComboboxData = {
 type ComboboxProps = {
   data: ComboboxData[];
   emptyMessage?: string;
+  open?: boolean;
   placeholder?: string;
   searchPlaceholder?: string;
   onOpen?: () => void;
+  setOpen?: (open: boolean) => void;
 };
 function Combobox({
   data,
   emptyMessage,
   onOpen,
+  open: controlledOpen,
   placeholder,
   searchPlaceholder,
+  setOpen: controlledSetOpen,
 }: ComboboxProps) {
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+
   const [value, setValue] = useState("");
+
+  const isControlled =
+    controlledOpen !== undefined && controlledSetOpen !== undefined;
+  const open = isControlled ? controlledOpen : internalOpen;
+  const setOpen = isControlled ? controlledSetOpen : setInternalOpen;
 
   const [triggerWidth, setTriggerWidth] = useState(0);
   const triggerRef = useRef<HTMLButtonElement>(null);
