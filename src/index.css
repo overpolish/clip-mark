@@ -128,19 +128,36 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
   input[type="password"]::-ms-reveal {
     display: none;
   }
+
   input[type="number"]::-webkit-outer-spin-button,
   input[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
   }
+
   input[type="number"] {
     -moz-appearance: textfield;
     appearance: textfield;
   }
+}
+
+.os-theme-clip-mark {
+  --os-size: 5px;
+  --os-padding-perpendicular: 0px;
+  --os-padding-axis: 2px;
+  --os-track-border-radius: 10px;
+  --os-handle-border-radius: 10px;
+  --os-handle-interactive-area-offset: 4px;
+
+  --os-handle-bg: var(--color-muted-foreground);
+  --os-handle-bg-hover: oklch(from var(--os-handle-bg) l c h / 0.8);
+  --os-handle-bg-active: oklch(from var(--os-handle-bg) l c h / 0.6);
 }
