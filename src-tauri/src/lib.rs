@@ -17,6 +17,8 @@ use crate::system_tray::service::init_system_tray;
 pub enum WindowEvents {
     #[strum(serialize = "window:configuration_will_hide")]
     ConfigurationWillHide,
+    #[strum(serialize = "window:configuration_will_show")]
+    ConfigurationWillShow,
 }
 
 pub struct GlobalState {

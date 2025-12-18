@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { convertFileSrc, invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
@@ -24,6 +24,7 @@ type AppUtilitiesProps = {
 
 const events = {
   ConfigurationWillHide: "window:configuration_will_hide",
+  ConfigurationWillShow: "window:configuration_will_show",
 } as const;
 
 const commands = {
@@ -57,25 +58,30 @@ async function fullscreenWindow(hwnd: number) {
 function AppUtilities({ className }: AppUtilitiesProps) {
   const [selectedWindow, setSelectedWindow] = useState<string | null>(null);
   const [windowOptions, setWindowOptions] = useState<ComboboxData[]>([]);
-
   const [comboboxOpen, setComboboxOpen] = useState(false);
+
+  const selectedWindowRef = useRef(selectedWindow);
+  const windowOptionsRef = useRef(windowOptions);
+  const lastSelectedWindowTitleRef = useRef<string | null>(null);
+
+  function windowsToOptions(wins: WindowInfo[]): ComboboxData[] {
+    return wins.map((win) => ({
+      label: win.title,
+      left: win.iconPath && (
+        <img
+          alt={win.app_name}
+          height={18}
+          src={convertFileSrc(win.iconPath)}
+          width={18}
+        />
+      ),
+      value: win.hwnd.toString(),
+    }));
+  }
 
   function getWindows() {
     listWindows().then((wins) => {
-      const options: ComboboxData[] = wins.map((win) => ({
-        label: win.title,
-        left: win.iconPath && (
-          <img
-            alt={win.app_name}
-            height={18}
-            src={convertFileSrc(win.iconPath)}
-            width={18}
-          />
-        ),
-        value: win.hwnd.toString(),
-      }));
-
-      setWindowOptions(options);
+      setWindowOptions(windowsToOptions(wins));
     });
   }
 
@@ -91,16 +97,50 @@ function AppUtilities({ className }: AppUtilitiesProps) {
   }
 
   useEffect(() => {
-    const unlisten = listen(events.ConfigurationWillHide, () => {
+    selectedWindowRef.current = selectedWindow;
+    windowOptionsRef.current = windowOptions;
+  });
+
+  useEffect(() => {
+    const unlistenWillHide = listen(events.ConfigurationWillHide, () => {
       setComboboxOpen(false);
+
+      // Cache currently selected window title
+      lastSelectedWindowTitleRef.current =
+        windowOptionsRef.current.find(
+          (w) => w.value === selectedWindowRef.current
+        )?.label || null;
+    });
+
+    const unlistenWillShow = listen(events.ConfigurationWillShow, () => {
+      listWindows().then((wins) => {
+        setWindowOptions(windowsToOptions(wins));
+      });
     });
 
     return () => {
-      unlisten.then((f) => f());
+      unlistenWillHide.then((f) => f());
+      unlistenWillShow.then((f) => f());
     };
   }, []);
 
-  // TODO check if selected value exists when window is reopened
+  useEffect(() => {
+    const hwndMatch = windowOptions.some((w) => w.value === selectedWindow);
+    if (hwndMatch) return;
+
+    if (lastSelectedWindowTitleRef.current !== null) {
+      const titleMatch = windowOptions.find(
+        (w) => w.label === lastSelectedWindowTitleRef.current
+      );
+
+      if (titleMatch) {
+        setSelectedWindow(titleMatch.value);
+        return;
+      }
+    }
+
+    setSelectedWindow(null);
+  }, [windowOptions, selectedWindow]);
 
   return (
     <div className={className}>
