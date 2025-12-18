@@ -28,6 +28,26 @@ pub async fn list_windows(app_handle: tauri::AppHandle) -> Result<Vec<WindowInfo
     Ok(windows)
 }
 
+#[tauri::command]
+pub async fn center_window(hwnd: isize) -> Result<(), String> {
+    todo!();
+}
+
+#[tauri::command]
+pub async fn make_borderless(hwnd: isize) -> Result<(), String> {
+    todo!();
+}
+
+#[tauri::command]
+pub async fn restore_border(hwnd: isize) -> Result<(), String> {
+    todo!();
+}
+
+#[tauri::command]
+pub async fn fullscreen_window(hwnd: isize) -> Result<(), String> {
+    todo!();
+}
+
 /// Create, if not exists, and return the path to the icons directory
 fn get_icons_dir(app_handle: tauri::AppHandle) -> Result<PathBuf, String> {
     let cache_dir = app_handle

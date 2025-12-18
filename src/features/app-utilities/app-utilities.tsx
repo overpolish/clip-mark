@@ -27,11 +27,31 @@ const events = {
 } as const;
 
 const commands = {
+  CenterWindow: "center_window",
+  FullscreenWindow: "fullscreen_window",
   ListWindows: "list_windows",
+  MakeBorderless: "make_borderless",
+  RestoreBorder: "restore_border",
 } as const;
 
 async function listWindows(): Promise<WindowInfo[]> {
   return await invoke<WindowInfo[]>(commands.ListWindows);
+}
+
+async function centerWindow(hwnd: number) {
+  invoke<void>(commands.CenterWindow, { hwnd });
+}
+
+async function makeBorderless(hwnd: number) {
+  invoke<void>(commands.MakeBorderless, { hwnd });
+}
+
+async function restoreBorder(hwnd: number) {
+  invoke<void>(commands.RestoreBorder, { hwnd });
+}
+
+async function fullscreenWindow(hwnd: number) {
+  invoke<void>(commands.FullscreenWindow, { hwnd });
 }
 
 function AppUtilities({ className }: AppUtilitiesProps) {
@@ -57,6 +77,17 @@ function AppUtilities({ className }: AppUtilitiesProps) {
 
       setWindowOptions(options);
     });
+  }
+
+  function onClick<T extends (hwnd: number) => void>(input: string | null) {
+    return (fn: T) => {
+      if (input === null) return;
+
+      const hwnd = Number(input);
+      if (isNaN(hwnd)) return;
+
+      fn(hwnd);
+    };
   }
 
   useEffect(() => {
@@ -96,9 +127,10 @@ function AppUtilities({ className }: AppUtilitiesProps) {
 
         <Toolbar
           isWindowSelected={selectedWindow !== null}
-          onClickCenter={() => {
-            console.log(selectedWindow);
-          }}
+          onClickBorderless={() => onClick(selectedWindow)(makeBorderless)}
+          onClickCenter={() => onClick(selectedWindow)(centerWindow)}
+          onClickFullscreen={() => onClick(selectedWindow)(fullscreenWindow)}
+          onClickRestoreBorder={() => onClick(selectedWindow)(restoreBorder)}
         />
       </div>
     </div>

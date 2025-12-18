@@ -1,4 +1,9 @@
-import { Maximize, SquareDashed, SquareDot } from "lucide-react";
+import {
+  Maximize,
+  SquareDashed,
+  SquareDashedBottom,
+  SquareDot,
+} from "lucide-react";
 
 import {
   Tooltip,
@@ -32,12 +37,14 @@ type ToolbarProps = {
   onClickBorderless?: () => void;
   onClickCenter?: () => void;
   onClickFullscreen?: () => void;
+  onClickRestoreBorder?: () => void;
 };
 function Toolbar({
   isWindowSelected,
   onClickBorderless,
   onClickCenter,
   onClickFullscreen,
+  onClickRestoreBorder,
 }: ToolbarProps) {
   return (
     <TooltipProvider>
@@ -47,10 +54,16 @@ function Toolbar({
           onClick={onClickCenter}
           tooltip="Center"
         />
+
         <ToolButton
           icon={<SquareDashed />}
           onClick={onClickBorderless}
           tooltip="Borderless"
+        />
+        <ToolButton
+          icon={<SquareDashedBottom />}
+          onClick={onClickRestoreBorder}
+          tooltip="Restore Border"
         />
         <ToolButton
           icon={<Maximize />}
