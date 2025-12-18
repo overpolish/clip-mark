@@ -32,9 +32,10 @@ use ::windows::Win32::{
 use image::{ImageBuffer, Rgba};
 use log::{info, warn};
 use windows::Win32::UI::WindowsAndMessaging::{
-    SetWindowLongPtrW, SWP_FRAMECHANGED, SWP_NOACTIVATE, SWP_NOMOVE, WS_BORDER, WS_CAPTION,
-    WS_DLGFRAME, WS_EX_CLIENTEDGE, WS_EX_DLGMODALFRAME, WS_EX_STATICEDGE, WS_EX_WINDOWEDGE,
-    WS_MAXIMIZEBOX, WS_MINIMIZEBOX, WS_POPUP, WS_SYSMENU, WS_THICKFRAME, WS_VISIBLE,
+    SetWindowLongPtrW, ShowWindow, SWP_FRAMECHANGED, SWP_NOACTIVATE, SWP_NOMOVE, SW_RESTORE,
+    WS_BORDER, WS_CAPTION, WS_DLGFRAME, WS_EX_CLIENTEDGE, WS_EX_DLGMODALFRAME, WS_EX_STATICEDGE,
+    WS_EX_WINDOWEDGE, WS_MAXIMIZEBOX, WS_MINIMIZEBOX, WS_POPUP, WS_SYSMENU, WS_THICKFRAME,
+    WS_VISIBLE,
 };
 
 use crate::windows::commands::WindowInfo;
@@ -512,6 +513,44 @@ pub fn restore_border(hwnd: isize) -> ::windows::core::Result<()> {
             0,
             SWP_FRAMECHANGED | SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE,
         )?;
+
+        Ok(())
+    }
+}
+
+pub fn fullscreen_window(hwnd: isize) -> ::windows::core::Result<()> {
+    unsafe {
+        info!("Fullscreen window: {}", hwnd);
+        make_borderless(hwnd)?;
+
+        let hwnd = HWND(hwnd as _);
+
+        let _ = ShowWindow(hwnd, SW_RESTORE); // Ensure window is not maximized
+
+        // Fullscreen without borders
+        let monitor = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
+        let mut monitor_info = MONITORINFO {
+            cbSize: std::mem::size_of::<MONITORINFO>() as u32,
+            ..Default::default()
+        };
+
+        if GetMonitorInfoW(monitor, &mut monitor_info as *mut _ as *mut _).as_bool() {
+            let monitor_rect = monitor_info.rcMonitor;
+            let width = monitor_rect.right - monitor_rect.left;
+            let height = monitor_rect.bottom - monitor_rect.top;
+
+            SetWindowPos(
+                hwnd,
+                None,
+                monitor_rect.left,
+                monitor_rect.top,
+                width,
+                height,
+                SWP_NOZORDER | SWP_NOACTIVATE,
+            )?;
+        } else {
+            warn!("Failed to get monitor info for fullscreen");
+        }
 
         Ok(())
     }

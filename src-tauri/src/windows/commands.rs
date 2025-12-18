@@ -44,8 +44,8 @@ pub async fn restore_border(hwnd: isize) {
 }
 
 #[tauri::command]
-pub async fn fullscreen_window(hwnd: isize) -> Result<(), String> {
-    todo!();
+pub async fn fullscreen_window(hwnd: isize) {
+    let _ = service::fullscreen_window(hwnd);
 }
 
 /// Create, if not exists, and return the path to the icons directory
