@@ -39,32 +39,34 @@ type ComboboxProps = {
   triggerClassName?: string;
   value?: string | null;
   onOpen?: () => void;
+  onValueChange?: (value: string | null) => void;
   setOpen?: (open: boolean) => void;
-  setValue?: (value: string | null) => void;
 };
 function Combobox({
   data,
   emptyMessage,
   onOpen,
+  onValueChange: controlledOnValueChange,
   open: controlledOpen,
   placeholder,
   searchPlaceholder,
   setOpen: controlledSetOpen,
-  setValue: controlledSetValue,
   triggerClassName,
   value: controlledValue,
 }: ComboboxProps) {
   const [internalOpen, setInternalOpen] = useState(false);
-  const [internalValue, setInternalValue] = useState("");
+  const [internalValue, setInternalValue] = useState<string | null>(null);
 
   const isControlled =
     controlledOpen !== undefined && controlledSetOpen !== undefined;
   const open = isControlled ? controlledOpen : internalOpen;
   const setOpen = isControlled ? controlledSetOpen : setInternalOpen;
   const isValueControlled =
-    controlledValue !== undefined && controlledSetValue !== undefined;
+    controlledValue !== undefined && controlledOnValueChange !== undefined;
   const value = isValueControlled ? controlledValue : internalValue;
-  const setValue = isValueControlled ? controlledSetValue : setInternalValue;
+  const setValue = isValueControlled
+    ? controlledOnValueChange
+    : setInternalValue;
 
   const [triggerWidth, setTriggerWidth] = useState(0);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -152,7 +154,7 @@ function Combobox({
                     keywords={[item.label.toLowerCase()]}
                     value={item.value}
                     onSelect={(currentValue) => {
-                      setValue(currentValue === value ? "" : currentValue);
+                      setValue(currentValue === value ? null : currentValue);
                       setOpen(false);
                     }}
                   >

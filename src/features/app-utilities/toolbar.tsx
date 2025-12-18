@@ -28,18 +28,20 @@ function ToolButton({ icon, onClick, tooltip }: ToolButtonProps) {
 }
 
 type ToolbarProps = {
+  isWindowSelected?: boolean;
   onClickBorderless?: () => void;
   onClickCenter?: () => void;
   onClickFullscreen?: () => void;
 };
 function Toolbar({
+  isWindowSelected,
   onClickBorderless,
   onClickCenter,
   onClickFullscreen,
 }: ToolbarProps) {
   return (
     <TooltipProvider>
-      <ButtonGroup aria-label="Window Utilities" pulsate>
+      <ButtonGroup aria-label="Window Utilities" pulsate={isWindowSelected}>
         <ToolButton
           icon={<SquareDot />}
           onClick={onClickCenter}

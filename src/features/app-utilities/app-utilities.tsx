@@ -35,6 +35,7 @@ async function listWindows(): Promise<WindowInfo[]> {
 }
 
 function AppUtilities({ className }: AppUtilitiesProps) {
+  const [selectedWindow, setSelectedWindow] = useState<string | null>(null);
   const [windowOptions, setWindowOptions] = useState<ComboboxData[]>([]);
 
   const [comboboxOpen, setComboboxOpen] = useState(false);
@@ -84,15 +85,21 @@ function AppUtilities({ className }: AppUtilitiesProps) {
           data={windowOptions}
           emptyMessage="No Windows found."
           onOpen={getWindows}
+          onValueChange={setSelectedWindow}
           open={comboboxOpen}
           placeholder="Select a Window"
           searchPlaceholder="Search Windows..."
           setOpen={setComboboxOpen}
           triggerClassName="shrink"
-          value={null}
+          value={selectedWindow}
         />
 
-        <Toolbar />
+        <Toolbar
+          isWindowSelected={selectedWindow !== null}
+          onClickCenter={() => {
+            console.log(selectedWindow);
+          }}
+        />
       </div>
     </div>
   );
