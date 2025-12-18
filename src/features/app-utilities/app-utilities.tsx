@@ -6,7 +6,8 @@ import z from "zod";
 
 import Combobox, { ComboboxData } from "@/components/ui/combobox";
 import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
+
+import Toolbar from "./toolbar";
 
 const _windowInfoSchema = z.object({
   app_name: z.string(),
@@ -68,7 +69,7 @@ function AppUtilities({ className }: AppUtilitiesProps) {
   }, []);
 
   return (
-    <div className={cn("", className)}>
+    <div className={className}>
       <div>
         <div className="relative flex items-center">
           <span className="absolute left-3 -translate-y-[50%] bg-background px-1 text-xs text-muted-foreground">
@@ -77,15 +78,22 @@ function AppUtilities({ className }: AppUtilitiesProps) {
           <Separator className="mb-3" />
         </div>
       </div>
-      <Combobox
-        data={windowOptions}
-        emptyMessage="No Windows found."
-        onOpen={getWindows}
-        open={comboboxOpen}
-        placeholder="Select a Window"
-        searchPlaceholder="Search Windows..."
-        setOpen={setComboboxOpen}
-      />
+
+      <div className="flex max-w-full gap-2">
+        <Combobox
+          data={windowOptions}
+          emptyMessage="No Windows found."
+          onOpen={getWindows}
+          open={comboboxOpen}
+          placeholder="Select a Window"
+          searchPlaceholder="Search Windows..."
+          setOpen={setComboboxOpen}
+          triggerClassName="shrink"
+          value={null}
+        />
+
+        <Toolbar />
+      </div>
     </div>
   );
 }

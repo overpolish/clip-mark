@@ -36,8 +36,11 @@ type ComboboxProps = {
   open?: boolean;
   placeholder?: string;
   searchPlaceholder?: string;
+  triggerClassName?: string;
+  value?: string | null;
   onOpen?: () => void;
   setOpen?: (open: boolean) => void;
+  setValue?: (value: string | null) => void;
 };
 function Combobox({
   data,
@@ -47,15 +50,21 @@ function Combobox({
   placeholder,
   searchPlaceholder,
   setOpen: controlledSetOpen,
+  setValue: controlledSetValue,
+  triggerClassName,
+  value: controlledValue,
 }: ComboboxProps) {
   const [internalOpen, setInternalOpen] = useState(false);
-
-  const [value, setValue] = useState("");
+  const [internalValue, setInternalValue] = useState("");
 
   const isControlled =
     controlledOpen !== undefined && controlledSetOpen !== undefined;
   const open = isControlled ? controlledOpen : internalOpen;
   const setOpen = isControlled ? controlledSetOpen : setInternalOpen;
+  const isValueControlled =
+    controlledValue !== undefined && controlledSetValue !== undefined;
+  const value = isValueControlled ? controlledValue : internalValue;
+  const setValue = isValueControlled ? controlledSetValue : setInternalValue;
 
   const [triggerWidth, setTriggerWidth] = useState(0);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -102,7 +111,8 @@ function Combobox({
           variant="outline"
           className={cn(
             "w-full justify-between",
-            !selected && "text-muted-foreground"
+            !selected && "text-muted-foreground",
+            triggerClassName
           )}
         >
           <div className="flex w-full items-center gap-2">
