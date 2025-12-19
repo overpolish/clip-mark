@@ -44,6 +44,20 @@
         "transparent": true,
         "shadow": false,
         "visible": false
+      },
+      {
+        "url": "/capture-note",
+        "label": "capture-note",
+        "title": "Capture Note",
+        "width": 400,
+        "height": 300,
+        "decorations": false,
+        "skipTaskbar": true,
+        "resizable": false,
+        "alwaysOnTop": true,
+        "transparent": true,
+        "shadow": false,
+        "visible": false
       }
     ]
   },

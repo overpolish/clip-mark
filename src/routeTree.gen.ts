@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as RecordingStatusRouteImport } from './routes/recording-status'
 import { Route as ConfigurationRouteImport } from './routes/configuration'
+import { Route as CaptureNoteRouteImport } from './routes/capture-note'
 
 const RecordingStatusRoute = RecordingStatusRouteImport.update({
   id: '/recording-status',
@@ -22,29 +23,38 @@ const ConfigurationRoute = ConfigurationRouteImport.update({
   path: '/configuration',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CaptureNoteRoute = CaptureNoteRouteImport.update({
+  id: '/capture-note',
+  path: '/capture-note',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
+  '/capture-note': typeof CaptureNoteRoute
   '/configuration': typeof ConfigurationRoute
   '/recording-status': typeof RecordingStatusRoute
 }
 export interface FileRoutesByTo {
+  '/capture-note': typeof CaptureNoteRoute
   '/configuration': typeof ConfigurationRoute
   '/recording-status': typeof RecordingStatusRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/capture-note': typeof CaptureNoteRoute
   '/configuration': typeof ConfigurationRoute
   '/recording-status': typeof RecordingStatusRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/configuration' | '/recording-status'
+  fullPaths: '/capture-note' | '/configuration' | '/recording-status'
   fileRoutesByTo: FileRoutesByTo
-  to: '/configuration' | '/recording-status'
-  id: '__root__' | '/configuration' | '/recording-status'
+  to: '/capture-note' | '/configuration' | '/recording-status'
+  id: '__root__' | '/capture-note' | '/configuration' | '/recording-status'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  CaptureNoteRoute: typeof CaptureNoteRoute
   ConfigurationRoute: typeof ConfigurationRoute
   RecordingStatusRoute: typeof RecordingStatusRoute
 }
@@ -65,10 +75,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConfigurationRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/capture-note': {
+      id: '/capture-note'
+      path: '/capture-note'
+      fullPath: '/capture-note'
+      preLoaderRoute: typeof CaptureNoteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
+  CaptureNoteRoute: CaptureNoteRoute,
   ConfigurationRoute: ConfigurationRoute,
   RecordingStatusRoute: RecordingStatusRoute,
 }
