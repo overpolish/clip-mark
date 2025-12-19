@@ -7,9 +7,9 @@ import { Circle, Pause } from "lucide-react";
 import { AnimatePresence } from "motion/react";
 import z from "zod";
 
-import Breathe from "@/components/motion/breathe";
-import Flip from "@/components/motion/flip";
-import ShadowPulse from "@/components/motion/shadow-pulse";
+import { Breathe } from "@/components/motion/breathe";
+import { Flip } from "@/components/motion/flip";
+import { ShadowPulse } from "@/components/motion/shadow-pulse";
 
 export const Route = createFileRoute("/recording-status")({
   component: RouteComponent,

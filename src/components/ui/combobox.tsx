@@ -5,7 +5,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
 import {
   OverlayScrollbarsComponent,
-  OverlayScrollbarsComponentRef,
+  type OverlayScrollbarsComponentRef,
 } from "overlayscrollbars-react";
 
 import { Button } from "@/components/ui/button";
@@ -42,7 +42,8 @@ type ComboboxProps = {
   onValueChange?: (value: string | null) => void;
   setOpen?: (open: boolean) => void;
 };
-function Combobox({
+
+export function Combobox({
   data,
   emptyMessage,
   onOpen,
@@ -179,5 +180,3 @@ function Combobox({
     </Popover>
   );
 }
-
-export default Combobox;

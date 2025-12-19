@@ -6,9 +6,9 @@ import { exit } from "@tauri-apps/plugin-process";
 import { Button } from "@/components/ui/button";
 import { DotPattern } from "@/components/ui/dot-pattern";
 import { Kbd } from "@/components/ui/kbd";
-import ConnectionStatus from "@/features/connection-status/connection-status";
-import ObsWebsocketConfiguration from "@/features/obs-websocket-configuration/obs-websocket-configuration";
-import WindowUtilities from "@/features/window-utilities/window-utilities";
+import { ConnectionStatus } from "@/features/connection-status/connection-status";
+import { ObsWebsocketConfiguration } from "@/features/obs-websocket-configuration/obs-websocket-configuration";
+import { WindowUtilities } from "@/features/window-utilities/window-utilities";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/configuration")({

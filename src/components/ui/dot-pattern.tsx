@@ -1,4 +1,5 @@
-import React, { useEffect, useId, useRef, useState } from "react";
+import type React from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 import { motion } from "motion/react";
 

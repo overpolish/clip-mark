@@ -42,7 +42,7 @@ type ObsWebsocketConfigurationProps = {
   className?: string;
 };
 
-function ObsWebsocketConfiguration({
+export function ObsWebsocketConfiguration({
   className,
 }: ObsWebsocketConfigurationProps) {
   const { handleSubmit, register, reset } = useForm({
@@ -130,5 +130,3 @@ function ObsWebsocketConfiguration({
     </div>
   );
 }
-
-export default ObsWebsocketConfiguration;
