@@ -55,7 +55,7 @@ async function fullscreenWindow(hwnd: number) {
   invoke<void>(commands.FullscreenWindow, { hwnd });
 }
 
-function AppUtilities({ className }: AppUtilitiesProps) {
+function WindowUtilities({ className }: AppUtilitiesProps) {
   const [selectedWindow, setSelectedWindow] = useState<string | null>(null);
   const [windowOptions, setWindowOptions] = useState<ComboboxData[]>([]);
   const [comboboxOpen, setComboboxOpen] = useState(false);
@@ -179,4 +179,4 @@ function AppUtilities({ className }: AppUtilitiesProps) {
   );
 }
 
-export default AppUtilities;
+export default WindowUtilities;
