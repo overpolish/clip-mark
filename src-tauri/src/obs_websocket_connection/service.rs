@@ -142,8 +142,10 @@ fn event_handler(
             obws::events::OutputState::Started => (true, false),
             obws::events::OutputState::Paused => (true, true),
             obws::events::OutputState::Resumed => (true, false),
-            obws::events::OutputState::Stopped
-            | obws::events::OutputState::Stopping => (false, false),
+            // TODO hide recording status if stopping, currently still shows as active
+            // which feels sluggish
+            obws::events::OutputState::Stopping => (true, false), // Still active until fully stopped
+            obws::events::OutputState::Stopped => (false, false),
             _ => (false, false),
          };
 
@@ -217,9 +219,19 @@ fn handle_recording_lifecycle(
    now: i64,
 ) {
    if active && !was_active {
-      start_recording(state, app_handle, path, now);
+      match start_recording(state, app_handle, path, now) {
+         Ok(_) => {}
+         Err(err) => {
+            warn!("Failed to initialize recording: {}", err);
+         }
+      }
    } else if !active && was_active {
-      stop_recording(state);
+      match stop_recording(state, path) {
+         Ok(_) => {}
+         Err(err) => {
+            warn!("Failed to finalize notes: {}", err);
+         }
+      }
    }
 }
 
@@ -228,26 +240,51 @@ fn start_recording(
    app_handle: &tauri::AppHandle,
    path: Option<String>,
    now: i64,
-) {
+) -> Result<(), std::io::Error> {
    state.recording_start = Some(now);
    state.accumulated_pause_duration = 0;
    state.pause_start = None;
-   state.note_file_path = Some(resolve_note_file_path(app_handle, path, now));
+   state.note_file_path = Some(resolve_note_file_path(app_handle, path, now)?);
+
+   Ok(())
 }
 
-fn stop_recording(state: &mut RecordingState) {
+fn stop_recording(
+   state: &mut RecordingState,
+   output_file_path: Option<String>,
+) -> Result<(), std::io::Error> {
    state.recording_start = None;
    state.accumulated_pause_duration = 0;
    state.pause_start = None;
-   state.note_file_path = None;
+
+   if let Some(note_path) = state.note_file_path.take() {
+      if let Some(output_path) = output_file_path {
+         let final_note_path = std::path::Path::new(&output_path)
+            .with_extension("txt")
+            .to_string_lossy()
+            .to_string();
+
+         if note_path != final_note_path {
+            if let Some(parent) =
+               std::path::Path::new(&final_note_path).parent()
+            {
+               std::fs::create_dir_all(parent)?;
+            }
+
+            std::fs::rename(&note_path, &final_note_path)?;
+         }
+      }
+   }
+
+   Ok(())
 }
 
 fn resolve_note_file_path(
    app_handle: &tauri::AppHandle,
    path: Option<String>,
    now: i64,
-) -> String {
-   if let Some(file_path) = path {
+) -> Result<String, std::io::Error> {
+   let file_path = if let Some(file_path) = path {
       std::path::Path::new(&file_path)
          .with_extension("txt")
          .to_string_lossy()
@@ -260,7 +297,15 @@ fn resolve_note_file_path(
    } else {
       warn!("Failed to get cache directory for note file path");
       format!("temp_recording_{}.txt", now)
+   };
+
+   if let Some(parent) = std::path::Path::new(&file_path).parent() {
+      std::fs::create_dir_all(parent)?;
    }
+
+   std::fs::File::create(&file_path)?;
+
+   Ok(file_path)
 }
 
 fn handle_pause_state(
