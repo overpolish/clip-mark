@@ -25,6 +25,8 @@ pub enum WindowEvents {
    ConfigurationWillHide,
    #[strum(serialize = "window:configuration_will_show")]
    ConfigurationWillShow,
+   #[strum(serialize = "window:capture_note_will_show")]
+   CaptureNoteWillShow,
 }
 
 pub struct GlobalState {
