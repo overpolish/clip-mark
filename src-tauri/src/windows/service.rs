@@ -267,7 +267,7 @@ unsafe fn icon_to_png(hicon: HICON, output_path: &Path) -> ::windows::core::Resu
     let height = bm.bmHeight as u32;
 
     // Create device contexts (DCs) - screen and memory
-    let hdc = GetDC(Some(HWND(0 as _)));
+    let hdc = GetDC(Some(HWND::default()));
     let hdc_mem = CreateCompatibleDC(Some(hdc));
 
     // Bitmap for 32-bit RGBA DIB section
@@ -345,7 +345,7 @@ unsafe fn cleanup_gdi_objects(
     let _ = DeleteObject(icon_info.hbmColor.into());
     let _ = DeleteObject(icon_info.hbmMask.into());
     let _ = DeleteDC(hdc_mem);
-    ReleaseDC(Some(HWND(0 as _)), hdc);
+    ReleaseDC(Some(HWND::default()), hdc);
 }
 
 unsafe fn get_exe_path_from_hwnd(hwnd: HWND) -> ::windows::core::Result<String> {
@@ -420,7 +420,7 @@ pub fn center_window(hwnd: isize) -> ::windows::core::Result<()> {
         // Center window
         SetWindowPos(
             hwnd,
-            Some(HWND(0 as _)),
+            Some(HWND::default()),
             center_x,
             center_y,
             0,
@@ -461,6 +461,7 @@ pub fn make_borderless(hwnd: isize) -> ::windows::core::Result<()> {
         let height = rect.bottom - rect.top;
 
         // Refresh window to apply changes
+        // NOTE: for some apps, just setting SWP_FRAMECHANGED doesn't fully remove the border
         SetWindowPos(
             hwnd,
             None,

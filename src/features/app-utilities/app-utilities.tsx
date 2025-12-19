@@ -99,7 +99,7 @@ function AppUtilities({ className }: AppUtilitiesProps) {
   useEffect(() => {
     selectedWindowRef.current = selectedWindow;
     windowOptionsRef.current = windowOptions;
-  });
+  }, [selectedWindow, windowOptions]);
 
   useEffect(() => {
     const unlistenWillHide = listen(events.ConfigurationWillHide, () => {
