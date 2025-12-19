@@ -2,6 +2,7 @@ mod note_capture;
 mod obs_websocket_configuration;
 mod obs_websocket_connection;
 mod shortcuts;
+mod state;
 mod system_tray;
 mod window_utilities;
 
@@ -11,10 +12,9 @@ use strum::{AsRefStr, Display, EnumString};
 use tauri::{Emitter, Manager, PhysicalPosition};
 use tauri_plugin_positioner::{Position, WindowExt};
 use tauri_plugin_store::StoreExt;
-use tokio::sync::watch;
 
 use crate::{
-   obs_websocket_connection::models::{ConnectionStatus, RecordingStatus},
+   state::GlobalState, state::ServerConfigState,
    system_tray::service::init_system_tray,
 };
 
@@ -28,66 +28,6 @@ pub enum WindowEvents {
    ConfigurationWillShow,
    #[strum(serialize = "window:capture_note_will_show")]
    CaptureNoteWillShow,
-}
-
-pub struct GlobalState {
-   pub server_connection_status:
-      Mutex<crate::obs_websocket_connection::models::ConnectionStatus>,
-   pub server_config_changed_tx: watch::Sender<()>,
-   pub recording_status:
-      Mutex<crate::obs_websocket_connection::models::RecordingStatus>,
-}
-
-impl GlobalState {
-   pub fn new() -> Self {
-      Self {
-         server_connection_status: Mutex::new(ConnectionStatus::Disconnected),
-         server_config_changed_tx: watch::channel(()).0,
-         recording_status: Mutex::new(RecordingStatus {
-            active: false,
-            paused: false,
-         }),
-      }
-   }
-}
-
-impl Default for GlobalState {
-   fn default() -> Self {
-      Self::new()
-   }
-}
-
-#[derive(Clone, Default)]
-struct ServerConfig {
-   address: String,
-   port: u16,
-   password: String,
-}
-
-impl ServerConfig {
-   fn from_store<R: tauri::Runtime>(
-      store: &tauri_plugin_store::Store<R>,
-   ) -> Self {
-      fn get_str<R: tauri::Runtime>(
-         store: &tauri_plugin_store::Store<R>,
-         key: &str,
-         default: &str,
-      ) -> String {
-         store
-            .get(key)
-            .and_then(|v| v.as_str().map(String::from))
-            .unwrap_or_else(|| default.to_string())
-      }
-
-      Self {
-         address: get_str(store, "address", "localhost"),
-         port: store
-            .get("port")
-            .and_then(|v| v.as_u64().map(|n| n as u16))
-            .unwrap_or(4455),
-         password: get_str(store, "password", ""),
-      }
-   }
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -149,7 +89,7 @@ fn setup_server_config(
    let store = app
       .store("obs-server-config.json")
       .expect("Failed to load OBS Server store");
-   app.manage(Mutex::new(ServerConfig::from_store(&store)));
+   app.manage(Mutex::new(ServerConfigState::from_store(&store)));
 
    Ok(())
 }

@@ -9,7 +9,7 @@ use crate::{
       ConnectionEvents, ConnectionStatus, RecordingEvents, RecordingStatus,
    },
    system_tray::service::{update_system_tray_icon, SystemTrayIcon},
-   GlobalState, ServerConfig,
+   GlobalState, ServerConfigState,
 };
 
 pub async fn websocket_connection(app_handle: tauri::AppHandle) {
@@ -55,8 +55,10 @@ pub async fn websocket_connection(app_handle: tauri::AppHandle) {
    }
 }
 
-fn get_server_config(app_handle: &tauri::AppHandle) -> Option<ServerConfig> {
-   if let Ok(lock) = app_handle.state::<Mutex<ServerConfig>>().lock() {
+fn get_server_config(
+   app_handle: &tauri::AppHandle,
+) -> Option<ServerConfigState> {
+   if let Ok(lock) = app_handle.state::<Mutex<ServerConfigState>>().lock() {
       Some(lock.clone())
    } else {
       None
@@ -64,7 +66,7 @@ fn get_server_config(app_handle: &tauri::AppHandle) -> Option<ServerConfig> {
 }
 
 async fn connect_to_obs(
-   server_config: ServerConfig,
+   server_config: ServerConfigState,
 ) -> Result<obws::Client, obws::error::Error> {
    obws::Client::connect_with_config(obws::client::ConnectConfig {
       host: server_config.address,
