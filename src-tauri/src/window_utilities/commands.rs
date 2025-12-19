@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use serde::Serialize;
 use tauri::Manager;
 
-use crate::windows::service::{self, get_visible_windows};
+use crate::window_utilities::service::{self, get_visible_windows};
 
 #[derive(Serialize, Debug)]
 #[serde(rename_all = "camelCase")]

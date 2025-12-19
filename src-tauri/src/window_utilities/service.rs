@@ -4,7 +4,9 @@ use std::{
     time::Duration,
 };
 
-use ::windows::Win32::{
+use image::{ImageBuffer, Rgba};
+use log::{info, warn};
+use windows::Win32::{
     Foundation::{CloseHandle, HINSTANCE, HWND, LPARAM},
     Graphics::{
         Dwm::{DwmGetWindowAttribute, DWMWA_CLOAKED},
@@ -24,21 +26,17 @@ use ::windows::Win32::{
         WindowsAndMessaging::{
             DestroyIcon, DrawIconEx, EnumWindows, GetIconInfo, GetSystemMetrics, GetWindowLongPtrW,
             GetWindowLongW, GetWindowRect, GetWindowTextW, GetWindowThreadProcessId,
-            IsWindowVisible, SetWindowPos, DI_NORMAL, GWL_EXSTYLE, GWL_STYLE, HICON, ICONINFO,
-            SM_CXSCREEN, SM_CYSCREEN, SWP_NOSIZE, SWP_NOZORDER, WS_EX_TOOLWINDOW,
+            IsWindowVisible, SetWindowLongPtrW, SetWindowPos, ShowWindow, DI_NORMAL, GWL_EXSTYLE,
+            GWL_STYLE, HICON, ICONINFO, SM_CXSCREEN, SM_CYSCREEN, SWP_FRAMECHANGED, SWP_NOACTIVATE,
+            SWP_NOMOVE, SWP_NOSIZE, SWP_NOZORDER, SW_RESTORE, WS_BORDER, WS_CAPTION, WS_DLGFRAME,
+            WS_EX_CLIENTEDGE, WS_EX_DLGMODALFRAME, WS_EX_STATICEDGE, WS_EX_TOOLWINDOW,
+            WS_EX_WINDOWEDGE, WS_MAXIMIZEBOX, WS_MINIMIZEBOX, WS_POPUP, WS_SYSMENU, WS_THICKFRAME,
+            WS_VISIBLE,
         },
     },
 };
-use image::{ImageBuffer, Rgba};
-use log::{info, warn};
-use windows::Win32::UI::WindowsAndMessaging::{
-    SetWindowLongPtrW, ShowWindow, SWP_FRAMECHANGED, SWP_NOACTIVATE, SWP_NOMOVE, SW_RESTORE,
-    WS_BORDER, WS_CAPTION, WS_DLGFRAME, WS_EX_CLIENTEDGE, WS_EX_DLGMODALFRAME, WS_EX_STATICEDGE,
-    WS_EX_WINDOWEDGE, WS_MAXIMIZEBOX, WS_MINIMIZEBOX, WS_POPUP, WS_SYSMENU, WS_THICKFRAME,
-    WS_VISIBLE,
-};
 
-use crate::windows::commands::WindowInfo;
+use crate::window_utilities::commands::WindowInfo;
 
 const MAX_WINDOW_TITLE_LEN: usize = 512;
 const MAX_PATH_LEN: usize = 512;
@@ -92,10 +90,7 @@ pub fn get_visible_windows(icons_dir: PathBuf) -> Vec<WindowInfo> {
     }
 }
 
-unsafe extern "system" fn enum_windows_callback(
-    hwnd: HWND,
-    lparam: LPARAM,
-) -> ::windows::core::BOOL {
+unsafe extern "system" fn enum_windows_callback(hwnd: HWND, lparam: LPARAM) -> windows::core::BOOL {
     let windows = &mut *(lparam.0 as *mut Vec<WindowInfo>);
 
     if !IsWindowVisible(hwnd).as_bool() {
@@ -144,7 +139,7 @@ unsafe extern "system" fn enum_windows_callback(
         if QueryFullProcessImageNameW(
             handle,
             PROCESS_NAME_WIN32,
-            ::windows::core::PWSTR(exe_path.as_mut_ptr()),
+            windows::core::PWSTR(exe_path.as_mut_ptr()),
             &mut size,
         )
         .is_ok()
@@ -176,7 +171,7 @@ fn extract_exe_icon_to_png(
     exe_path: &str,
     app_name: &str,
     icons_dir: &Path,
-) -> ::windows::core::Result<PathBuf> {
+) -> windows::core::Result<PathBuf> {
     unsafe {
         let safe_name = app_name
             .replace(".exe", "")
@@ -189,7 +184,7 @@ fn extract_exe_icon_to_png(
 
         let hicon = extract_icon_from_exe(exe_path)?;
 
-        let result = (|| -> ::windows::core::Result<PathBuf> {
+        let result = (|| -> windows::core::Result<PathBuf> {
             icon_to_png(hicon, &output_path)?;
             Ok(output_path)
         })();
@@ -231,24 +226,24 @@ fn should_use_cached_icon(icon_path: &Path, exe_path: &str) -> bool {
     true
 }
 
-unsafe fn extract_icon_from_exe(exe_path: &str) -> ::windows::core::Result<HICON> {
+unsafe fn extract_icon_from_exe(exe_path: &str) -> windows::core::Result<HICON> {
     let path_wide: Vec<u16> = exe_path.encode_utf16().chain(std::iter::once(0)).collect();
     let hicon = ExtractIconW(
         Some(HINSTANCE::default()),
-        ::windows::core::PWSTR::from_raw(path_wide.as_ptr() as *mut _),
+        windows::core::PWSTR::from_raw(path_wide.as_ptr() as *mut _),
         0,
     );
 
     if hicon.0 as usize <= 1 {
-        return Err(::windows::core::Error::from(
-            ::windows::Win32::Foundation::E_FAIL,
+        return Err(windows::core::Error::from(
+            windows::Win32::Foundation::E_FAIL,
         ));
     }
 
     Ok(hicon)
 }
 
-unsafe fn icon_to_png(hicon: HICON, output_path: &Path) -> ::windows::core::Result<()> {
+unsafe fn icon_to_png(hicon: HICON, output_path: &Path) -> windows::core::Result<()> {
     // Get icon info - bitmaps for color and mask
     let mut icon_info = ICONINFO::default();
     GetIconInfo(hicon, &mut icon_info)?;
@@ -326,7 +321,7 @@ unsafe fn icon_to_png(hicon: HICON, output_path: &Path) -> ::windows::core::Resu
     // Save image as a PNG
     let save_result = img_buffer
         .save(output_path)
-        .map_err(|_| ::windows::core::Error::from(::windows::Win32::Foundation::E_FAIL));
+        .map_err(|_| windows::core::Error::from(windows::Win32::Foundation::E_FAIL));
 
     cleanup_gdi_objects(hdc, hdc_mem, old_bm, hbm_dib.into(), icon_info);
 
@@ -348,20 +343,20 @@ unsafe fn cleanup_gdi_objects(
     ReleaseDC(Some(HWND::default()), hdc);
 }
 
-unsafe fn get_exe_path_from_hwnd(hwnd: HWND) -> ::windows::core::Result<String> {
+unsafe fn get_exe_path_from_hwnd(hwnd: HWND) -> windows::core::Result<String> {
     let mut pid: u32 = 0;
     GetWindowThreadProcessId(hwnd, Some(&mut pid));
 
     let process_handle = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, false, pid)?;
 
-    let result = (|| -> ::windows::core::Result<String> {
+    let result = (|| -> windows::core::Result<String> {
         let mut exe_path: [u16; MAX_PATH_LEN] = [0; MAX_PATH_LEN];
         let mut size = exe_path.len() as u32;
 
         QueryFullProcessImageNameW(
             process_handle,
             PROCESS_NAME_WIN32,
-            ::windows::core::PWSTR(exe_path.as_mut_ptr()),
+            windows::core::PWSTR(exe_path.as_mut_ptr()),
             &mut size,
         )?;
 
@@ -376,13 +371,13 @@ unsafe fn get_exe_path_from_hwnd(hwnd: HWND) -> ::windows::core::Result<String> 
 
 // #region Center, Borderless, Fullscreen Window Functions
 
-pub fn center_window(hwnd: isize) -> ::windows::core::Result<()> {
+pub fn center_window(hwnd: isize) -> windows::core::Result<()> {
     unsafe {
         info!("Centering window: {}", hwnd);
         let hwnd = HWND(hwnd as _);
 
         // Window rect
-        let mut window_rect = ::windows::Win32::Foundation::RECT::default();
+        let mut window_rect = windows::Win32::Foundation::RECT::default();
         GetWindowRect(hwnd, &mut window_rect)?;
 
         let window_width = window_rect.right - window_rect.left;
@@ -432,7 +427,7 @@ pub fn center_window(hwnd: isize) -> ::windows::core::Result<()> {
     }
 }
 
-pub fn make_borderless(hwnd: isize) -> ::windows::core::Result<()> {
+pub fn make_borderless(hwnd: isize) -> windows::core::Result<()> {
     unsafe {
         info!("Making window borderless: {}", hwnd);
         let hwnd = HWND(hwnd as _);
@@ -454,7 +449,7 @@ pub fn make_borderless(hwnd: isize) -> ::windows::core::Result<()> {
         SetWindowLongPtrW(hwnd, GWL_EXSTYLE, new_ex_style as isize);
 
         // Resize to refresh window frame
-        let mut rect = ::windows::Win32::Foundation::RECT::default();
+        let mut rect = windows::Win32::Foundation::RECT::default();
         GetWindowRect(hwnd, &mut rect)?;
 
         let width = rect.right - rect.left;
@@ -487,7 +482,7 @@ pub fn make_borderless(hwnd: isize) -> ::windows::core::Result<()> {
     }
 }
 
-pub fn restore_border(hwnd: isize) -> ::windows::core::Result<()> {
+pub fn restore_border(hwnd: isize) -> windows::core::Result<()> {
     unsafe {
         info!("Restoring window border: {}", hwnd);
         let hwnd = HWND(hwnd as _);
@@ -519,7 +514,7 @@ pub fn restore_border(hwnd: isize) -> ::windows::core::Result<()> {
     }
 }
 
-pub fn fullscreen_window(hwnd: isize) -> ::windows::core::Result<()> {
+pub fn fullscreen_window(hwnd: isize) -> windows::core::Result<()> {
     unsafe {
         info!("Fullscreen window: {}", hwnd);
         make_borderless(hwnd)?;

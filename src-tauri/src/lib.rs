@@ -1,7 +1,7 @@
 mod obs_websocket_configuration;
 mod obs_websocket_connection;
 mod system_tray;
-mod windows;
+mod window_utilities;
 
 use std::sync::Mutex;
 
@@ -48,11 +48,11 @@ pub fn run() {
             obs_websocket_configuration::commands::update_server_details,
             obs_websocket_connection::commands::get_server_connection_status,
             obs_websocket_connection::commands::get_recording_status,
-            crate::windows::commands::list_windows,
-            crate::windows::commands::center_window,
-            crate::windows::commands::make_borderless,
-            crate::windows::commands::restore_border,
-            crate::windows::commands::fullscreen_window,
+            crate::window_utilities::commands::list_windows,
+            crate::window_utilities::commands::center_window,
+            crate::window_utilities::commands::make_borderless,
+            crate::window_utilities::commands::restore_border,
+            crate::window_utilities::commands::fullscreen_window,
         ])
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
