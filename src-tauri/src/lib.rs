@@ -1,3 +1,4 @@
+mod note_capture;
 mod obs_websocket_configuration;
 mod obs_websocket_connection;
 mod shortcuts;
@@ -106,6 +107,8 @@ pub fn run() {
       crate::window_utilities::commands::make_borderless,
       crate::window_utilities::commands::restore_border,
       crate::window_utilities::commands::fullscreen_window,
+      crate::window_utilities::commands::hide_window,
+      crate::note_capture::commands::capture_note,
    ]);
 
    // State

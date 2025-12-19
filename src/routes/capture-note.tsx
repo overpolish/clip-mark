@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute } from "@tanstack/react-router";
+import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { CornerDownLeft, PenLine } from "lucide-react";
 import z from "zod";
@@ -19,40 +20,50 @@ export const Route = createFileRoute("/capture-note")({
   component: CaptureNote,
 });
 
+const commands = {
+  CaptureNote: "capture_note",
+  HideWindow: "hide_window",
+} as const;
+
 const events = {
   CaptureNoteWillShow: "window:capture_note_will_show",
 } as const;
 
 const schema = z.object({
+  date: z.date(),
   note: z.string(),
 });
 
 type Schema = z.infer<typeof schema>;
 
+async function hideWindow() {
+  invoke(commands.HideWindow, { label: "capture-note" });
+}
+
+async function captureNote(note: string, date: Date) {
+  invoke(commands.CaptureNote, { date: date.toISOString(), note });
+}
+
 function CaptureNote() {
-  const { handleSubmit, register, reset, setFocus } = useForm<Schema>({
-    defaultValues: {
-      note: "",
-    },
-    resolver: zodResolver(schema),
-  });
+  const { handleSubmit, register, reset, setFocus, setValue } = useForm<Schema>(
+    {
+      defaultValues: {
+        date: new Date(),
+        note: "",
+      },
+      resolver: zodResolver(schema),
+    }
+  );
 
   function onSubmit(data: Schema) {
-    console.log("TODO submit note:", data);
-
     if (data.note.trim().length === 0) return;
-
-    reset();
+    captureNote(data.note.trim(), data.date);
+    resetSpotlight();
   }
 
   function resetSpotlight() {
+    hideWindow();
     reset();
-    closeWindow();
-  }
-
-  function closeWindow() {
-    // TODO hide window rust side
-    console.log("TODO close window");
   }
 
   useEffect(() => {
@@ -74,6 +85,7 @@ function CaptureNote() {
 
   useEffect(() => {
     const unlisten = listen(events.CaptureNoteWillShow, () => {
+      setValue("date", new Date());
       setFocus("note");
     });
 
