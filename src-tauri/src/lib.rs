@@ -14,7 +14,7 @@ use tauri_plugin_positioner::{Position, WindowExt};
 use tauri_plugin_store::StoreExt;
 
 use crate::{
-   state::GlobalState, state::ServerConfigState,
+   state::{GlobalState, RecordingStateMutex, ServerConfigState},
    system_tray::service::init_system_tray,
 };
 
@@ -52,7 +52,9 @@ pub fn run() {
    ]);
 
    // State
-   app_builder = app_builder.manage(GlobalState::default());
+   app_builder = app_builder
+      .manage(GlobalState::default())
+      .manage(RecordingStateMutex::default());
 
    // Plugins
    app_builder = app_builder

@@ -1,5 +1,6 @@
 use std::sync::Mutex;
 
+use serde::{Deserialize, Serialize};
 use tokio::sync::watch;
 
 use crate::obs_websocket_connection::models::{
@@ -10,8 +11,6 @@ pub struct GlobalState {
    pub server_connection_status:
       Mutex<crate::obs_websocket_connection::models::ConnectionStatus>,
    pub server_config_changed_tx: watch::Sender<()>,
-   pub recording_status:
-      Mutex<crate::obs_websocket_connection::models::RecordingStatus>,
 }
 
 impl GlobalState {
@@ -19,10 +18,6 @@ impl GlobalState {
       Self {
          server_connection_status: Mutex::new(ConnectionStatus::Disconnected),
          server_config_changed_tx: watch::channel(()).0,
-         recording_status: Mutex::new(RecordingStatus {
-            active: false,
-            paused: false,
-         }),
       }
    }
 }
@@ -65,3 +60,14 @@ impl ServerConfigState {
       }
    }
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct RecordingState {
+   pub recording_status: RecordingStatus,
+   pub note_file_path: Option<String>,
+   pub recording_start: Option<i64>,
+   pub accumulated_pause_duration: i64,
+   pub pause_start: Option<i64>,
+}
+
+pub type RecordingStateMutex = Mutex<RecordingState>;

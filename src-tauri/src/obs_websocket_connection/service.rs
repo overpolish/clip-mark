@@ -8,6 +8,7 @@ use crate::{
    obs_websocket_connection::models::{
       ConnectionEvents, ConnectionStatus, RecordingEvents, RecordingStatus,
    },
+   state::{RecordingState, RecordingStateMutex},
    system_tray::service::{update_system_tray_icon, SystemTrayIcon},
    GlobalState, ServerConfigState,
 };
@@ -96,6 +97,7 @@ async fn handle_client_connection(
          app_handle,
          initial_status.active,
          initial_status.paused,
+         None,
       );
    }
 
@@ -136,13 +138,16 @@ fn event_handler(
       Event::RecordStateChanged { state, path, .. } => {
          info!("Recording state changed: {:?}, path: {:?}", state, path);
 
-         let active = matches!(
-            state,
-            obws::events::OutputState::Started
-               | obws::events::OutputState::Resumed
-         );
-         let paused = matches!(state, obws::events::OutputState::Paused);
-         update_recording_status(app_handle, active, paused);
+         let (active, paused) = match state {
+            obws::events::OutputState::Started => (true, false),
+            obws::events::OutputState::Paused => (true, true),
+            obws::events::OutputState::Resumed => (true, false),
+            obws::events::OutputState::Stopped
+            | obws::events::OutputState::Stopping => (false, false),
+            _ => (false, false),
+         };
+
+         update_recording_status(app_handle, active, paused, path);
 
          Ok(())
       }
@@ -180,16 +185,120 @@ fn update_recording_status(
    app_handle: &tauri::AppHandle,
    active: bool,
    paused: bool,
+   path: Option<String>,
 ) {
-   let global_state = app_handle.state::<GlobalState>();
+   let recording_state = app_handle.state::<RecordingStateMutex>();
+   let now = chrono::Utc::now().timestamp_millis();
 
-   if let Ok(mut status) = global_state.recording_status.lock() {
-      status.active = active;
-      status.paused = paused;
+   if let Ok(mut state) = recording_state.lock() {
+      let was_active = state.recording_status.active;
+      let was_paused = state.recording_status.paused;
+
+      handle_recording_lifecycle(
+         &mut state, app_handle, active, was_active, path, now,
+      );
+      handle_pause_state(&mut state, active, paused, was_paused, now);
+
+      state.recording_status.active = active;
+      state.recording_status.paused = paused;
    } else {
       warn!("Failed to lock recording_status mutex");
    }
 
+   emit_recording_status_change(app_handle, active, paused);
+}
+
+fn handle_recording_lifecycle(
+   state: &mut RecordingState,
+   app_handle: &tauri::AppHandle,
+   active: bool,
+   was_active: bool,
+   path: Option<String>,
+   now: i64,
+) {
+   if active && !was_active {
+      start_recording(state, app_handle, path, now);
+   } else if !active && was_active {
+      stop_recording(state);
+   }
+}
+
+fn start_recording(
+   state: &mut RecordingState,
+   app_handle: &tauri::AppHandle,
+   path: Option<String>,
+   now: i64,
+) {
+   state.recording_start = Some(now);
+   state.accumulated_pause_duration = 0;
+   state.pause_start = None;
+   state.note_file_path = Some(resolve_note_file_path(app_handle, path, now));
+}
+
+fn stop_recording(state: &mut RecordingState) {
+   state.recording_start = None;
+   state.accumulated_pause_duration = 0;
+   state.pause_start = None;
+   state.note_file_path = None;
+}
+
+fn resolve_note_file_path(
+   app_handle: &tauri::AppHandle,
+   path: Option<String>,
+   now: i64,
+) -> String {
+   if let Some(file_path) = path {
+      std::path::Path::new(&file_path)
+         .with_extension("txt")
+         .to_string_lossy()
+         .to_string()
+   } else if let Ok(cache_dir) = app_handle.path().cache_dir() {
+      cache_dir
+         .join(format!("temp_recording_{}.txt", now))
+         .to_string_lossy()
+         .to_string()
+   } else {
+      warn!("Failed to get cache directory for note file path");
+      format!("temp_recording_{}.txt", now)
+   }
+}
+
+fn handle_pause_state(
+   state: &mut RecordingState,
+   active: bool,
+   paused: bool,
+   was_paused: bool,
+   now: i64,
+) {
+   if !active {
+      return;
+   }
+
+   if paused && !was_paused {
+      pause_recording(state, now);
+   } else if !paused && was_paused {
+      resume_recording(state, now);
+   }
+}
+
+fn pause_recording(state: &mut RecordingState, now: i64) {
+   state.pause_start = Some(now);
+}
+
+fn resume_recording(state: &mut RecordingState, now: i64) {
+   if let Some(pause_start) = state.pause_start {
+      let pause_duration = now - pause_start;
+      state.accumulated_pause_duration += pause_duration;
+   }
+
+   state.pause_start = None;
+}
+
+fn emit_recording_status_change(
+   app_handle: &tauri::AppHandle,
+   active: bool,
+   paused: bool,
+) {
    let _ = app_handle.emit(
       RecordingEvents::Status.as_ref(),
       RecordingStatus { active, paused },
