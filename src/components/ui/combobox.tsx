@@ -36,26 +36,37 @@ type ComboboxProps = {
   open?: boolean;
   placeholder?: string;
   searchPlaceholder?: string;
+  triggerClassName?: string;
+  value?: string | null;
   onOpen?: () => void;
+  onValueChange?: (value: string | null) => void;
   setOpen?: (open: boolean) => void;
 };
 function Combobox({
   data,
   emptyMessage,
   onOpen,
+  onValueChange: controlledOnValueChange,
   open: controlledOpen,
   placeholder,
   searchPlaceholder,
   setOpen: controlledSetOpen,
+  triggerClassName,
+  value: controlledValue,
 }: ComboboxProps) {
   const [internalOpen, setInternalOpen] = useState(false);
-
-  const [value, setValue] = useState("");
+  const [internalValue, setInternalValue] = useState<string | null>(null);
 
   const isControlled =
     controlledOpen !== undefined && controlledSetOpen !== undefined;
   const open = isControlled ? controlledOpen : internalOpen;
   const setOpen = isControlled ? controlledSetOpen : setInternalOpen;
+  const isValueControlled =
+    controlledValue !== undefined && controlledOnValueChange !== undefined;
+  const value = isValueControlled ? controlledValue : internalValue;
+  const setValue = isValueControlled
+    ? controlledOnValueChange
+    : setInternalValue;
 
   const [triggerWidth, setTriggerWidth] = useState(0);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -102,7 +113,8 @@ function Combobox({
           variant="outline"
           className={cn(
             "w-full justify-between",
-            !selected && "text-muted-foreground"
+            !selected && "text-muted-foreground",
+            triggerClassName
           )}
         >
           <div className="flex w-full items-center gap-2">
@@ -142,7 +154,7 @@ function Combobox({
                     keywords={[item.label.toLowerCase()]}
                     value={item.value}
                     onSelect={(currentValue) => {
-                      setValue(currentValue === value ? "" : currentValue);
+                      setValue(currentValue === value ? null : currentValue);
                       setOpen(false);
                     }}
                   >

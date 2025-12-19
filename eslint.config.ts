@@ -86,6 +86,7 @@ export default defineConfig([
               ],
               from: "features",
             },
+            { allow: ["components"], from: "components" },
           ],
         },
       ],

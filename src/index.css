@@ -51,6 +51,16 @@
       background-position: var(--bg-size, 300%) 0;
     }
   }
+  --animate-pulse: pulse var(--duration) ease-in-out infinite;
+  @keyframes pulse {
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 var(--pulse-color);
+    }
+    50% {
+      box-shadow: 0 0 0 4px var(--pulse-color);
+    }
+  }
 }
 
 :root {

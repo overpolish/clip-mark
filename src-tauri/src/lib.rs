@@ -17,6 +17,8 @@ use crate::system_tray::service::init_system_tray;
 pub enum WindowEvents {
     #[strum(serialize = "window:configuration_will_hide")]
     ConfigurationWillHide,
+    #[strum(serialize = "window:configuration_will_show")]
+    ConfigurationWillShow,
 }
 
 pub struct GlobalState {
@@ -47,6 +49,10 @@ pub fn run() {
             obs_websocket_connection::commands::get_server_connection_status,
             obs_websocket_connection::commands::get_recording_status,
             crate::windows::commands::list_windows,
+            crate::windows::commands::center_window,
+            crate::windows::commands::make_borderless,
+            crate::windows::commands::restore_border,
+            crate::windows::commands::fullscreen_window,
         ])
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_opener::init())

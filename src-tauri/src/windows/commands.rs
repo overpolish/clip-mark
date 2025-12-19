@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use serde::Serialize;
 use tauri::Manager;
 
-use crate::windows::service::get_visible_windows;
+use crate::windows::service::{self, get_visible_windows};
 
 #[derive(Serialize, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -26,6 +26,26 @@ pub async fn list_windows(app_handle: tauri::AppHandle) -> Result<Vec<WindowInfo
     });
 
     Ok(windows)
+}
+
+#[tauri::command]
+pub async fn center_window(hwnd: isize) {
+    let _ = service::center_window(hwnd);
+}
+
+#[tauri::command]
+pub async fn make_borderless(hwnd: isize) {
+    let _ = service::make_borderless(hwnd);
+}
+
+#[tauri::command]
+pub async fn restore_border(hwnd: isize) {
+    let _ = service::restore_border(hwnd);
+}
+
+#[tauri::command]
+pub async fn fullscreen_window(hwnd: isize) {
+    let _ = service::fullscreen_window(hwnd);
 }
 
 /// Create, if not exists, and return the path to the icons directory

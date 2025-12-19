@@ -1,4 +1,6 @@
-use tauri::{tray::TrayIconEvent, LogicalSize, Manager};
+use tauri::{tray::TrayIconEvent, Emitter, LogicalSize, Manager};
+
+use crate::WindowEvents;
 
 pub fn init_system_tray(app_handle: &tauri::AppHandle) {
     let tray = app_handle.tray_by_id("tray-icon").unwrap();
@@ -14,6 +16,7 @@ pub fn init_system_tray(app_handle: &tauri::AppHandle) {
             // Height precise for UI
             let _ = win.set_size(LogicalSize::new(450.0, 287.0));
 
+            let _ = app.emit(WindowEvents::ConfigurationWillShow.as_ref(), ());
             win.show().unwrap();
             win.set_focus().unwrap();
         }
