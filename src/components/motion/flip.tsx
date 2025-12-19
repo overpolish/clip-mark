@@ -1,10 +1,10 @@
-import { motion, MotionProps } from "motion/react";
+import { motion, type MotionProps } from "motion/react";
 
 type FlipProps = MotionProps & {
   children: React.ReactNode;
 };
 
-function Flip({ children, ...props }: FlipProps) {
+export function Flip({ children, ...props }: FlipProps) {
   return (
     <motion.div
       {...props}
@@ -34,5 +34,3 @@ function Flip({ children, ...props }: FlipProps) {
     </motion.div>
   );
 }
-
-export default Flip;

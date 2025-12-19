@@ -4,10 +4,10 @@ import { convertFileSrc, invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import z from "zod";
 
-import Combobox, { ComboboxData } from "@/components/ui/combobox";
+import { Combobox, type ComboboxData } from "@/components/ui/combobox";
 import { Separator } from "@/components/ui/separator";
 
-import Toolbar from "./toolbar";
+import { Toolbar } from "./toolbar";
 
 const _windowInfoSchema = z.object({
   app_name: z.string(),
@@ -55,7 +55,7 @@ async function fullscreenWindow(hwnd: number) {
   invoke<void>(commands.FullscreenWindow, { hwnd });
 }
 
-function WindowUtilities({ className }: AppUtilitiesProps) {
+export function WindowUtilities({ className }: AppUtilitiesProps) {
   const [selectedWindow, setSelectedWindow] = useState<string | null>(null);
   const [windowOptions, setWindowOptions] = useState<ComboboxData[]>([]);
   const [comboboxOpen, setComboboxOpen] = useState(false);
@@ -178,5 +178,3 @@ function WindowUtilities({ className }: AppUtilitiesProps) {
     </div>
   );
 }
-
-export default WindowUtilities;

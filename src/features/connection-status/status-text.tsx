@@ -1,13 +1,14 @@
-import { ComponentProps } from "react";
+import { type ComponentProps } from "react";
 
 import { AnimatedGradientText } from "@/components/ui/animated-gradient-text";
 
-import ConnectionStatus, { connectionStatus } from "./connection-status";
+import { type ConnectionStatus, connectionStatus } from "./connection-status";
 
 type StatusTextProps = {
   children: ConnectionStatus;
 };
-function StatusText({ children }: StatusTextProps) {
+
+export function StatusText({ children }: StatusTextProps) {
   const textProps: ComponentProps<typeof AnimatedGradientText> = {
     className: "text-3xl font-bold tracking-tight capitalize",
   };
@@ -31,5 +32,3 @@ function StatusText({ children }: StatusTextProps) {
     </AnimatedGradientText>
   );
 }
-
-export default StatusText;

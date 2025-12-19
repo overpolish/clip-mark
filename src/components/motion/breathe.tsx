@@ -1,10 +1,10 @@
-import { motion, MotionProps } from "motion/react";
+import { motion, type MotionProps } from "motion/react";
 
 type BreatheProps = MotionProps & {
   children: React.ReactNode;
 };
 
-function Breathe({ children, ...props }: BreatheProps) {
+export function Breathe({ children, ...props }: BreatheProps) {
   return (
     <motion.div
       {...props}
@@ -21,5 +21,3 @@ function Breathe({ children, ...props }: BreatheProps) {
     </motion.div>
   );
 }
-
-export default Breathe;

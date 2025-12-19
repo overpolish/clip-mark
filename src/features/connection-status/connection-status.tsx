@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 
-import ConnectionGraph from "./connection-graph";
-import StatusText from "./status-text";
+import { ConnectionGraph } from "./connection-graph";
+import { StatusText } from "./status-text";
 
 const commands = {
   GetServerConnectionStatus: "get_server_connection_status",
@@ -20,14 +20,14 @@ export const connectionStatus = {
   retrying: "retrying",
 } as const;
 
-type ConnectionStatus =
+export type ConnectionStatus =
   (typeof connectionStatus)[keyof typeof connectionStatus];
 
 async function getConnectionStatus(): Promise<ConnectionStatus> {
   return await invoke<ConnectionStatus>(commands.GetServerConnectionStatus);
 }
 
-function ConnectionStatus() {
+export function ConnectionStatus() {
   const [status, setStatus] = useState<ConnectionStatus>();
 
   useEffect(() => {
@@ -62,5 +62,3 @@ function ConnectionStatus() {
     </div>
   );
 }
-
-export default ConnectionStatus;

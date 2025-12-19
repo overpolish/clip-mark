@@ -1,11 +1,11 @@
-import { ComponentProps, forwardRef, useRef } from "react";
+import { type ComponentProps, forwardRef, useRef } from "react";
 
 import ClipMarkLogo from "@/assets/clip-mark.png";
 import ObsLogo from "@/assets/obsstudio.svg";
 import { AnimatedBeam } from "@/components/ui/animated-beam";
 import { cn } from "@/lib/utils";
 
-import ConnectionStatus, { connectionStatus } from "./connection-status";
+import { type ConnectionStatus, connectionStatus } from "./connection-status";
 
 const Circle = forwardRef<HTMLDivElement, { children?: React.ReactNode }>(
   (props, ref) => {
@@ -71,7 +71,7 @@ type ConnectionGraphProps = {
   status: ConnectionStatus;
 };
 
-function ConnectionGraph({ status }: ConnectionGraphProps) {
+export function ConnectionGraph({ status }: ConnectionGraphProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const clipMarkRef = useRef<HTMLDivElement>(null);
   const obsRef = useRef<HTMLDivElement>(null);
@@ -116,5 +116,3 @@ function ConnectionGraph({ status }: ConnectionGraphProps) {
     </div>
   );
 }
-
-export default ConnectionGraph;

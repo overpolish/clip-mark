@@ -19,6 +19,7 @@ type ToolButtonProps = {
   tooltip: string;
   onClick?: () => void;
 };
+
 function ToolButton({ icon, onClick, tooltip }: ToolButtonProps) {
   return (
     <Tooltip sideOffset={-7}>
@@ -39,7 +40,8 @@ type ToolbarProps = {
   onClickFullscreen?: () => void;
   onClickRestoreBorder?: () => void;
 };
-function Toolbar({
+
+export function Toolbar({
   isWindowSelected,
   onClickBorderless,
   onClickCenter,
@@ -74,5 +76,3 @@ function Toolbar({
     </TooltipProvider>
   );
 }
-
-export default Toolbar;

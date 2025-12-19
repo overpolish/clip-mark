@@ -1,4 +1,4 @@
-import { motion, MotionProps } from "motion/react";
+import { motion, type MotionProps } from "motion/react";
 
 type ShadowPulseProps = MotionProps & {
   children: React.ReactNode;
@@ -6,7 +6,7 @@ type ShadowPulseProps = MotionProps & {
   dimmest?: string;
 };
 
-function ShadowPulse({
+export function ShadowPulse({
   brightest = "rgba(251,191,36,0.6)",
   children,
   dimmest = "rgba(251,191,36,0.3)",
@@ -32,5 +32,3 @@ function ShadowPulse({
     </motion.div>
   );
 }
-
-export default ShadowPulse;

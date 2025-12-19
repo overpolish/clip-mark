@@ -18,6 +18,10 @@ export default defineConfig([
   tseslint.configs.recommended,
   {
     rules: {
+      "@typescript-eslint/consistent-type-imports": [
+        "error",
+        { fixStyle: "inline-type-imports", prefer: "type-imports" },
+      ],
       "@typescript-eslint/no-unused-vars": [
         "error",
         {
@@ -39,6 +43,20 @@ export default defineConfig([
           reservedFirst: true,
           shorthandLast: true,
         },
+      ],
+    },
+    settings: {
+      react: {
+        version: "detect",
+      },
+    },
+  },
+  {
+    ignores: ["eslint.config.ts"],
+    rules: {
+      "no-restricted-exports": [
+        "error",
+        { restrictDefaultExports: { direct: true } },
       ],
     },
     settings: {
