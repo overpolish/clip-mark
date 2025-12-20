@@ -94,13 +94,12 @@ async fn handle_client_connection(
    }
 
    if let Ok(initial_status) = client.recording().status().await {
-      // TODO handle initial state - say obs was already recording the status will give current
-      // duration so we can calculate start time accordingly
       update_recording_status(
          app_handle,
          initial_status.active,
          initial_status.paused,
          None,
+         Some(initial_status.duration.whole_milliseconds() as i64),
       );
    }
 
@@ -152,7 +151,7 @@ fn event_handler(
             _ => (false, false),
          };
 
-         update_recording_status(app_handle, active, paused, path);
+         update_recording_status(app_handle, active, paused, path, None);
 
          Ok(())
       }
@@ -191,6 +190,7 @@ fn update_recording_status(
    active: bool,
    paused: bool,
    path: Option<String>,
+   existing_duration_ms: Option<i64>,
 ) {
    let recording_state = app_handle.state::<RecordingStateMutex>();
    let now = chrono::Utc::now().timestamp_millis();
@@ -200,7 +200,18 @@ fn update_recording_status(
       let was_paused = state.recording_status.paused;
 
       handle_recording_lifecycle(
-         &mut state, app_handle, active, was_active, path, now,
+         &mut state,
+         app_handle,
+         active,
+         was_active,
+         path,
+         if let Some(duration) = existing_duration_ms {
+            // Negative 1.1 second as the duration is not accurate from OBS
+            // this gets notes closer to actual timecode
+            now - duration - 1100
+         } else {
+            now
+         },
       );
       handle_pause_state(&mut state, active, paused, was_paused, now);
 
