@@ -1,5 +1,5 @@
 use strum::EnumString;
-use tauri::AppHandle;
+use tauri::{AppHandle, Manager};
 use tauri_plugin_global_shortcut::{Code, Modifiers, Shortcut};
 
 use crate::WindowEvents;
@@ -22,11 +22,25 @@ impl AppShortcut {
 
    pub fn execute(&self, app_handle: &AppHandle) {
       match self {
-         Self::CaptureNote => super::actions::show_window(
-            app_handle,
-            "capture-note",
-            Some(WindowEvents::CaptureNoteWillShow.as_ref()),
-         ),
+         Self::CaptureNote => {
+            let recording_state =
+               app_handle.state::<crate::state::RecordingStateMutex>();
+            let is_recording = if let Ok(state) = recording_state.lock() {
+               state.recording_status.active
+            } else {
+               false
+            };
+
+            if !is_recording {
+               return;
+            }
+
+            super::actions::show_window(
+               app_handle,
+               "capture-note",
+               Some(WindowEvents::CaptureNoteWillShow.as_ref()),
+            )
+         }
       }
    }
 }

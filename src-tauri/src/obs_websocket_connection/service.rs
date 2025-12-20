@@ -10,6 +10,7 @@ use crate::{
    },
    state::{RecordingState, RecordingStateMutex},
    system_tray::service::{update_system_tray_icon, SystemTrayIcon},
+   window_utilities::commands::hide_window,
    GlobalState, ServerConfigState,
 };
 
@@ -93,6 +94,8 @@ async fn handle_client_connection(
    }
 
    if let Ok(initial_status) = client.recording().status().await {
+      // TODO handle initial state - say obs was already recording the status will give current
+      // duration so we can calculate start time accordingly
       update_recording_status(
          app_handle,
          initial_status.active,
@@ -226,6 +229,12 @@ fn handle_recording_lifecycle(
          }
       }
    } else if !active && was_active {
+      let app_handle_clone = app_handle.clone();
+      tauri::async_runtime::spawn(async move {
+         let _ =
+            hide_window(app_handle_clone, "capture-note".to_string()).await;
+      });
+
       match stop_recording(state, path) {
          Ok(_) => {}
          Err(err) => {

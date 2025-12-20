@@ -1,4 +1,4 @@
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, Duration, TimeDelta, Utc};
 use tauri::Manager;
 
 use crate::state::RecordingStateMutex;
@@ -32,28 +32,49 @@ pub async fn capture_note(
             total_elapsed - state.accumulated_pause_duration
          };
 
-         // Convert to human-readable format (HH:MM:SS.mmm)
-         let total_seconds = actual_timecode_ms / 1000;
-         let milliseconds = actual_timecode_ms % 1000;
-         let hours = total_seconds / 3600;
-         let minutes = (total_seconds % 3600) / 60;
-         let seconds = total_seconds % 60;
-
-         let timecode = format!(
-            "{:02}:{:02}:{:02}.{:03}",
-            hours, minutes, seconds, milliseconds
-         );
-
-         println!(
-    "Captured note: {} | Timecode: {} | Raw ms: {} | recording_start: {:?} | accumulated: {} | note_time: {} | path: {:?}",
-    note, timecode, actual_timecode_ms, state.recording_start, state.accumulated_pause_duration, note_timestamp, state.note_file_path
-);
+         let timecode = Duration::milliseconds(actual_timecode_ms);
+         if let Some(note_file_path) = &state.note_file_path {
+            write_note_to_file(
+               std::path::Path::new(note_file_path),
+               timecode,
+               &note,
+            )?;
+         }
       } else {
          return Err("Recording start time is not set".to_string());
       }
    } else {
       return Err("Failed to lock recording state".to_string());
    }
+
+   Ok(())
+}
+
+fn write_note_to_file(
+   file_path: &std::path::Path,
+   timecode: TimeDelta,
+   note: &str,
+) -> Result<(), String> {
+   use std::fs::OpenOptions;
+   use std::io::Write;
+
+   let mut file = OpenOptions::new()
+      .create(true)
+      .append(true)
+      .open(file_path)
+      .map_err(|e| format!("Failed to open note file: {}", e))?;
+
+   let hours = timecode.num_hours();
+   let minutes = timecode.num_minutes() % 60;
+   let seconds = timecode.num_seconds() % 60;
+   let milliseconds = timecode.num_milliseconds() % 1000;
+   let formatted_timecode = format!(
+      "{:02}:{:02}:{:02}.{:03}",
+      hours, minutes, seconds, milliseconds
+   );
+
+   writeln!(file, "[{}] {}", formatted_timecode, note)
+      .map_err(|e| format!("Failed to write note to file: {}", e))?;
 
    Ok(())
 }
