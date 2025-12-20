@@ -1,4 +1,4 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use strum::{AsRefStr, Display, EnumString};
 
 #[derive(
@@ -25,7 +25,7 @@ pub enum ConnectionStatus {
    Retrying,
 }
 
-#[derive(Serialize, Debug, Clone, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct RecordingStatus {
    pub active: bool,

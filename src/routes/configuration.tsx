@@ -35,11 +35,9 @@ function Configuration() {
       </Button>
       <div className="flex h-full w-full flex-col items-center justify-center">
         <ConnectionStatus />
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground italic">
-            New note:
-          </span>
-          <Kbd>Ctrl + Shift + N</Kbd>
+        <div className="flex items-center gap-1">
+          <span className="text-xs text-muted-foreground">Capture note:</span>
+          <Kbd>Ctrl + Alt + =</Kbd>
         </div>
       </div>
       <ObsWebsocketConfiguration />

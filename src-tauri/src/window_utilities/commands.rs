@@ -50,6 +50,19 @@ pub async fn fullscreen_window(hwnd: isize) {
    let _ = service::fullscreen_window(hwnd);
 }
 
+#[tauri::command]
+pub async fn hide_window(
+   app_handle: tauri::AppHandle,
+   label: String,
+) -> Result<(), String> {
+   let win = app_handle
+      .get_webview_window(&label)
+      .ok_or_else(|| format!("Window with label '{}' not found", label))?;
+
+   win.hide()
+      .map_err(|e| format!("Failed to hide window: {}", e))
+}
+
 /// Create, if not exists, and return the path to the icons directory
 fn get_icons_dir(app_handle: tauri::AppHandle) -> Result<PathBuf, String> {
    let cache_dir = app_handle

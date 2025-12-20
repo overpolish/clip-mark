@@ -1,6 +1,6 @@
 use tauri_plugin_store::StoreExt;
 
-use crate::ServerConfig;
+use crate::ServerConfigState;
 
 #[derive(serde::Serialize)]
 pub struct ServerConfigResponse {
@@ -11,7 +11,7 @@ pub struct ServerConfigResponse {
 
 #[tauri::command]
 pub async fn get_server_details(
-   server_config: tauri::State<'_, std::sync::Mutex<ServerConfig>>,
+   server_config: tauri::State<'_, std::sync::Mutex<ServerConfigState>>,
 ) -> Result<ServerConfigResponse, String> {
    if let Ok(state) = server_config.lock() {
       Ok(ServerConfigResponse {
@@ -27,7 +27,7 @@ pub async fn get_server_details(
 #[tauri::command]
 pub async fn update_server_details(
    app: tauri::AppHandle,
-   server_config: tauri::State<'_, std::sync::Mutex<ServerConfig>>,
+   server_config: tauri::State<'_, std::sync::Mutex<ServerConfigState>>,
    global_state: tauri::State<'_, crate::GlobalState>,
    address: String,
    port: u16,
