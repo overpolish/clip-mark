@@ -144,14 +144,18 @@ fn event_handler(
             obws::events::OutputState::Started => (true, false),
             obws::events::OutputState::Paused => (true, true),
             obws::events::OutputState::Resumed => (true, false),
-            // TODO hide recording status if stopping, currently still shows as active
-            // which feels sluggish
             obws::events::OutputState::Stopping => (true, false), // Still active until fully stopped
             obws::events::OutputState::Stopped => (false, false),
             _ => (false, false),
          };
 
          update_recording_status(app_handle, active, paused, path, None);
+
+         // Special handling for Stopping state to emit inactive correctly
+         // hides recording status immediately feeling responsive
+         if state == obws::events::OutputState::Stopping {
+            emit_recording_status_change(app_handle, false, false);
+         }
 
          Ok(())
       }
