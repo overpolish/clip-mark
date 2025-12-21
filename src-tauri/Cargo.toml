@@ -4,6 +4,7 @@ version = "1.0.0"
 description = "Quickly capture important moments in your recordings"
 authors = ["domingasp"]
 edition = "2021"
+homepage = "https://github.com/domingasp/clip-mark"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

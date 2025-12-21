@@ -71,11 +71,19 @@
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ]
+    ],
+    "publisher": "Made by Dom | Dev",
+    "category": "Utility",
+    "longDescription": "Quickly capture important moments in your OBS recordings. Includes ability to make windows fullscreen borderless.",
+    "windows": {
+      "nsis": {
+        "installerIcon": "icons/icon.ico"
+      }
+    }
   },
   "plugins": {
     "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDUxMjY1OEI2NkEzMTAyNzUKUldSMUFqRnF0bGdtVWI1Rlo5RWMwSStLSERVVm43RlBkS0Y3Z2V3NGxLWmlKWEhzOEdlSWlXSU0K",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEVCMTdBNDg5NTJEN0FCRkIKUldUN3E5ZFNpYVFYNnhRcUFCY2toWnBRNFFnZTVnZ0NhNXE0Z0FIUWpsVlpSU3JtNFp1MUNvVHgK",
       "endpoints": [
         "https://github.com/domingasp/clip-mark/releases/latest/download/latest.json"
       ],
