@@ -8,10 +8,12 @@ mod window_utilities;
 
 use std::sync::Mutex;
 
+use log::info;
 use strum::{AsRefStr, Display, EnumString};
 use tauri::{Emitter, Manager, PhysicalPosition};
 use tauri_plugin_positioner::{Position, WindowExt};
 use tauri_plugin_store::StoreExt;
+use tauri_plugin_updater::UpdaterExt;
 
 use crate::{
    state::{GlobalState, RecordingStateMutex, ServerConfigState},
@@ -65,11 +67,13 @@ pub fn run() {
          tauri_plugin_log::Builder::new()
             .level(tauri_plugin_log::log::LevelFilter::Info)
             .build(),
-      );
+      )
+      .plugin(tauri_plugin_updater::Builder::new().build());
 
    // Setup and build
    let app = app_builder
       .setup(|app: &mut tauri::App| {
+         check_for_update(app.handle().clone());
          setup_server_config(app)?;
          setup_positioner_and_tray(app)?;
          setup_windows(app)?;
@@ -83,6 +87,12 @@ pub fn run() {
 
    // Run
    app.run(|_app_handle, _event| {})
+}
+
+fn check_for_update(app_handle: tauri::AppHandle) {
+   tauri::async_runtime::spawn(async move {
+      update(&app_handle).await.unwrap();
+   });
 }
 
 fn setup_server_config(
@@ -189,4 +199,27 @@ fn close_on_focus_lost(
          }
       });
    }
+}
+
+async fn update(app: &tauri::AppHandle) -> tauri_plugin_updater::Result<()> {
+   if let Some(update) = app.updater()?.check().await? {
+      let mut downloaded = 0;
+
+      update
+         .download_and_install(
+            |chunk_length, content_length| {
+               downloaded += chunk_length;
+               info!("Downloaded {downloaded} from {content_length:?}");
+            },
+            || {
+               info!("Download finished");
+            },
+         )
+         .await?;
+
+      println!("Update installed");
+      app.restart();
+   }
+
+   Ok(())
 }
