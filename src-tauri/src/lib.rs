@@ -126,6 +126,11 @@ fn setup_windows(
       Some(WindowEvents::ConfigurationWillHide.as_ref().to_string()),
    );
 
+   let clip_mark_win = app
+      .get_webview_window("clip-mark")
+      .expect("Failed to get clip-mark window");
+   clip_mark_win.set_content_protected(false)?;
+
    let recording_status_win = app
       .get_webview_window("recording-status")
       .expect("Failed to get recording status window");
@@ -136,6 +141,7 @@ fn setup_windows(
    recording_status_win.set_ignore_cursor_events(true)?;
    recording_status_win.show()?;
    position_above_taskbar(&recording_status_win);
+   recording_status_win.set_content_protected(false)?;
 
    let capture_note_win = app
       .get_webview_window("capture-note")
@@ -145,6 +151,7 @@ fn setup_windows(
       .window()
       .move_window(Position::Center)?;
    close_on_focus_lost(app.app_handle().clone(), "capture-note", None);
+   capture_note_win.set_content_protected(false)?;
 
    Ok(())
 }
