@@ -1,4 +1,4 @@
-use tauri::{tray::TrayIconEvent, Emitter, LogicalSize, Manager};
+use tauri::{tray::TrayIconEvent, Emitter, Manager};
 
 use crate::{constants::WindowLabel, WindowEvent};
 
@@ -14,9 +14,10 @@ pub fn init_system_tray(app_handle: &tauri::AppHandle) {
          let win = app
             .get_webview_window(WindowLabel::ClipMark.as_ref())
             .unwrap();
-         let _ = win.as_ref().window().move_window(Position::TrayCenter);
-         // Height precise for UI
-         let _ = win.set_size(LogicalSize::new(450.0, 287.0));
+         let _ = win
+            .as_ref()
+            .window()
+            .move_window_constrained(Position::TrayCenter);
 
          let _ = app.emit(WindowEvent::ConfigurationWillShow.as_ref(), ());
          win.show().unwrap();

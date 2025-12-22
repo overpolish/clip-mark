@@ -2,6 +2,7 @@ mod constants;
 mod note_capture;
 mod obs_websocket_configuration;
 mod obs_websocket_connection;
+mod positioner;
 mod shortcuts;
 mod state;
 mod system_tray;
@@ -10,13 +11,14 @@ mod window_utilities;
 use std::sync::Mutex;
 
 use log::info;
-use tauri::{Emitter, Manager, PhysicalPosition};
+use tauri::{Emitter, LogicalSize, Manager, PhysicalPosition};
 use tauri_plugin_positioner::{Position, WindowExt};
 use tauri_plugin_store::StoreExt;
 use tauri_plugin_updater::UpdaterExt;
 
 use crate::{
    constants::{WindowEvent, WindowLabel},
+   positioner::WindowTrayExt,
    state::{GlobalState, RecordingStateMutex, ServerConfigState},
    system_tray::service::init_system_tray,
 };
@@ -109,6 +111,14 @@ fn setup_positioner_and_tray(
 fn setup_windows(
    app: &mut tauri::App,
 ) -> Result<(), Box<dyn std::error::Error>> {
+   let clip_mark_win = app
+      .get_webview_window(WindowLabel::ClipMark.as_ref())
+      .unwrap();
+
+   // Height precise for UI
+   let _ = clip_mark_win.set_size(LogicalSize::new(450.0, 287.0));
+   clip_mark_win.move_window_to_tray_id("tray-icon", Position::TrayCenter)?;
+
    close_on_focus_lost(
       app.handle().clone(),
       WindowLabel::ClipMark.as_ref(),
