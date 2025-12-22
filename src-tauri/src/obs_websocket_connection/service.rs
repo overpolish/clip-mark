@@ -5,6 +5,7 @@ use log::{info, warn};
 use tauri::{Emitter, Manager};
 
 use crate::{
+   constants::WindowLabel,
    obs_websocket_connection::models::{
       ConnectionEvents, ConnectionStatus, RecordingEvents, RecordingStatus,
    },
@@ -247,7 +248,8 @@ fn handle_recording_lifecycle(
       let app_handle_clone = app_handle.clone();
       tauri::async_runtime::spawn(async move {
          let _ =
-            hide_window(app_handle_clone, "capture-note".to_string()).await;
+            hide_window(app_handle_clone, WindowLabel::CaptureNote.to_string())
+               .await;
       });
 
       match stop_recording(state, path) {
