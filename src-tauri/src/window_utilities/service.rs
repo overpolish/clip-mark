@@ -32,11 +32,15 @@ use ::windows::Win32::{
 };
 use image::{ImageBuffer, Rgba};
 use log::{info, warn};
-use windows::Win32::UI::WindowsAndMessaging::{
-   SetWindowLongPtrW, ShowWindow, SWP_FRAMECHANGED, SWP_NOACTIVATE, SWP_NOMOVE,
-   SW_RESTORE, WS_BORDER, WS_CAPTION, WS_DLGFRAME, WS_EX_CLIENTEDGE,
-   WS_EX_DLGMODALFRAME, WS_EX_STATICEDGE, WS_EX_WINDOWEDGE, WS_MAXIMIZEBOX,
-   WS_MINIMIZEBOX, WS_POPUP, WS_SYSMENU, WS_THICKFRAME, WS_VISIBLE,
+use windows::Win32::{
+   Graphics::Gdi::GetDIBits,
+   UI::WindowsAndMessaging::{
+      SetWindowLongPtrW, ShowWindow, SWP_FRAMECHANGED, SWP_NOACTIVATE,
+      SWP_NOMOVE, SW_RESTORE, WS_BORDER, WS_CAPTION, WS_DLGFRAME,
+      WS_EX_CLIENTEDGE, WS_EX_DLGMODALFRAME, WS_EX_STATICEDGE,
+      WS_EX_WINDOWEDGE, WS_MAXIMIZEBOX, WS_MINIMIZEBOX, WS_POPUP, WS_SYSMENU,
+      WS_THICKFRAME, WS_VISIBLE,
+   },
 };
 
 use crate::window_utilities::commands::WindowInfo;
@@ -331,14 +335,91 @@ unsafe fn icon_to_png(
       std::slice::from_raw_parts(bits as *const u8, pixel_count * 4);
 
    let mut img_buffer = ImageBuffer::<Rgba<u8>, Vec<u8>>::new(width, height);
-   for (i, pixel) in img_buffer.pixels_mut().enumerate() {
-      let offset = i * 4;
-      pixel.0 = [
-         pixel_data[offset + 2], // R
-         pixel_data[offset + 1], // G
-         pixel_data[offset],     // B
-         pixel_data[offset + 3], // A
-      ]
+
+   let alpha_all_zero = pixel_data.chunks_exact(4).all(|px| px[3] == 0);
+   if alpha_all_zero && !icon_info.hbmMask.is_invalid() {
+      let mut bmp_mask = BITMAP::default();
+      let size = std::mem::size_of::<BITMAP>() as i32;
+
+      if GetObjectW(
+         HGDIOBJ(icon_info.hbmMask.0),
+         size,
+         Some(&mut bmp_mask as *mut _ as *mut _),
+      ) != 0
+      {
+         let bmi_mask = BITMAPINFO {
+            bmiHeader: BITMAPINFOHEADER {
+               biSize: std::mem::size_of::<BITMAPINFOHEADER>() as u32,
+               biWidth: bmp_mask.bmWidth,
+               biHeight: -bmp_mask.bmHeight, // Top-down
+               biPlanes: 1,
+               biBitCount: 1,
+               biCompression: BI_RGB.0,
+               ..Default::default()
+            },
+            ..Default::default()
+         };
+
+         // Each scanline is aligned to 32 bits (4 bytes)
+         let stride = (width.div_ceil(32) * 4) as usize;
+         let mut mask_bits = vec![0u8; stride * height as usize];
+
+         let mask_lines = GetDIBits(
+            hdc,
+            icon_info.hbmMask,
+            0,
+            height,
+            Some(mask_bits.as_mut_ptr() as *mut _),
+            &bmi_mask as *const _ as *mut _,
+            DIB_RGB_COLORS,
+         );
+
+         if mask_lines != 0 {
+            for y in 0..height as usize {
+               for x in 0..width as usize {
+                  let byte_index = y * stride + x / 8;
+                  let bit_index = 7 - (x % 8);
+                  let mask_bit = (mask_bits[byte_index] >> bit_index) & 1;
+
+                  let pixel_index = y * width as usize + x;
+                  let offset = pixel_index * 4;
+
+                  let b = pixel_data[offset];
+                  let g = pixel_data[offset + 1];
+                  let r = pixel_data[offset + 2];
+
+                  // Mask bit 1 means transparent
+                  let alpha = if mask_bit == 1 { 0 } else { 255 };
+
+                  img_buffer.get_pixel_mut(x as u32, y as u32).0 =
+                     [r, g, b, alpha];
+               }
+            }
+         }
+      }
+   } else {
+      // Use existing alpha channel
+      for (i, pixel) in img_buffer.pixels_mut().enumerate() {
+         let offset = i * 4;
+         let b = pixel_data[offset];
+         let g = pixel_data[offset + 1];
+         let r = pixel_data[offset + 2];
+         let a = pixel_data[offset + 3];
+
+         if a == 0 {
+            pixel.0 = [0, 0, 0, 0];
+         } else if a == 255 {
+            pixel.0 = [r, g, b, 255];
+         } else {
+            // Un-premultiply alpha
+            pixel.0 = [
+               ((r as u16 * 255) / (a as u16)) as u8,
+               ((g as u16 * 255) / (a as u16)) as u8,
+               ((b as u16 * 255) / (a as u16)) as u8,
+               a,
+            ];
+         }
+      }
    }
 
    // Save image as a PNG
