@@ -111,17 +111,18 @@ fn setup_positioner_and_tray(
 fn setup_windows(
    app: &mut tauri::App,
 ) -> Result<(), Box<dyn std::error::Error>> {
-   let clip_mark_win = app
-      .get_webview_window(WindowLabel::ClipMark.as_ref())
+   let configuration_win = app
+      .get_webview_window(WindowLabel::Configuration.as_ref())
       .unwrap();
 
    // Height precise for UI
-   let _ = clip_mark_win.set_size(LogicalSize::new(450.0, 287.0));
-   clip_mark_win.move_window_to_tray_id("tray-icon", Position::TrayCenter)?;
+   let _ = configuration_win.set_size(LogicalSize::new(450.0, 287.0));
+   configuration_win
+      .move_window_to_tray_id("tray-icon", Position::TrayCenter)?;
 
    close_on_focus_lost(
       app.handle().clone(),
-      WindowLabel::ClipMark.as_ref(),
+      WindowLabel::Configuration.as_ref(),
       Some(WindowEvent::ConfigurationWillHide.as_ref().to_string()),
    );
 

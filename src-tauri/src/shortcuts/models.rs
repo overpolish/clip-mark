@@ -9,8 +9,8 @@ use crate::{constants::WindowLabel, positioner::WindowTrayExt, WindowEvent};
 pub enum AppShortcut {
    #[strum(serialize = "capture_note")]
    CaptureNote,
-   #[strum(serialize = "open_clip_mark")]
-   OpenClipMark,
+   #[strum(serialize = "open_configuration")]
+   OpenConfiguration,
 }
 
 impl AppShortcut {
@@ -20,7 +20,7 @@ impl AppShortcut {
             Some(Modifiers::CONTROL | Modifiers::ALT),
             Code::Equal,
          ),
-         Self::OpenClipMark => Shortcut::new(
+         Self::OpenConfiguration => Shortcut::new(
             Some(Modifiers::CONTROL | Modifiers::ALT),
             Code::Minus,
          ),
@@ -48,9 +48,9 @@ impl AppShortcut {
                Some(WindowEvent::CaptureNoteWillShow.as_ref()),
             )
          }
-         Self::OpenClipMark => {
+         Self::OpenConfiguration => {
             let win = app_handle
-               .get_webview_window(WindowLabel::ClipMark.as_ref())
+               .get_webview_window(WindowLabel::Configuration.as_ref())
                .unwrap();
 
             if win.is_visible().unwrap_or(false) {
@@ -63,7 +63,7 @@ impl AppShortcut {
 
                super::actions::show_window(
                   app_handle,
-                  WindowLabel::ClipMark.as_ref(),
+                  WindowLabel::Configuration.as_ref(),
                   Some(WindowEvent::ConfigurationWillShow.as_ref()),
                )
             }

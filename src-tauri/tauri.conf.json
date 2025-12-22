@@ -24,8 +24,8 @@
     "windows": [
       {
         "url": "/configuration",
-        "label": "clip-mark",
-        "title": "Clip Mark",
+        "label": "configuration",
+        "title": "Configuration",
         "decorations": false,
         "visible": false,
         "skipTaskbar": true,

@@ -12,7 +12,7 @@ pub fn init_system_tray(app_handle: &tauri::AppHandle) {
          let app = tray.app_handle();
 
          let win = app
-            .get_webview_window(WindowLabel::ClipMark.as_ref())
+            .get_webview_window(WindowLabel::Configuration.as_ref())
             .unwrap();
          let _ = win
             .as_ref()
