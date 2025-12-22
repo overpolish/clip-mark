@@ -64,7 +64,6 @@ function RouteComponent() {
 
   return (
     <div className="flex h-dvh items-center justify-center">
-      \{" "}
       <AnimatePresence mode="popLayout">
         {status?.active && !status?.paused && (
           <Flip key="recording">
