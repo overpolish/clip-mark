@@ -29,7 +29,8 @@
         "decorations": false,
         "visible": false,
         "skipTaskbar": true,
-        "resizable": false
+        "resizable": false,
+        "contentProtected": false
       },
       {
         "url": "/recording-status",
@@ -43,7 +44,8 @@
         "alwaysOnTop": true,
         "transparent": true,
         "shadow": false,
-        "visible": false
+        "visible": false,
+        "contentProtected": false
       },
       {
         "url": "/capture-note",
@@ -57,7 +59,8 @@
         "alwaysOnTop": true,
         "transparent": true,
         "shadow": false,
-        "visible": false
+        "visible": false,
+        "contentProtected": false
       }
     ]
   },

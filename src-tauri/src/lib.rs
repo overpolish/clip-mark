@@ -1,3 +1,4 @@
+mod constants;
 mod note_capture;
 mod obs_websocket_configuration;
 mod obs_websocket_connection;
@@ -114,11 +115,6 @@ fn setup_windows(
       Some(WindowEvent::ConfigurationWillHide.as_ref().to_string()),
    );
 
-   let clip_mark_win = app
-      .get_webview_window("clip-mark")
-      .expect("Failed to get clip-mark window");
-   clip_mark_win.set_content_protected(false)?;
-
    let recording_status_win = app
       .get_webview_window(WindowLabel::RecordingStatus.as_ref())
       .expect("Failed to get recording status window");
@@ -127,9 +123,7 @@ fn setup_windows(
       .window()
       .move_window(Position::BottomLeft)?;
    recording_status_win.set_ignore_cursor_events(true)?;
-   recording_status_win.show()?;
    position_above_taskbar(&recording_status_win);
-   recording_status_win.set_content_protected(false)?;
 
    let capture_note_win = app
       .get_webview_window(WindowLabel::CaptureNote.as_ref())
