@@ -1,3 +1,4 @@
+mod constants;
 mod note_capture;
 mod obs_websocket_configuration;
 mod obs_websocket_connection;
@@ -9,28 +10,16 @@ mod window_utilities;
 use std::sync::Mutex;
 
 use log::info;
-use strum::{AsRefStr, Display, EnumString};
 use tauri::{Emitter, Manager, PhysicalPosition};
 use tauri_plugin_positioner::{Position, WindowExt};
 use tauri_plugin_store::StoreExt;
 use tauri_plugin_updater::UpdaterExt;
 
 use crate::{
+   constants::{WindowEvent, WindowLabel},
    state::{GlobalState, RecordingStateMutex, ServerConfigState},
    system_tray::service::init_system_tray,
 };
-
-#[derive(
-   EnumString, AsRefStr, Display, Debug, Clone, Copy, PartialEq, Eq, Hash,
-)]
-pub enum WindowEvents {
-   #[strum(serialize = "window:configuration_will_hide")]
-   ConfigurationWillHide,
-   #[strum(serialize = "window:configuration_will_show")]
-   ConfigurationWillShow,
-   #[strum(serialize = "window:capture_note_will_show")]
-   CaptureNoteWillShow,
-}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -122,36 +111,32 @@ fn setup_windows(
 ) -> Result<(), Box<dyn std::error::Error>> {
    close_on_focus_lost(
       app.handle().clone(),
-      "clip-mark",
-      Some(WindowEvents::ConfigurationWillHide.as_ref().to_string()),
+      WindowLabel::ClipMark.as_ref(),
+      Some(WindowEvent::ConfigurationWillHide.as_ref().to_string()),
    );
 
-   let clip_mark_win = app
-      .get_webview_window("clip-mark")
-      .expect("Failed to get clip-mark window");
-   clip_mark_win.set_content_protected(false)?;
-
    let recording_status_win = app
-      .get_webview_window("recording-status")
+      .get_webview_window(WindowLabel::RecordingStatus.as_ref())
       .expect("Failed to get recording status window");
    recording_status_win
       .as_ref()
       .window()
       .move_window(Position::BottomLeft)?;
    recording_status_win.set_ignore_cursor_events(true)?;
-   recording_status_win.show()?;
    position_above_taskbar(&recording_status_win);
-   recording_status_win.set_content_protected(false)?;
 
    let capture_note_win = app
-      .get_webview_window("capture-note")
+      .get_webview_window(WindowLabel::CaptureNote.as_ref())
       .expect("Failed to get capture note window");
    capture_note_win
       .as_ref()
       .window()
       .move_window(Position::Center)?;
-   close_on_focus_lost(app.app_handle().clone(), "capture-note", None);
-   capture_note_win.set_content_protected(false)?;
+   close_on_focus_lost(
+      app.app_handle().clone(),
+      WindowLabel::CaptureNote.as_ref(),
+      None,
+   );
 
    Ok(())
 }

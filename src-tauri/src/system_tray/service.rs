@@ -1,6 +1,6 @@
 use tauri::{tray::TrayIconEvent, Emitter, LogicalSize, Manager};
 
-use crate::WindowEvents;
+use crate::{constants::WindowLabel, WindowEvent};
 
 pub fn init_system_tray(app_handle: &tauri::AppHandle) {
    let tray = app_handle.tray_by_id("tray-icon").unwrap();
@@ -11,12 +11,14 @@ pub fn init_system_tray(app_handle: &tauri::AppHandle) {
          tauri_plugin_positioner::on_tray_event(tray.app_handle(), &event);
          let app = tray.app_handle();
 
-         let win = app.get_webview_window("clip-mark").unwrap();
+         let win = app
+            .get_webview_window(WindowLabel::ClipMark.as_ref())
+            .unwrap();
          let _ = win.as_ref().window().move_window(Position::TrayCenter);
          // Height precise for UI
          let _ = win.set_size(LogicalSize::new(450.0, 287.0));
 
-         let _ = app.emit(WindowEvents::ConfigurationWillShow.as_ref(), ());
+         let _ = app.emit(WindowEvent::ConfigurationWillShow.as_ref(), ());
          win.show().unwrap();
          win.set_focus().unwrap();
       }

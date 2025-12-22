@@ -2,7 +2,7 @@ use strum::EnumString;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_global_shortcut::{Code, Modifiers, Shortcut};
 
-use crate::WindowEvents;
+use crate::{constants::WindowLabel, WindowEvent};
 
 #[derive(EnumString, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum AppShortcut {
@@ -37,8 +37,8 @@ impl AppShortcut {
 
             super::actions::show_window(
                app_handle,
-               "capture-note",
-               Some(WindowEvents::CaptureNoteWillShow.as_ref()),
+               WindowLabel::CaptureNote.as_ref(),
+               Some(WindowEvent::CaptureNoteWillShow.as_ref()),
             )
          }
       }
