@@ -16,8 +16,8 @@ pub enum WindowEvent {
    EnumString, AsRefStr, Display, Debug, Clone, Copy, PartialEq, Eq, Hash,
 )]
 pub enum WindowLabel {
-   #[strum(serialize = "clip-mark")]
-   ClipMark,
+   #[strum(serialize = "configuration")]
+   Configuration,
    #[strum(serialize = "recording-status")]
    RecordingStatus,
    #[strum(serialize = "capture-note")]

@@ -1,13 +1,16 @@
 use strum::EnumString;
-use tauri::{AppHandle, Manager};
+use tauri::{AppHandle, Emitter, Manager};
 use tauri_plugin_global_shortcut::{Code, Modifiers, Shortcut};
+use tauri_plugin_positioner::Position;
 
-use crate::{constants::WindowLabel, WindowEvent};
+use crate::{constants::WindowLabel, positioner::WindowTrayExt, WindowEvent};
 
 #[derive(EnumString, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum AppShortcut {
    #[strum(serialize = "capture_note")]
    CaptureNote,
+   #[strum(serialize = "open_configuration")]
+   OpenConfiguration,
 }
 
 impl AppShortcut {
@@ -16,6 +19,10 @@ impl AppShortcut {
          Self::CaptureNote => Shortcut::new(
             Some(Modifiers::CONTROL | Modifiers::ALT),
             Code::Equal,
+         ),
+         Self::OpenConfiguration => Shortcut::new(
+            Some(Modifiers::CONTROL | Modifiers::ALT),
+            Code::Minus,
          ),
       }
    }
@@ -40,6 +47,26 @@ impl AppShortcut {
                WindowLabel::CaptureNote.as_ref(),
                Some(WindowEvent::CaptureNoteWillShow.as_ref()),
             )
+         }
+         Self::OpenConfiguration => {
+            let win = app_handle
+               .get_webview_window(WindowLabel::Configuration.as_ref())
+               .unwrap();
+
+            if win.is_visible().unwrap_or(false) {
+               let _ = app_handle
+                  .emit(WindowEvent::ConfigurationWillHide.as_ref(), ());
+               let _ = win.hide();
+            } else {
+               let _ =
+                  win.move_window_to_tray_id("tray-icon", Position::TrayCenter);
+
+               super::actions::show_window(
+                  app_handle,
+                  WindowLabel::Configuration.as_ref(),
+                  Some(WindowEvent::ConfigurationWillShow.as_ref()),
+               )
+            }
          }
       }
    }
