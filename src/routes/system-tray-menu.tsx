@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { exit } from "@tauri-apps/plugin-process";
 import { EyeOff, X, Zap } from "lucide-react";
 
 import { Switch } from "@/components/animate-ui/components/radix/switch";
@@ -10,6 +11,10 @@ export const Route = createFileRoute("/system-tray-menu")({
 });
 
 function SystemTrayMenu() {
+  function handleExit() {
+    exit(0);
+  }
+
   return (
     <div className="flex flex-col justify-between gap-0.5">
       <SwitchItem
@@ -30,12 +35,9 @@ function SystemTrayMenu() {
       />
       <Button
         className="justify-start text-xs"
+        onClick={handleExit}
         size="sm"
         variant="ghost"
-        onClick={() => {
-          // TODO
-          console.log("Exit clicked");
-        }}
       >
         <X className="text-destructive" />
         Exit
