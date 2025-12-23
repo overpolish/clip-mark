@@ -42,6 +42,7 @@ pub fn run() {
       crate::window_utilities::commands::fullscreen_window,
       crate::window_utilities::commands::hide_window,
       crate::note_capture::commands::capture_note,
+      crate::shortcuts::commands::get_shortcuts,
    ]);
 
    // State
