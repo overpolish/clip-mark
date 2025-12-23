@@ -1,3 +1,4 @@
+mod app_settings;
 mod constants;
 mod note_capture;
 mod obs_websocket_configuration;
@@ -19,7 +20,9 @@ use tauri_plugin_updater::UpdaterExt;
 use crate::{
    constants::{WindowEvent, WindowLabel},
    positioner::WindowTrayExt,
-   state::{GlobalState, RecordingStateMutex, ServerConfigState},
+   state::{
+      AppSettingsState, GlobalState, RecordingStateMutex, ServerConfigState,
+   },
    system_tray::service::init_system_tray,
 };
 
@@ -43,6 +46,9 @@ pub fn run() {
       crate::window_utilities::commands::hide_window,
       crate::note_capture::commands::capture_note,
       crate::shortcuts::commands::get_shortcuts,
+      crate::app_settings::commands::get_app_settings,
+      crate::app_settings::commands::update_start_at_login,
+      crate::app_settings::commands::update_hide_from_capture,
    ]);
 
    // State
@@ -66,7 +72,7 @@ pub fn run() {
    let app = app_builder
       .setup(|app: &mut tauri::App| {
          check_for_update(app.handle().clone());
-         setup_server_config(app)?;
+         setup_stores(app)?;
          setup_positioner_and_tray(app)?;
          setup_windows(app)?;
          spawn_websocket_connection(app.handle());
@@ -87,13 +93,23 @@ fn check_for_update(app_handle: tauri::AppHandle) {
    });
 }
 
-fn setup_server_config(
+fn setup_stores(
    app: &mut tauri::App,
 ) -> Result<(), Box<dyn std::error::Error>> {
-   let store = app
+   let server_config_store = app
       .store("obs-server-config.json")
       .expect("Failed to load OBS Server store");
-   app.manage(Mutex::new(ServerConfigState::from_store(&store)));
+
+   let app_settings_store = app
+      .store("app-settings.json")
+      .expect("Failed to load App Settings store");
+
+   app.manage(Mutex::new(ServerConfigState::from_store(
+      &server_config_store,
+   )));
+   app.manage(Mutex::new(AppSettingsState::from_store(
+      &app_settings_store,
+   )));
 
    Ok(())
 }

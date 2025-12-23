@@ -69,7 +69,7 @@
         "label": "system-tray-menu",
         "title": "System Tray Menu",
         "width": 200,
-        "height": 110,
+        "height": 105,
         "skipTaskbar": true,
         "resizable": false,
         "decorations": false,
