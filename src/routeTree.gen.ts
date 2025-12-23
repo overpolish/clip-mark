@@ -9,10 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SystemTrayMenuRouteImport } from './routes/system-tray-menu'
 import { Route as RecordingStatusRouteImport } from './routes/recording-status'
 import { Route as ConfigurationRouteImport } from './routes/configuration'
 import { Route as CaptureNoteRouteImport } from './routes/capture-note'
 
+const SystemTrayMenuRoute = SystemTrayMenuRouteImport.update({
+  id: '/system-tray-menu',
+  path: '/system-tray-menu',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RecordingStatusRoute = RecordingStatusRouteImport.update({
   id: '/recording-status',
   path: '/recording-status',
@@ -33,34 +39,58 @@ export interface FileRoutesByFullPath {
   '/capture-note': typeof CaptureNoteRoute
   '/configuration': typeof ConfigurationRoute
   '/recording-status': typeof RecordingStatusRoute
+  '/system-tray-menu': typeof SystemTrayMenuRoute
 }
 export interface FileRoutesByTo {
   '/capture-note': typeof CaptureNoteRoute
   '/configuration': typeof ConfigurationRoute
   '/recording-status': typeof RecordingStatusRoute
+  '/system-tray-menu': typeof SystemTrayMenuRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/capture-note': typeof CaptureNoteRoute
   '/configuration': typeof ConfigurationRoute
   '/recording-status': typeof RecordingStatusRoute
+  '/system-tray-menu': typeof SystemTrayMenuRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/capture-note' | '/configuration' | '/recording-status'
+  fullPaths:
+    | '/capture-note'
+    | '/configuration'
+    | '/recording-status'
+    | '/system-tray-menu'
   fileRoutesByTo: FileRoutesByTo
-  to: '/capture-note' | '/configuration' | '/recording-status'
-  id: '__root__' | '/capture-note' | '/configuration' | '/recording-status'
+  to:
+    | '/capture-note'
+    | '/configuration'
+    | '/recording-status'
+    | '/system-tray-menu'
+  id:
+    | '__root__'
+    | '/capture-note'
+    | '/configuration'
+    | '/recording-status'
+    | '/system-tray-menu'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   CaptureNoteRoute: typeof CaptureNoteRoute
   ConfigurationRoute: typeof ConfigurationRoute
   RecordingStatusRoute: typeof RecordingStatusRoute
+  SystemTrayMenuRoute: typeof SystemTrayMenuRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/system-tray-menu': {
+      id: '/system-tray-menu'
+      path: '/system-tray-menu'
+      fullPath: '/system-tray-menu'
+      preLoaderRoute: typeof SystemTrayMenuRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/recording-status': {
       id: '/recording-status'
       path: '/recording-status'
@@ -89,6 +119,7 @@ const rootRouteChildren: RootRouteChildren = {
   CaptureNoteRoute: CaptureNoteRoute,
   ConfigurationRoute: ConfigurationRoute,
   RecordingStatusRoute: RecordingStatusRoute,
+  SystemTrayMenuRoute: SystemTrayMenuRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

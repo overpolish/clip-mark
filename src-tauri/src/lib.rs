@@ -11,7 +11,7 @@ mod window_utilities;
 use std::sync::Mutex;
 
 use log::info;
-use tauri::{Emitter, LogicalSize, Manager, PhysicalPosition};
+use tauri::{Emitter, Manager, PhysicalPosition};
 use tauri_plugin_positioner::{Position, WindowExt};
 use tauri_plugin_store::StoreExt;
 use tauri_plugin_updater::UpdaterExt;
@@ -115,9 +115,6 @@ fn setup_windows(
    let configuration_win = app
       .get_webview_window(WindowLabel::Configuration.as_ref())
       .unwrap();
-
-   // Height precise for UI
-   let _ = configuration_win.set_size(LogicalSize::new(450.0, 287.0));
    configuration_win
       .move_window_to_tray_id("tray-icon", Position::TrayCenter)?;
 
@@ -147,6 +144,12 @@ fn setup_windows(
    close_on_focus_lost(
       app.app_handle().clone(),
       WindowLabel::CaptureNote.as_ref(),
+      None,
+   );
+
+   close_on_focus_lost(
+      app.app_handle().clone(),
+      WindowLabel::SystemTrayMenu.as_ref(),
       None,
    );
 

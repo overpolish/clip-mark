@@ -22,4 +22,6 @@ pub enum WindowLabel {
    RecordingStatus,
    #[strum(serialize = "capture-note")]
    CaptureNote,
+   #[strum(serialize = "system-tray-menu")]
+   SystemTrayMenu,
 }
