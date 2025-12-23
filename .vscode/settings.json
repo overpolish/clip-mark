@@ -3,6 +3,7 @@
   "git.inputValidationSubjectLength": 50,
   "git.inputValidationLength": 72,
   "rust-analyzer.check.command": "clippy",
+  "tailwindCSS.classFunctions": ["cva", "cx", "scv"],
   "[rust]": {
     "editor.tabSize": 3,
     "editor.rulers": [80]

@@ -61,19 +61,19 @@
       box-shadow: 0 0 0 4px var(--pulse-color);
     }
   }
-  --animate-shine: shine var(--duration) infinite linear
-;
+  --animate-shine: shine var(--duration) infinite linear;
   @keyframes shine {
-  0% {
-    background-position: 0% 0%;
+    0% {
+      background-position: 0% 0%;
     }
-  50% {
-    background-position: 100% 100%;
+    50% {
+      background-position: 100% 100%;
     }
-  to {
-    background-position: 0% 0%;
+    to {
+      background-position: 0% 0%;
     }
-  }}
+  }
+}
 
 :root {
   --radius: 0.625rem;
@@ -173,7 +173,20 @@
 
 .os-theme-clip-mark {
   --os-size: 5px;
-  --os-padding-perpendicular: 0px;
+  --os-padding-perpendicular: 1px;
+  --os-padding-axis: 2px;
+  --os-track-border-radius: 10px;
+  --os-handle-border-radius: 10px;
+  --os-handle-interactive-area-offset: 4px;
+
+  --os-handle-bg: var(--color-muted-foreground);
+  --os-handle-bg-hover: oklch(from var(--os-handle-bg) l c h / 0.8);
+  --os-handle-bg-active: oklch(from var(--os-handle-bg) l c h / 0.6);
+}
+
+.os-theme-scroll-area {
+  --os-size: 10px;
+  --os-padding-perpendicular: 3px;
   --os-padding-axis: 2px;
   --os-track-border-radius: 10px;
   --os-handle-border-radius: 10px;
