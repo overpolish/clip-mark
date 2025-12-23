@@ -13,7 +13,28 @@ pub enum AppShortcut {
    OpenConfiguration,
 }
 
+#[derive(serde::Serialize)]
+pub struct AppShortcutDetails {
+   pub title: String,
+   pub description: Option<String>,
+   pub shortcut: Vec<String>,
+}
+
 impl AppShortcut {
+   fn title(&self) -> &str {
+      match self {
+         Self::CaptureNote => "Capture Note",
+         Self::OpenConfiguration => "Open Configuration",
+      }
+   }
+
+   fn description(&self) -> Option<&str> {
+      match self {
+         AppShortcut::CaptureNote => Some("When recording in progress."),
+         AppShortcut::OpenConfiguration => None,
+      }
+   }
+
    pub fn default_shortcut(&self) -> Shortcut {
       match self {
          Self::CaptureNote => Shortcut::new(
@@ -68,6 +89,49 @@ impl AppShortcut {
                )
             }
          }
+      }
+   }
+
+   pub fn all_shortcuts() -> Vec<AppShortcutDetails> {
+      vec![
+         AppShortcut::CaptureNote.to_details(),
+         AppShortcut::OpenConfiguration.to_details(),
+      ]
+   }
+
+   fn shortcut_to_string(shortcut: Shortcut) -> Vec<String> {
+      let mut parts = Vec::new();
+
+      let mods = shortcut.mods;
+      if mods.ctrl() {
+         parts.push("Ctrl");
+      }
+      if mods.alt() {
+         parts.push("Alt");
+      }
+      if mods.shift() {
+         parts.push("Shift");
+      }
+      if mods.meta() {
+         parts.push("Meta");
+      }
+
+      let key_str = match shortcut.key {
+         Code::Equal => "=",
+         Code::Minus => "-",
+         _ => &format!("{:?}", shortcut.key),
+      };
+
+      parts.push(key_str);
+
+      parts.into_iter().map(|s| s.to_string()).collect()
+   }
+
+   fn to_details(self) -> AppShortcutDetails {
+      AppShortcutDetails {
+         title: self.title().to_string(),
+         description: self.description().map(|s| s.to_string()),
+         shortcut: Self::shortcut_to_string(self.default_shortcut()),
       }
    }
 }

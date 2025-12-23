@@ -2,6 +2,7 @@ use tauri::AppHandle;
 use tauri_plugin_global_shortcut::{GlobalShortcutExt, ShortcutState};
 
 mod actions;
+pub mod commands;
 mod models;
 
 pub fn register_shortcuts(app_handle: &AppHandle) {
