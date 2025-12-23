@@ -293,6 +293,12 @@ fn stop_recording(
 
    if let Some(note_path) = state.note_file_path.take() {
       if let Some(output_path) = output_file_path {
+         let metadata = std::fs::metadata(&note_path);
+         if metadata.is_err() || metadata.unwrap().len() == 0 {
+            std::fs::remove_file(&note_path)?;
+            return Ok(());
+         }
+
          let final_note_path = std::path::Path::new(&output_path)
             .with_extension("txt")
             .to_string_lossy()
