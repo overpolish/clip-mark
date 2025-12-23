@@ -12,29 +12,31 @@ pub fn init_system_tray(app_handle: &tauri::AppHandle) {
 
          match button {
             tauri::tray::MouseButton::Left => {
-               let win = app
-                  .get_webview_window(WindowLabel::Configuration.as_ref())
-                  .unwrap();
-               let _ = win
-                  .as_ref()
-                  .window()
-                  .move_window_constrained(Position::TrayCenter);
+               if let Some(win) =
+                  app.get_webview_window(WindowLabel::Configuration.as_ref())
+               {
+                  let _ = win
+                     .as_ref()
+                     .window()
+                     .move_window_constrained(Position::TrayCenter);
 
-               let _ =
-                  app.emit(WindowEvent::ConfigurationWillShow.as_ref(), ());
-               win.show().unwrap();
-               win.set_focus().unwrap();
+                  let _ =
+                     app.emit(WindowEvent::ConfigurationWillShow.as_ref(), ());
+                  win.show().unwrap();
+                  win.set_focus().unwrap();
+               }
             }
             tauri::tray::MouseButton::Right => {
-               let system_tray_menu_win = app
-                  .get_webview_window(WindowLabel::SystemTrayMenu.as_ref())
-                  .unwrap();
-               let _ = system_tray_menu_win
-                  .as_ref()
-                  .window()
-                  .move_window_constrained(Position::TrayLeft);
-               system_tray_menu_win.show().unwrap();
-               system_tray_menu_win.set_focus().unwrap();
+               if let Some(system_tray_menu_win) =
+                  app.get_webview_window(WindowLabel::SystemTrayMenu.as_ref())
+               {
+                  let _ = system_tray_menu_win
+                     .as_ref()
+                     .window()
+                     .move_window_constrained(Position::TrayLeft);
+                  system_tray_menu_win.show().unwrap();
+                  system_tray_menu_win.set_focus().unwrap();
+               }
             }
             _ => {}
          }
