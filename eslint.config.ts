@@ -83,6 +83,21 @@ export default defineConfig([
     },
     settings: {
       "better-tailwindcss": {
+        callees: [
+          [
+            "scv",
+            [
+              {
+                match: "objectValues",
+                pathPattern: "^(?!slots|defaultVariants)(?!compoundVariants).*",
+              },
+              {
+                match: "objectValues",
+                pathPattern: "^compoundVariants\\[\\d+\\]\\.classNames\\.",
+              },
+            ],
+          ],
+        ],
         entryPoint: "src/index.css",
       },
     },

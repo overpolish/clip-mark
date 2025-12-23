@@ -56,7 +56,7 @@ function SwitchItem({ icon, label, onChange }: SwitchItemProps) {
         {icon}
         {label}
       </span>
-      <Switch onCheckedChange={onChange} />
+      <Switch onCheckedChange={onChange} size="sm" />
     </Label>
   );
 }

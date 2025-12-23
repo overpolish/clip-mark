@@ -9,10 +9,10 @@ import {
 
 const scrollAreaStyles = scv({
   base: {
-    end: "pointer-events-none from-foreground/25 absolute z-100 to-transparent",
+    end: "pointer-events-none absolute z-100 from-foreground/25 to-transparent",
     os: "relative h-full w-full overflow-hidden",
     start:
-      "pointer-events-none from-foreground/25 absolute z-100 to-transparent",
+      "pointer-events-none absolute z-100 from-foreground/25 to-transparent",
   },
   compoundVariants: [
     {
@@ -50,7 +50,7 @@ const scrollAreaStyles = scv({
     {
       classNames: {
         end: "h-2.5 w-full",
-        start: "w-full h-2.5",
+        start: "h-2.5 w-full",
       },
       orientation: "vertical",
     },
