@@ -7,6 +7,8 @@ import { defineConfig, globalIgnores } from "eslint/config";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 
+import eslintPluginClipMark from "./eslint-plugin-clip-mark/index.ts";
+
 export default defineConfig([
   globalIgnores(["routeTree.gen.ts"]),
   {
@@ -218,6 +220,12 @@ export default defineConfig([
           type: "alphabetical",
         },
       ],
+    },
+  },
+  {
+    plugins: { "clip-mark": eslintPluginClipMark },
+    rules: {
+      "clip-mark/no-inline-classname": "error",
     },
   },
 ]);

@@ -4,8 +4,8 @@ import { convertFileSrc, invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import z from "zod";
 
-import { Combobox, type ComboboxData } from "@/components/ui/combobox";
-import { Separator } from "@/components/ui/separator";
+import { Combobox, type ComboboxData } from "@/components/inputs/combobox";
+import { Separator } from "@/components/miscellaneous/separator";
 
 import { Toolbar } from "./toolbar";
 

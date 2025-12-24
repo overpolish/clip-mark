@@ -5,14 +5,14 @@ import {
   SquareDot,
 } from "lucide-react";
 
+import { Button } from "@/components/buttons/button/button";
+import { ButtonGroup } from "@/components/buttons/button/button-group";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/animate-ui/components/animate/tooltip";
-import { Button } from "@/components/ui/button";
-import { ButtonGroup } from "@/components/ui/button-group";
+} from "@/components/overlays/tooltip";
 
 type ToolButtonProps = {
   icon: React.ReactNode;

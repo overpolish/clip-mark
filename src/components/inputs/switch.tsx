@@ -7,7 +7,7 @@ import {
   SwitchThumb as SwitchThumbPrimitive,
   SwitchIcon as SwitchIconPrimitive,
   type SwitchProps as SwitchPrimitiveProps,
-} from "@/components/animate-ui/primitives/radix/switch";
+} from "@/components/inputs/switch.primitives";
 
 const switchStyles = scv({
   base: {

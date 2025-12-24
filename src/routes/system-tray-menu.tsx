@@ -6,9 +6,9 @@ import { exit } from "@tauri-apps/plugin-process";
 import { EyeOff, X, Zap } from "lucide-react";
 import z from "zod";
 
-import { Switch } from "@/components/animate-ui/components/radix/switch";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+import { Button } from "@/components/buttons/button/button";
+import { Switch } from "@/components/inputs/switch";
+import { Label } from "@/components/typography/label";
 
 const commands = {
   GetAppSettings: "get_app_settings",

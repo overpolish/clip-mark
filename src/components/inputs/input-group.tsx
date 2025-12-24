@@ -2,9 +2,9 @@ import * as React from "react";
 
 import { cva, type VariantProps } from "class-variance-authority";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/buttons/button/button";
+import { Input } from "@/components/inputs/input";
+import { Textarea } from "@/components/inputs/textarea";
 import { cn } from "@/lib/utils";
 
 const inputGroupVariants = cva(
@@ -168,7 +168,10 @@ export function InputGroupText({
   );
 }
 
-const InputGroupInput = React.forwardRef<
+/**
+ * @public
+ */
+export const InputGroupInput = React.forwardRef<
   HTMLInputElement,
   React.ComponentProps<"input">
 >(({ className, ...props }, ref) => {

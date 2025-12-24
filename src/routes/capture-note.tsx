@@ -12,9 +12,9 @@ import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
-} from "@/components/ui/input-group";
-import { Kbd } from "@/components/ui/kbd";
-import { ShineBorder } from "@/components/ui/shine-border";
+} from "@/components/inputs/input-group";
+import { ShineBorder } from "@/components/motion/shine-border";
+import { Kbd } from "@/components/typography/kbd";
 
 export const Route = createFileRoute("/capture-note")({
   component: CaptureNote,

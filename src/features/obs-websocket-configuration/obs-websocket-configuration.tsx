@@ -7,13 +7,13 @@ import { openUrl } from "@tauri-apps/plugin-opener";
 import { Book, EthernetPort, KeyRound, Plug } from "lucide-react";
 import z from "zod";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/buttons/button/button";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
-} from "@/components/ui/input-group";
-import { Label } from "@/components/ui/label";
+} from "@/components/inputs/input-group";
+import { Label } from "@/components/typography/label";
 import { cn } from "@/lib/utils";
 
 const commands = {

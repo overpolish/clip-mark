@@ -2,7 +2,7 @@ import { type ComponentProps, forwardRef, useRef } from "react";
 
 import ClipMarkLogo from "@/assets/clip-mark.png";
 import ObsLogo from "@/assets/obsstudio.svg";
-import { AnimatedBeam } from "@/components/ui/animated-beam";
+import { AnimatedBeam } from "@/components/motion/beam";
 import { cn } from "@/lib/utils";
 
 import { type ConnectionStatus, connectionStatus } from "./connection-status";

@@ -1,6 +1,6 @@
 import { type ComponentProps } from "react";
 
-import { AnimatedGradientText } from "@/components/ui/animated-gradient-text";
+import { AnimatedGradientText } from "@/components/motion/gradient-text";
 
 import { type ConnectionStatus, connectionStatus } from "./connection-status";
 

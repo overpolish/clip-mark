@@ -21,10 +21,7 @@ import {
   type HTMLMotionProps,
 } from "motion/react";
 
-import {
-  Slot,
-  type WithAsChild,
-} from "@/components/animate-ui/primitives/animate/slot";
+import { Slot, type WithAsChild } from "@/components/miscellaneous/slot";
 import { getStrictContext } from "@/lib/get-strict-context";
 
 type Side = "top" | "bottom" | "left" | "right";

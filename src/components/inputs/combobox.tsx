@@ -8,7 +8,7 @@ import {
   type OverlayScrollbarsComponentRef,
 } from "overlayscrollbars-react";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/buttons/button/button";
 import {
   Command,
   CommandEmpty,
@@ -16,12 +16,12 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
+} from "@/components/overlays/command";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from "@/components/overlays/popover";
 import { cn } from "@/lib/utils";
 
 export type ComboboxData = {

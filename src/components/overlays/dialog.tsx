@@ -20,7 +20,7 @@ import {
   type DialogTriggerProps as DialogTriggerPrimitiveProps,
   type DialogOverlayProps as DialogOverlayPrimitiveProps,
   type DialogCloseProps as DialogClosePrimitiveProps,
-} from "@/components/animate-ui/primitives/radix/dialog";
+} from "@/components/overlays/dialog.primitives";
 import { cn } from "@/lib/utils";
 
 type DialogProps = DialogPrimitiveProps;

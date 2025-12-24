@@ -1,4 +1,4 @@
-import { KbdGroup } from "@/components/ui/kbd";
+import { KbdGroup } from "@/components/typography/kbd";
 
 import { type Shortcut } from "./shortcuts";
 

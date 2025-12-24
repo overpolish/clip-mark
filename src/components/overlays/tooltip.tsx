@@ -10,7 +10,7 @@ import {
   type TooltipProps as TooltipPrimitiveProps,
   type TooltipTriggerProps as TooltipTriggerPrimitiveProps,
   type TooltipContentProps as TooltipContentPrimitiveProps,
-} from "@/components/animate-ui/primitives/animate/tooltip";
+} from "@/components/overlays/tooltip.primitives";
 import { cn } from "@/lib/utils";
 
 type TooltipProviderProps = TooltipProviderPrimitiveProps;

@@ -2,7 +2,7 @@ import { useEffect } from "react";
 
 import { createFileRoute } from "@tanstack/react-router";
 
-import { DotPattern } from "@/components/ui/dot-pattern";
+import { DotPattern } from "@/components/miscellaneous/dot-pattern";
 import { ConnectionStatus } from "@/features/connection-status/connection-status";
 import { ObsWebsocketConfiguration } from "@/features/obs-websocket-configuration/obs-websocket-configuration";
 import { Shortcuts } from "@/features/shortcuts/shortcuts";
