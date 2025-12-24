@@ -21,7 +21,11 @@ const buttonGroupVariants = cva(
   }
 );
 
-function ButtonGroup({
+/**
+ *
+ * @public
+ */
+export function ButtonGroup({
   className,
   orientation,
   pulsate,
@@ -56,7 +60,11 @@ function ButtonGroup({
   );
 }
 
-function ButtonGroupText({
+/**
+ *
+ * @public
+ */
+export function ButtonGroupText({
   asChild = false,
   className,
   ...props
@@ -76,7 +84,10 @@ function ButtonGroupText({
   );
 }
 
-function ButtonGroupSeparator({
+/**
+ * @public
+ */
+export function ButtonGroupSeparator({
   className,
   orientation = "vertical",
   ...props
@@ -93,10 +104,3 @@ function ButtonGroupSeparator({
     />
   );
 }
-
-export {
-  ButtonGroup,
-  ButtonGroupSeparator,
-  ButtonGroupText,
-  buttonGroupVariants,
-};

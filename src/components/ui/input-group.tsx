@@ -39,7 +39,7 @@ const inputGroupVariants = cva(
         default: "h-9 min-w-0 has-[>textarea]:h-auto",
         spotlight: [
           "h-14 min-w-0 rounded-[18px] has-[>textarea]:h-auto [&>input]:text-2xl",
-          "[&>[data-slot=input-group-addon]]:pr-1 [&>[data-slot=input-group-addon]]:text-base",
+          "*:data-[slot=input-group-addon]:pr-1 *:data-[slot=input-group-addon]:text-base",
         ],
       },
     },
@@ -50,7 +50,10 @@ export interface InputGroupProps
   extends React.ComponentPropsWithoutRef<"div">,
     VariantProps<typeof inputGroupVariants> {}
 
-function InputGroup({ className, size, ...props }: InputGroupProps) {
+/**
+ * @public
+ */
+export function InputGroup({ className, size, ...props }: InputGroupProps) {
   return (
     <div
       className={cn(inputGroupVariants({ size }), className)}
@@ -82,7 +85,10 @@ const inputGroupAddonVariants = cva(
   }
 );
 
-function InputGroupAddon({
+/**
+ * @public
+ */
+export function InputGroupAddon({
   align = "inline-start",
   className,
   ...props
@@ -122,7 +128,10 @@ const inputGroupButtonVariants = cva(
   }
 );
 
-function InputGroupButton({
+/**
+ * @public
+ */
+export function InputGroupButton({
   className,
   size = "xs",
   type = "button",
@@ -141,7 +150,13 @@ function InputGroupButton({
   );
 }
 
-function InputGroupText({ className, ...props }: React.ComponentProps<"span">) {
+/**
+ * @public
+ */
+export function InputGroupText({
+  className,
+  ...props
+}: React.ComponentProps<"span">) {
   return (
     <span
       className={cn(
@@ -172,7 +187,10 @@ const InputGroupInput = React.forwardRef<
 
 InputGroupInput.displayName = "InputGroupInput";
 
-function InputGroupTextarea({
+/**
+ * @public
+ */
+export function InputGroupTextarea({
   className,
   ...props
 }: React.ComponentProps<"textarea">) {
@@ -187,12 +205,3 @@ function InputGroupTextarea({
     />
   );
 }
-
-export {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupButton,
-  InputGroupText,
-  InputGroupInput,
-  InputGroupTextarea,
-};

@@ -12,7 +12,10 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
-function Command({
+/**
+ * @public
+ */
+export function Command({
   className,
   ...props
 }: React.ComponentProps<typeof CommandPrimitive>) {
@@ -35,7 +38,10 @@ function Command({
   );
 }
 
-function CommandDialog({
+/**
+ * @public
+ */
+export function CommandDialog({
   children,
   className,
   description = "Search for a command to run...",
@@ -66,7 +72,10 @@ function CommandDialog({
   );
 }
 
-function CommandInput({
+/**
+ * @public
+ */
+export function CommandInput({
   className,
   ...props
 }: React.ComponentProps<typeof CommandPrimitive.Input>) {
@@ -88,7 +97,10 @@ function CommandInput({
   );
 }
 
-function CommandList({
+/**
+ * @public
+ */
+export function CommandList({
   className,
   ...props
 }: React.ComponentProps<typeof CommandPrimitive.List>) {
@@ -104,7 +116,10 @@ function CommandList({
   );
 }
 
-function CommandEmpty({
+/**
+ * @public
+ */
+export function CommandEmpty({
   ...props
 }: React.ComponentProps<typeof CommandPrimitive.Empty>) {
   return (
@@ -116,7 +131,10 @@ function CommandEmpty({
   );
 }
 
-function CommandGroup({
+/**
+ * @public
+ */
+export function CommandGroup({
   className,
   ...props
 }: React.ComponentProps<typeof CommandPrimitive.Group>) {
@@ -132,7 +150,10 @@ function CommandGroup({
   );
 }
 
-function CommandSeparator({
+/**
+ * @public
+ */
+export function CommandSeparator({
   className,
   ...props
 }: React.ComponentProps<typeof CommandPrimitive.Separator>) {
@@ -145,7 +166,10 @@ function CommandSeparator({
   );
 }
 
-function CommandItem({
+/**
+ * @public
+ */
+export function CommandItem({
   className,
   ...props
 }: React.ComponentProps<typeof CommandPrimitive.Item>) {
@@ -161,7 +185,10 @@ function CommandItem({
   );
 }
 
-function CommandShortcut({
+/**
+ * @public
+ */
+export function CommandShortcut({
   className,
   ...props
 }: React.ComponentProps<"span">) {
@@ -176,15 +203,3 @@ function CommandShortcut({
     />
   );
 }
-
-export {
-  Command,
-  CommandDialog,
-  CommandInput,
-  CommandList,
-  CommandEmpty,
-  CommandGroup,
-  CommandItem,
-  CommandShortcut,
-  CommandSeparator,
-};

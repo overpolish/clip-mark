@@ -30,7 +30,10 @@ type SwitchProps = Omit<
 > &
   HTMLMotionProps<"button">;
 
-function Switch(props: SwitchProps) {
+/**
+ * @public
+ */
+export function Switch(props: SwitchProps) {
   const [isPressed, setIsPressed] = React.useState(false);
   const [isChecked, setIsChecked] = useControlledState({
     defaultValue: props.defaultChecked,
@@ -69,7 +72,10 @@ type SwitchThumbProps = Omit<
       | LegacyAnimationControls;
   };
 
-function SwitchThumb({
+/**
+ * @public
+ */
+export function SwitchThumb({
   pressedAnimation,
   transition = { damping: 25, stiffness: 300, type: "spring" },
   ...props
@@ -96,7 +102,10 @@ type SwitchIconProps = HTMLMotionProps<"div"> & {
   position: SwitchIconPosition;
 };
 
-function SwitchIcon({
+/**
+ * @public
+ */
+export function SwitchIcon({
   position,
   transition = { bounce: 0, type: "spring" },
   ...props
@@ -121,10 +130,6 @@ function SwitchIcon({
 }
 
 export {
-  Switch,
-  SwitchThumb,
-  SwitchIcon,
-  useSwitch,
   type SwitchProps,
   type SwitchThumbProps,
   type SwitchIconProps,

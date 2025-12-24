@@ -18,7 +18,10 @@ const [DialogProvider, useDialog] =
 
 type DialogProps = React.ComponentProps<typeof DialogPrimitive.Root>;
 
-function Dialog(props: DialogProps) {
+/**
+ * @public
+ */
+export function Dialog(props: DialogProps) {
   const [isOpen, setIsOpen] = useControlledState({
     defaultValue: props?.defaultOpen,
     onChange: props?.onOpenChange,
@@ -38,7 +41,10 @@ function Dialog(props: DialogProps) {
 
 type DialogTriggerProps = React.ComponentProps<typeof DialogPrimitive.Trigger>;
 
-function DialogTrigger(props: DialogTriggerProps) {
+/**
+ * @public
+ */
+export function DialogTrigger(props: DialogTriggerProps) {
   return <DialogPrimitive.Trigger data-slot="dialog-trigger" {...props} />;
 }
 
@@ -47,7 +53,10 @@ type DialogPortalProps = Omit<
   "forceMount"
 >;
 
-function DialogPortal(props: DialogPortalProps) {
+/**
+ * @public
+ */
+export function DialogPortal(props: DialogPortalProps) {
   const { isOpen } = useDialog();
 
   return (
@@ -69,7 +78,10 @@ type DialogOverlayProps = Omit<
 > &
   HTMLMotionProps<"div">;
 
-function DialogOverlay({
+/**
+ * @public
+ */
+export function DialogOverlay({
   transition = { duration: 0.2, ease: "easeInOut" },
   ...props
 }: DialogOverlayProps) {
@@ -97,7 +109,10 @@ type DialogContentProps = Omit<
     from?: DialogFlipDirection;
   };
 
-function DialogContent({
+/**
+ * @public
+ */
+export function DialogContent({
   from = "top",
   onCloseAutoFocus,
   onEscapeKeyDown,
@@ -149,25 +164,37 @@ function DialogContent({
 
 type DialogCloseProps = React.ComponentProps<typeof DialogPrimitive.Close>;
 
-function DialogClose(props: DialogCloseProps) {
+/**
+ * @public
+ */
+export function DialogClose(props: DialogCloseProps) {
   return <DialogPrimitive.Close data-slot="dialog-close" {...props} />;
 }
 
 type DialogHeaderProps = React.ComponentProps<"div">;
 
-function DialogHeader(props: DialogHeaderProps) {
+/**
+ * @public
+ */
+export function DialogHeader(props: DialogHeaderProps) {
   return <div data-slot="dialog-header" {...props} />;
 }
 
 type DialogFooterProps = React.ComponentProps<"div">;
 
-function DialogFooter(props: DialogFooterProps) {
+/**
+ * @public
+ */
+export function DialogFooter(props: DialogFooterProps) {
   return <div data-slot="dialog-footer" {...props} />;
 }
 
 type DialogTitleProps = React.ComponentProps<typeof DialogPrimitive.Title>;
 
-function DialogTitle(props: DialogTitleProps) {
+/**
+ * @public
+ */
+export function DialogTitle(props: DialogTitleProps) {
   return <DialogPrimitive.Title data-slot="dialog-title" {...props} />;
 }
 
@@ -175,24 +202,16 @@ type DialogDescriptionProps = React.ComponentProps<
   typeof DialogPrimitive.Description
 >;
 
-function DialogDescription(props: DialogDescriptionProps) {
+/**
+ * @public
+ */
+export function DialogDescription(props: DialogDescriptionProps) {
   return (
     <DialogPrimitive.Description data-slot="dialog-description" {...props} />
   );
 }
 
 export {
-  Dialog,
-  DialogPortal,
-  DialogOverlay,
-  DialogClose,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogFooter,
-  DialogTitle,
-  DialogDescription,
-  useDialog,
   type DialogProps,
   type DialogTriggerProps,
   type DialogPortalProps,

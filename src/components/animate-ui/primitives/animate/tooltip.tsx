@@ -95,7 +95,10 @@ type TooltipProviderProps = {
   transition?: Transition;
 };
 
-function TooltipProvider({
+/**
+ * @public
+ */
+export function TooltipProvider({
   children,
   closeDelay = 300,
   id,
@@ -203,7 +206,10 @@ type TooltipArrowProps = Omit<
   withTransition?: boolean;
 };
 
-function TooltipArrow({
+/**
+ * @public
+ */
+export function TooltipArrow({
   ref,
   withTransition = true,
   ...props
@@ -363,7 +369,10 @@ type TooltipProps = {
   sideOffset?: number;
 };
 
-function Tooltip({
+/**
+ * @public
+ */
+export function Tooltip({
   align = "center",
   alignOffset = 0,
   children,
@@ -411,7 +420,13 @@ function shallowEqualWithoutChildren(
   return true;
 }
 
-function TooltipContent({ asChild = false, ...props }: TooltipContentProps) {
+/**
+ * @public
+ */
+export function TooltipContent({
+  asChild = false,
+  ...props
+}: TooltipContentProps) {
   const { setAsChild, setProps } = useTooltip();
   const lastPropsRef = React.useRef<HTMLMotionProps<"div"> | undefined>(
     undefined
@@ -433,7 +448,10 @@ function TooltipContent({ asChild = false, ...props }: TooltipContentProps) {
 
 type TooltipTriggerProps = WithAsChild<HTMLMotionProps<"div">>;
 
-function TooltipTrigger({
+/**
+ * @public
+ */
+export function TooltipTrigger({
   asChild = false,
   onBlur,
   onFocus,
@@ -558,13 +576,6 @@ function TooltipTrigger({
 }
 
 export {
-  TooltipProvider,
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-  TooltipArrow,
-  useGlobalTooltip,
-  useTooltip,
   type TooltipProviderProps,
   type TooltipProps,
   type TooltipContentProps,
