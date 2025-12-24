@@ -18,6 +18,7 @@ use tauri_plugin_store::StoreExt;
 use tauri_plugin_updater::UpdaterExt;
 
 use crate::{
+   app_settings::service::update_autostart,
    constants::{WindowEvent, WindowLabel},
    positioner::WindowTrayExt,
    state::{
@@ -66,7 +67,11 @@ pub fn run() {
             .level(tauri_plugin_log::log::LevelFilter::Info)
             .build(),
       )
-      .plugin(tauri_plugin_updater::Builder::new().build());
+      .plugin(tauri_plugin_updater::Builder::new().build())
+      .plugin(tauri_plugin_autostart::init(
+         tauri_plugin_autostart::MacosLauncher::LaunchAgent,
+         None,
+      ));
 
    // Setup and build
    let app = app_builder
@@ -97,19 +102,20 @@ fn setup_stores(
    app: &mut tauri::App,
 ) -> Result<(), Box<dyn std::error::Error>> {
    let server_config_store = app
-      .store("obs-server-config.json")
+      .store(crate::constants::Store::ObsServerConfig.as_ref())
       .expect("Failed to load OBS Server store");
 
    let app_settings_store = app
-      .store("app-settings.json")
+      .store(crate::constants::Store::AppSettings.as_ref())
       .expect("Failed to load App Settings store");
+
+   let app_settings_state = AppSettingsState::from_store(&app_settings_store);
+   update_autostart(app.handle(), app_settings_state.start_at_login);
 
    app.manage(Mutex::new(ServerConfigState::from_store(
       &server_config_store,
    )));
-   app.manage(Mutex::new(AppSettingsState::from_store(
-      &app_settings_store,
-   )));
+   app.manage(Mutex::new(app_settings_state));
 
    Ok(())
 }

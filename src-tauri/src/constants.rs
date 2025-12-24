@@ -25,3 +25,13 @@ pub enum WindowLabel {
    #[strum(serialize = "system-tray-menu")]
    SystemTrayMenu,
 }
+
+#[derive(
+   EnumString, AsRefStr, Display, Debug, Clone, Copy, PartialEq, Eq, Hash,
+)]
+pub enum Store {
+   #[strum(serialize = "app-settings.json")]
+   AppSettings,
+   #[strum(serialize = "obs-server-config.json")]
+   ObsServerConfig,
+}

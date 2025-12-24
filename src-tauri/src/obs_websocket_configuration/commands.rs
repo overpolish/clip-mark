@@ -34,7 +34,7 @@ pub async fn update_server_details(
    password: String,
 ) -> Result<(), String> {
    let store = app
-      .store("obs-server-config.json")
+      .store(crate::constants::Store::ObsServerConfig.as_ref())
       .expect("Failed to load OBS Server store");
 
    store.set("address", address.clone());
