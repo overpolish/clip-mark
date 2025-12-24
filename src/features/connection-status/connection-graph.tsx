@@ -13,7 +13,11 @@ const Circle = forwardRef<HTMLDivElement, { children?: React.ReactNode }>(
       <div
         ref={ref}
         className={cn(
-          "relative z-10 flex size-12 items-center justify-center rounded-full border-2 bg-white p-3 text-background shadow-xl shadow-border/20 dark:bg-background"
+          `
+            relative z-10 flex size-12 items-center justify-center rounded-full
+            border-2 bg-white p-3 text-background shadow-xl shadow-border/20
+            dark:bg-background
+          `
         )}
       >
         {props.children}
@@ -81,7 +85,11 @@ export function ConnectionGraph({ status }: ConnectionGraphProps) {
       ref={containerRef}
       className="relative flex w-full max-w-35 items-center justify-center"
     >
-      <div className="flex size-full flex-col items-stretch justify-between gap-10">
+      <div
+        className={`
+        flex size-full flex-col items-stretch justify-between gap-10
+      `}
+      >
         <div className="flex flex-row justify-between">
           <Circle ref={clipMarkRef}>
             <img src={ClipMarkLogo} />

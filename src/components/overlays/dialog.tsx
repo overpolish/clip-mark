@@ -82,14 +82,31 @@ export function DialogContent({
       <DialogOverlay />
       <DialogContentPrimitive
         className={cn(
-          "fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border bg-background p-6 shadow-lg sm:max-w-lg",
+          `
+            fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)]
+            translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border
+            bg-background p-6 shadow-lg
+            sm:max-w-lg
+          `,
           className
         )}
         {...props}
       >
         {children}
         {showCloseButton && (
-          <DialogClosePrimitive className="absolute top-4 right-4 rounded-xs opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4">
+          <DialogClosePrimitive
+            className={`
+            absolute top-4 right-4 rounded-xs opacity-70 ring-offset-background
+            transition-opacity
+            hover:opacity-100
+            focus:ring-2 focus:ring-ring focus:ring-offset-2
+            focus:outline-hidden
+            disabled:pointer-events-none
+            data-[state=open]:bg-accent data-[state=open]:text-muted-foreground
+            [&_svg]:pointer-events-none [&_svg]:shrink-0
+            [&_svg:not([class*='size-'])]:size-4
+          `}
+          >
             <XIcon className="text-xs" />
             <span className="sr-only">Close</span>
           </DialogClosePrimitive>
@@ -122,7 +139,10 @@ export function DialogFooter({ className, ...props }: DialogFooterProps) {
   return (
     <DialogFooterPrimitive
       className={cn(
-        "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end",
+        `
+          flex flex-col-reverse gap-2
+          sm:flex-row sm:justify-end
+        `,
         className
       )}
       {...props}

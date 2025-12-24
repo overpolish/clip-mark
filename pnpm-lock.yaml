@@ -44,18 +44,9 @@ importers:
       '@tauri-apps/plugin-process':
         specifier: ~2.3.1
         version: 2.3.1
-      class-variance-authority:
-        specifier: ^0.7.1
-        version: 0.7.1
-      clsx:
-        specifier: ^2.1.1
-        version: 2.1.1
       cmdk:
         specifier: ^1.1.1
         version: 1.1.1(@types/react-dom@19.2.3(@types/react@19.2.7))(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      css-variants:
-        specifier: ^2.3.4
-        version: 2.3.4
       lucide-react:
         specifier: ^0.560.0
         version: 0.560.0(react@19.2.3)
@@ -80,9 +71,9 @@ importers:
       react-hook-form:
         specifier: ^7.68.0
         version: 7.68.0(react@19.2.3)
-      tailwind-merge:
-        specifier: ^3.4.0
-        version: 3.4.0
+      tailwind-variants:
+        specifier: ^3.2.2
+        version: 3.2.2(tailwindcss@4.1.18)
       tailwindcss:
         specifier: ^4.1.18
         version: 4.1.18
@@ -2282,13 +2273,6 @@ packages:
     resolution: {integrity: sha512-7VT13fmjotKpGipCW9JEQAusEPE+Ei8nl6/g4FBAmIm0GOOLMua9NDDo/DWp0ZAxCr3cPq5ZpBqmPAQgDda2Pw==}
     engines: {node: '>= 8.10.0'}
 
-  class-variance-authority@0.7.1:
-    resolution: {integrity: sha512-Ka+9Trutv7G8M6WT6SeiRWz792K5qEqIGEGzXKhAE6xOWAY6pPH8U+9IY3oCMv6kqTmLsv7Xh/2w2RigkePMsg==}
-
-  clsx@2.1.1:
-    resolution: {integrity: sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA==}
-    engines: {node: '>=6'}
-
   cmdk@1.1.1:
     resolution: {integrity: sha512-Vsv7kFaXm+ptHDMZ7izaRsP70GgrW9NBNGswt9OZaVBLlE0SNpDq8eu/VGXyF9r7M0azK3Wy7OlYXsuyYLFzHg==}
     peerDependencies:
@@ -2314,9 +2298,6 @@ packages:
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
-
-  css-variants@2.3.4:
-    resolution: {integrity: sha512-PTttHIRgLxDMQnEMZH5GERO8gKpIBW5qwHg8SxEQWG/UwYZO/7tHYVIizmu+286Y0oJ6Ct0dC5X3c6A4s8mK4A==}
 
   csstype@3.2.3:
     resolution: {integrity: sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ==}
@@ -3470,8 +3451,15 @@ packages:
     resolution: {integrity: sha512-FzD187HuFIZEyeR7Xy6sJbJll2d4SybS90satC8SKIuaNRC05CxMvdzN7BUsfDQffcnabckRM5OIcfArjsZ0mg==}
     engines: {node: '>=18.18'}
 
-  tailwind-merge@3.4.0:
-    resolution: {integrity: sha512-uSaO4gnW+b3Y2aWoWfFpX62vn2sR3skfhbjsEnaBI81WD1wBLlHZe5sWf0AqjksNdYTbGBEd0UasQMT3SNV15g==}
+  tailwind-variants@3.2.2:
+    resolution: {integrity: sha512-Mi4kHeMTLvKlM98XPnK+7HoBPmf4gygdFmqQPaDivc3DpYS6aIY6KiG/PgThrGvii5YZJqRsPz0aPyhoFzmZgg==}
+    engines: {node: '>=16.x', pnpm: '>=7.x'}
+    peerDependencies:
+      tailwind-merge: '>=3.0.0'
+      tailwindcss: '*'
+    peerDependenciesMeta:
+      tailwind-merge:
+        optional: true
 
   tailwindcss@4.1.18:
     resolution: {integrity: sha512-4+Z+0yiYyEtUVCScyfHCxOYP06L5Ne+JiHhY2IjR2KWMIWhJOYZKLSGZaP5HkZ8+bY0cxfzwDE5uOmzFXyIwxw==}
@@ -5761,12 +5749,6 @@ snapshots:
     optionalDependencies:
       fsevents: 2.3.3
 
-  class-variance-authority@0.7.1:
-    dependencies:
-      clsx: 2.1.1
-
-  clsx@2.1.1: {}
-
   cmdk@1.1.1(@types/react-dom@19.2.3(@types/react@19.2.7))(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
     dependencies:
       '@radix-ui/react-compose-refs': 1.1.2(@types/react@19.2.7)(react@19.2.3)
@@ -5796,8 +5778,6 @@ snapshots:
       path-key: 3.1.1
       shebang-command: 2.0.0
       which: 2.0.2
-
-  css-variants@2.3.4: {}
 
   csstype@3.2.3: {}
 
@@ -7183,7 +7163,9 @@ snapshots:
 
   tailwind-csstree@0.1.4: {}
 
-  tailwind-merge@3.4.0: {}
+  tailwind-variants@3.2.2(tailwindcss@4.1.18):
+    dependencies:
+      tailwindcss: 4.1.18
 
   tailwindcss@4.1.18: {}
 

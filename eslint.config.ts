@@ -68,6 +68,7 @@ export default defineConfig([
     },
   },
   {
+    files: ["**/*.{jsx,tsx}"],
     languageOptions: {
       parserOptions: {
         ecmaFeatures: {
@@ -81,25 +82,9 @@ export default defineConfig([
     rules: {
       ...eslintPluginBetterTailwindcss.configs["recommended-warn"].rules,
       ...eslintPluginBetterTailwindcss.configs["recommended-error"].rules,
-      "better-tailwindcss/enforce-consistent-line-wrapping": "off",
     },
     settings: {
       "better-tailwindcss": {
-        callees: [
-          [
-            "scv",
-            [
-              {
-                match: "objectValues",
-                pathPattern: "^(?!slots|defaultVariants)(?!compoundVariants).*",
-              },
-              {
-                match: "objectValues",
-                pathPattern: "^compoundVariants\\[\\d+\\]\\.classNames\\.",
-              },
-            ],
-          ],
-        ],
         entryPoint: "src/index.css",
       },
     },

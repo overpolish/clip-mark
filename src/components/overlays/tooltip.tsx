@@ -57,8 +57,14 @@ function TooltipContent({
       </motion.div>
       {showArrow && (
         <TooltipArrowPrimitive
-          className="size-3 fill-primary data-[side='bottom']:translate-y-px data-[side='left']:-translate-x-px data-[side='right']:translate-x-px data-[side='top']:-translate-y-px"
           tipRadius={2}
+          className={`
+            size-3 fill-primary
+            data-[side='bottom']:translate-y-px
+            data-[side='left']:-translate-x-px
+            data-[side='right']:translate-x-px
+            data-[side='top']:-translate-y-px
+          `}
         />
       )}
     </TooltipContentPrimitive>

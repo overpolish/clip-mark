@@ -104,8 +104,11 @@ function CaptureNote() {
         />
         <form onSubmit={handleSubmit(onSubmit)}>
           <InputGroup
-            className="border-2 has-[[data-slot=input-group-control]:focus-visible]:ring-0"
             size="spotlight"
+            className={`
+              border-2
+              has-[[data-slot=input-group-control]:focus-visible]:ring-0
+            `}
           >
             <InputGroupAddon>
               <PenLine />

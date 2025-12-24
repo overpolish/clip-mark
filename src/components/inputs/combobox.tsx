@@ -123,7 +123,11 @@ export function Combobox({
             <span className={"truncate"}>
               {selected ? selected.label : placeholder}
             </span>
-            <ChevronsUpDownIcon className="ml-auto shrink-0 text-[10px] opacity-50" />
+            <ChevronsUpDownIcon
+              className={`
+              ml-auto shrink-0 text-[10px] opacity-50
+            `}
+            />
           </div>
         </Button>
       </PopoverTrigger>

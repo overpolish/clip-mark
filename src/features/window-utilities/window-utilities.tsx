@@ -146,7 +146,12 @@ export function WindowUtilities({ className }: AppUtilitiesProps) {
     <div className={className}>
       <div>
         <div className="relative flex items-center">
-          <span className="absolute left-3 -translate-y-[50%] bg-background px-1 text-xs text-muted-foreground">
+          <span
+            className={`
+            absolute left-3 -translate-y-[50%] bg-background px-1 text-xs
+            text-muted-foreground
+          `}
+          >
             Window Utilities
           </span>
           <Separator className="mb-3" />
