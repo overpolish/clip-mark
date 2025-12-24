@@ -207,10 +207,5 @@ export default defineConfig([
       ],
     },
   },
-  {
-    plugins: { "clip-mark": eslintPluginClipMark },
-    rules: {
-      "clip-mark/no-inline-classname": "error",
-    },
-  },
+  eslintPluginClipMark.configs.recommended,
 ]);
