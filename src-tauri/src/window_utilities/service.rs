@@ -32,11 +32,12 @@ use ::windows::Win32::{
 };
 use image::{ImageBuffer, Rgba};
 use log::{info, warn};
+use tauri::PhysicalPosition;
 use windows::Win32::{
    Graphics::Gdi::GetDIBits,
    UI::WindowsAndMessaging::{
       SetWindowLongPtrW, ShowWindow, SWP_FRAMECHANGED, SWP_NOACTIVATE,
-      SWP_NOMOVE, SW_RESTORE, WS_BORDER, WS_CAPTION, WS_DLGFRAME,
+      SWP_NOMOVE, SW_RESTORE, SW_SHOWNA, WS_BORDER, WS_CAPTION, WS_DLGFRAME,
       WS_EX_CLIENTEDGE, WS_EX_DLGMODALFRAME, WS_EX_STATICEDGE,
       WS_EX_WINDOWEDGE, WS_MAXIMIZEBOX, WS_MINIMIZEBOX, WS_POPUP, WS_SYSMENU,
       WS_THICKFRAME, WS_VISIBLE,
@@ -665,6 +666,44 @@ pub fn fullscreen_window(hwnd: isize) -> ::windows::core::Result<()> {
       }
 
       Ok(())
+   }
+}
+
+// #endregion
+
+// #region WebviewWindow Functions
+
+pub trait WindowUtilitiesExt {
+   /// Show a window without focusing it
+   fn show_without_focus(&self);
+   /// Adjusts the window position to be above the taskbar
+   fn position_above_taskbar(&self);
+}
+
+impl WindowUtilitiesExt for tauri::WebviewWindow {
+   fn show_without_focus(&self) {
+      if let Ok(hwnd) = self.hwnd() {
+         unsafe {
+            let _ = ShowWindow(HWND(hwnd.0 as _), SW_SHOWNA);
+         }
+      }
+   }
+
+   fn position_above_taskbar(&self) {
+      if let Ok(Some(monitor)) = self.current_monitor() {
+         let taskbar_top = monitor.work_area().size.height;
+         let window_size = self.outer_size().unwrap_or_default();
+
+         // Window size excludes taskbar height, we treat bottom of work area as top of taskbar
+         let y = taskbar_top.saturating_sub(window_size.height);
+
+         let window_position = PhysicalPosition {
+            x: self.outer_position().unwrap_or_default().x,
+            y: y as i32,
+         };
+
+         let _ = self.as_ref().window().set_position(window_position);
+      }
    }
 }
 

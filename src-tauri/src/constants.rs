@@ -22,4 +22,26 @@ pub enum WindowLabel {
    RecordingStatus,
    #[strum(serialize = "capture-note")]
    CaptureNote,
+   #[strum(serialize = "system-tray-menu")]
+   SystemTrayMenu,
+}
+
+impl WindowLabel {
+   pub fn capturable_windows() -> Vec<WindowLabel> {
+      vec![
+         WindowLabel::Configuration,
+         WindowLabel::RecordingStatus,
+         WindowLabel::CaptureNote,
+      ]
+   }
+}
+
+#[derive(
+   EnumString, AsRefStr, Display, Debug, Clone, Copy, PartialEq, Eq, Hash,
+)]
+pub enum Store {
+   #[strum(serialize = "app-settings.json")]
+   AppSettings,
+   #[strum(serialize = "obs-server-config.json")]
+   ObsServerConfig,
 }

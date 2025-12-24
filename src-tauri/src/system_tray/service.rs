@@ -1,27 +1,45 @@
 use tauri::{tray::TrayIconEvent, Emitter, Manager};
 
 use crate::{constants::WindowLabel, WindowEvent};
+use tauri_plugin_positioner::{Position, WindowExt};
 
 pub fn init_system_tray(app_handle: &tauri::AppHandle) {
    let tray = app_handle.tray_by_id("tray-icon").unwrap();
    tray.on_tray_icon_event(|tray, event| {
-      if let TrayIconEvent::Click { .. } = event {
-         use tauri_plugin_positioner::{Position, WindowExt};
-
-         tauri_plugin_positioner::on_tray_event(tray.app_handle(), &event);
+      if let TrayIconEvent::Click { button, .. } = event {
          let app = tray.app_handle();
+         tauri_plugin_positioner::on_tray_event(tray.app_handle(), &event);
 
-         let win = app
-            .get_webview_window(WindowLabel::Configuration.as_ref())
-            .unwrap();
-         let _ = win
-            .as_ref()
-            .window()
-            .move_window_constrained(Position::TrayCenter);
+         match button {
+            tauri::tray::MouseButton::Left => {
+               if let Some(win) =
+                  app.get_webview_window(WindowLabel::Configuration.as_ref())
+               {
+                  let _ = win
+                     .as_ref()
+                     .window()
+                     .move_window_constrained(Position::TrayCenter);
 
-         let _ = app.emit(WindowEvent::ConfigurationWillShow.as_ref(), ());
-         win.show().unwrap();
-         win.set_focus().unwrap();
+                  let _ =
+                     app.emit(WindowEvent::ConfigurationWillShow.as_ref(), ());
+                  win.show().unwrap();
+                  win.set_focus().unwrap();
+               }
+            }
+            tauri::tray::MouseButton::Right => {
+               if let Some(system_tray_menu_win) =
+                  app.get_webview_window(WindowLabel::SystemTrayMenu.as_ref())
+               {
+                  let _ = system_tray_menu_win
+                     .as_ref()
+                     .window()
+                     .move_window_constrained(Position::TrayLeft);
+                  system_tray_menu_win.show().unwrap();
+                  system_tray_menu_win.set_focus().unwrap();
+               }
+            }
+            _ => {}
+         }
       }
    });
 }

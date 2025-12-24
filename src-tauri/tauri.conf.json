@@ -26,6 +26,8 @@
         "url": "/configuration",
         "label": "configuration",
         "title": "Configuration",
+        "width": 450,
+        "height": 287,
         "decorations": false,
         "visible": false,
         "skipTaskbar": true,
@@ -61,6 +63,18 @@
         "shadow": false,
         "visible": false,
         "contentProtected": false
+      },
+      {
+        "url": "/system-tray-menu",
+        "label": "system-tray-menu",
+        "title": "System Tray Menu",
+        "width": 200,
+        "height": 105,
+        "skipTaskbar": true,
+        "resizable": false,
+        "decorations": false,
+        "alwaysOnTop": true,
+        "visible": false
       }
     ]
   },

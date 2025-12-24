@@ -67,6 +67,7 @@ impl AppShortcut {
                app_handle,
                WindowLabel::CaptureNote.as_ref(),
                Some(WindowEvent::CaptureNoteWillShow.as_ref()),
+               Some(Position::Center),
             )
          }
          Self::OpenConfiguration => {
@@ -86,6 +87,7 @@ impl AppShortcut {
                   app_handle,
                   WindowLabel::Configuration.as_ref(),
                   Some(WindowEvent::ConfigurationWillShow.as_ref()),
+                  None,
                )
             }
          }

@@ -42,6 +42,9 @@ thiserror = "2"
 
 [target.'cfg(windows)'.dependencies]
 tauri-plugin-positioner = { version = "2.3.1", features = ["tray-icon"] }
+tauri-plugin-global-shortcut = "2"
+tauri-plugin-updater = "2"
+tauri-plugin-autostart = "2.5.1"
 windows = { version = "0.62.2", features = [
 	"Win32_Foundation",
 	"Win32_UI_WindowsAndMessaging",
@@ -50,7 +53,3 @@ windows = { version = "0.62.2", features = [
 	"Win32_Graphics_Dwm",
 	"Win32_Graphics_Gdi",
 ] }
-
-[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
-tauri-plugin-global-shortcut = "2"
-tauri-plugin-updater = "2"
