@@ -12,19 +12,20 @@ mod window_utilities;
 use std::sync::Mutex;
 
 use log::info;
-use tauri::{Emitter, Manager, PhysicalPosition};
+use tauri::{Emitter, Manager};
 use tauri_plugin_positioner::{Position, WindowExt};
 use tauri_plugin_store::StoreExt;
 use tauri_plugin_updater::UpdaterExt;
 
 use crate::{
-   app_settings::service::update_autostart,
+   app_settings::service::{update_autostart, update_hide_from_capture},
    constants::{WindowEvent, WindowLabel},
    positioner::WindowTrayExt,
    state::{
       AppSettingsState, GlobalState, RecordingStateMutex, ServerConfigState,
    },
    system_tray::service::init_system_tray,
+   window_utilities::WindowUtilitiesExt,
 };
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -81,6 +82,7 @@ pub fn run() {
          setup_positioner_and_tray(app)?;
          setup_windows(app)?;
          spawn_websocket_connection(app.handle());
+         init_app_settings(app.handle().clone());
          shortcuts::register_shortcuts(app.handle());
 
          Ok(())
@@ -109,13 +111,12 @@ fn setup_stores(
       .store(crate::constants::Store::AppSettings.as_ref())
       .expect("Failed to load App Settings store");
 
-   let app_settings_state = AppSettingsState::from_store(&app_settings_store);
-   update_autostart(app.handle(), app_settings_state.start_at_login);
-
    app.manage(Mutex::new(ServerConfigState::from_store(
       &server_config_store,
    )));
-   app.manage(Mutex::new(app_settings_state));
+   app.manage(Mutex::new(AppSettingsState::from_store(
+      &app_settings_store,
+   )));
 
    Ok(())
 }
@@ -154,7 +155,7 @@ fn setup_windows(
       .window()
       .move_window(Position::BottomLeft)?;
    recording_status_win.set_ignore_cursor_events(true)?;
-   position_above_taskbar(&recording_status_win);
+   recording_status_win.position_above_taskbar();
 
    let capture_note_win = app
       .get_webview_window(WindowLabel::CaptureNote.as_ref())
@@ -178,6 +179,18 @@ fn setup_windows(
    Ok(())
 }
 
+fn init_app_settings(app_handle: tauri::AppHandle) {
+   let app_settings_mutex =
+      app_handle.state::<std::sync::Mutex<AppSettingsState>>();
+
+   let app_settings = app_settings_mutex
+      .lock()
+      .expect("Failed to acquire lock on App Settings");
+
+   update_hide_from_capture(&app_handle, app_settings.hide_from_capture);
+   update_autostart(&app_handle, app_settings.start_at_login);
+}
+
 /// Spawn OBS Websocket connection
 fn spawn_websocket_connection(app_handle: &tauri::AppHandle) {
    let app_handle_for_thread = app_handle.clone();
@@ -187,24 +200,6 @@ fn spawn_websocket_connection(app_handle: &tauri::AppHandle) {
       )
       .await;
    });
-}
-
-/// Adjusts the window position to be above the taskbar
-fn position_above_taskbar(win: &tauri::WebviewWindow) {
-   if let Ok(Some(monitor)) = win.current_monitor() {
-      let taskbar_top = monitor.work_area().size.height;
-      let window_size = win.outer_size().unwrap_or_default();
-
-      // Window size excludes taskbar height, we treat bottom of work area as top of taskbar
-      let y = taskbar_top.saturating_sub(window_size.height);
-
-      let window_position = PhysicalPosition {
-         x: win.outer_position().unwrap_or_default().x,
-         y: y as i32,
-      };
-
-      let _ = win.as_ref().window().set_position(window_position);
-   }
 }
 
 fn close_on_focus_lost(

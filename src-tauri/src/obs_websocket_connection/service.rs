@@ -3,6 +3,7 @@ use std::{sync::Mutex, time::Duration};
 use futures::StreamExt;
 use log::{info, warn};
 use tauri::{Emitter, Manager};
+use tauri_plugin_positioner::{Position, WindowExt};
 
 use crate::{
    constants::WindowLabel,
@@ -11,7 +12,7 @@ use crate::{
    },
    state::{RecordingState, RecordingStateMutex},
    system_tray::service::{update_system_tray_icon, SystemTrayIcon},
-   window_utilities::commands::hide_window,
+   window_utilities::{commands::hide_window, WindowUtilitiesExt},
    GlobalState, ServerConfigState,
 };
 
@@ -277,6 +278,8 @@ fn start_recording(
    let recording_status_win = app_handle
       .get_webview_window(WindowLabel::RecordingStatus.as_ref())
       .expect("Failed to get recording status window");
+   let _ = recording_status_win.move_window(Position::BottomLeft);
+   recording_status_win.position_above_taskbar();
    let _ = recording_status_win.show();
 
    Ok(())

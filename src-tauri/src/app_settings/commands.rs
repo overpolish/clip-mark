@@ -44,10 +44,20 @@ pub async fn update_start_at_login(
 
 #[tauri::command]
 pub async fn update_hide_from_capture(
+   app_handle: tauri::AppHandle,
+   app_settings: tauri::State<'_, std::sync::Mutex<AppSettingsState>>,
    hide_from_capture: bool,
 ) -> Result<(), String> {
-   todo!(
-      "Implement updating hide from capture setting {:?}",
-      hide_from_capture
-   );
+   let store = app_handle
+      .store(crate::constants::Store::AppSettings.as_ref())
+      .expect("Failed to load App Settings store");
+
+   store.set("hide_from_capture", hide_from_capture);
+   super::service::update_hide_from_capture(&app_handle, hide_from_capture);
+
+   if let Ok(mut state) = app_settings.lock() {
+      state.hide_from_capture = hide_from_capture;
+   }
+
+   Ok(())
 }

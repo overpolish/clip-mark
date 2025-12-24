@@ -26,6 +26,16 @@ pub enum WindowLabel {
    SystemTrayMenu,
 }
 
+impl WindowLabel {
+   pub fn capturable_windows() -> Vec<WindowLabel> {
+      vec![
+         WindowLabel::Configuration,
+         WindowLabel::RecordingStatus,
+         WindowLabel::CaptureNote,
+      ]
+   }
+}
+
 #[derive(
    EnumString, AsRefStr, Display, Debug, Clone, Copy, PartialEq, Eq, Hash,
 )]
