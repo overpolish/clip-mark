@@ -1,19 +1,32 @@
 import { useEffect, useRef } from "react";
 
-import { cx } from "class-variance-authority";
-import { scv } from "css-variants";
 import {
   OverlayScrollbarsComponent,
   type OverlayScrollbarsComponentRef,
 } from "overlayscrollbars-react";
+import { tv, type VariantProps } from "tailwind-variants";
 
-const scrollAreaStyles = scv({
-  base: {
-    end: "pointer-events-none absolute z-100 from-foreground/25 to-transparent",
-    os: "relative h-full w-full overflow-hidden",
-    start:
-      "pointer-events-none absolute z-100 from-foreground/25 to-transparent",
-  },
+import { separateVariantProps } from "@/lib/variants";
+
+const scrollAreaVariants = tv({
+  compoundSlots: [
+    {
+      class: `
+        pointer-events-none absolute z-100 from-foreground/25 to-transparent
+      `,
+      slots: ["start", "end"],
+    },
+    {
+      class: "h-2.5 w-full",
+      orientation: "vertical",
+      slots: ["start", "end"],
+    },
+    {
+      class: "h-full w-2.5",
+      orientation: "horizontal",
+      slots: ["start", "end"],
+    },
+  ],
   compoundVariants: [
     {
       classNames: {
@@ -47,26 +60,17 @@ const scrollAreaStyles = scv({
       orientation: "vertical",
       shadowRadius: "md",
     },
-    {
-      classNames: {
-        end: "h-2.5 w-full",
-        start: "h-2.5 w-full",
-      },
-      orientation: "vertical",
-    },
-    {
-      classNames: {
-        end: "h-full w-2.5",
-        start: "h-full w-2.5",
-      },
-      orientation: "horizontal",
-    },
   ],
   defaultVariants: {
     orientation: "vertical",
     shadowRadius: "sm",
   },
-  slots: ["end", "os", "start"],
+  slots: {
+    end: "",
+    os: "relative h-full w-full overflow-hidden",
+    start: "",
+    wrapper: "",
+  },
   variants: {
     insetShadow: {
       true: {
@@ -77,6 +81,7 @@ const scrollAreaStyles = scv({
       horizontal: {
         end: "right-0 bg-linear-to-l",
         start: "left-0 bg-linear-to-r",
+        wrapper: "text-nowrap",
       },
       vertical: {
         end: "bottom-0 bg-linear-to-t",
@@ -94,7 +99,7 @@ const scrollAreaStyles = scv({
   },
 });
 
-type ScrollAreaProps = Parameters<typeof scrollAreaStyles>[0] & {
+type ScrollAreaProps = VariantProps<typeof scrollAreaVariants> & {
   children?: React.ReactNode;
   className?: string;
   hideScrollbar?: boolean;
@@ -104,22 +109,21 @@ type ScrollAreaProps = Parameters<typeof scrollAreaStyles>[0] & {
   viewportClassName?: string;
 };
 
+/**
+ * @public
+ */
 export function ScrollArea({
   children,
   className,
   hideScrollbar,
-  insetShadow,
-  orientation,
-  shadowRadius,
+  osClassName,
   startAtEnd,
   style,
   viewportClassName,
+  ...allProps
 }: ScrollAreaProps) {
-  const { end, os, start } = scrollAreaStyles({
-    insetShadow,
-    orientation,
-    shadowRadius,
-  });
+  const [variants] = separateVariantProps(allProps, scrollAreaVariants);
+  const { end, os, start, wrapper } = scrollAreaVariants({ ...variants });
 
   const osRef = useRef<OverlayScrollbarsComponentRef>(null);
   const startRef = useRef<HTMLDivElement>(null);
@@ -140,9 +144,12 @@ export function ScrollArea({
       scrollWidth,
     } = scrollEl;
 
-    const scrollPosition = orientation === "vertical" ? scrollTop : scrollLeft;
-    const scrollSize = orientation === "vertical" ? scrollHeight : scrollWidth;
-    const clientSize = orientation === "vertical" ? clientHeight : clientWidth;
+    const scrollPosition =
+      variants.orientation === "vertical" ? scrollTop : scrollLeft;
+    const scrollSize =
+      variants.orientation === "vertical" ? scrollHeight : scrollWidth;
+    const clientSize =
+      variants.orientation === "vertical" ? clientHeight : clientWidth;
 
     const maxScroll = scrollSize - clientSize;
 
@@ -159,7 +166,7 @@ export function ScrollArea({
 
   function createShadowNode(startShadow: boolean) {
     const shadow = document.createElement("div");
-    shadow.className = startShadow ? start : end;
+    shadow.className = startShadow ? start() : end();
     shadow.style.opacity = startShadow ? "0" : "1";
     return shadow;
   }
@@ -197,7 +204,7 @@ export function ScrollArea({
     window.addEventListener("resize", updateShadows);
 
     if (startAtEnd) {
-      if (orientation === "vertical") {
+      if (variants.orientation === "vertical") {
         scrollEl.scrollTop = scrollEl.scrollHeight;
       } else {
         scrollEl.scrollLeft = scrollEl.scrollWidth;
@@ -221,14 +228,14 @@ export function ScrollArea({
   return (
     <OverlayScrollbarsComponent
       ref={osRef}
-      className={os}
+      className={os({ className: osClassName })}
       events={{
         updated: handleInitialized,
       }}
       options={{
         overflow: {
-          x: orientation === "horizontal" ? "scroll" : "hidden",
-          y: orientation === "vertical" ? "scroll" : "hidden",
+          x: variants.orientation === "horizontal" ? "scroll" : "hidden",
+          y: variants.orientation === "vertical" ? "scroll" : "hidden",
         },
         scrollbars: {
           autoHide: "scroll",
@@ -238,10 +245,7 @@ export function ScrollArea({
       }}
       defer
     >
-      <div
-        className={cx(orientation === "horizontal" && "text-nowrap", className)}
-        style={style}
-      >
+      <div className={wrapper({ className })} style={style}>
         {children}
       </div>
     </OverlayScrollbarsComponent>

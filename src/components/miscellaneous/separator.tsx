@@ -9,6 +9,8 @@ const separatorVariants = tv({
   `,
 });
 
+type SeparatorProps = React.ComponentProps<typeof SeparatorPrimitive.Root>;
+
 /**
  * @public
  */
@@ -17,7 +19,7 @@ export function Separator({
   decorative = true,
   orientation = "horizontal",
   ...props
-}: React.ComponentProps<typeof SeparatorPrimitive.Root>) {
+}: SeparatorProps) {
   const styles = separatorVariants({ className });
   return (
     <SeparatorPrimitive.Root

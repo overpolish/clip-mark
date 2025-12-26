@@ -1,9 +1,11 @@
-import type React from "react";
-import { useEffect, useId, useRef, useState } from "react";
+import { type SVGProps, useEffect, useId, useRef, useState } from "react";
 
 import { motion } from "motion/react";
+import { tv } from "tailwind-variants";
 
-import { cn } from "@/lib/utils";
+const dotPatternVariants = tv({
+  base: "pointer-events-none absolute inset-0 h-full w-full text-neutral-400/80",
+});
 
 /**
  *  DotPattern Component Props
@@ -18,7 +20,7 @@ import { cn } from "@/lib/utils";
  * @param {string} [className] - Additional CSS classes to apply to the SVG container
  * @param {boolean} [glow=false] - Whether dots should have a glowing animation effect
  */
-interface DotPatternProps extends React.SVGProps<SVGSVGElement> {
+type DotPatternProps = SVGProps<SVGSVGElement> & {
   className?: string;
   cr?: number;
   cx?: number;
@@ -29,7 +31,7 @@ interface DotPatternProps extends React.SVGProps<SVGSVGElement> {
   x?: number;
   y?: number;
   [key: string]: unknown;
-}
+};
 
 /**
  * DotPattern Component
@@ -61,6 +63,9 @@ interface DotPatternProps extends React.SVGProps<SVGSVGElement> {
  * - Dots color can be controlled via the text color utility classes
  */
 
+/**
+ * @public
+ */
 export function DotPattern({
   className,
   cr = 1,
@@ -106,16 +111,9 @@ export function DotPattern({
     }
   );
 
+  const styles = dotPatternVariants({ className });
   return (
-    <svg
-      ref={containerRef}
-      aria-hidden="true"
-      className={cn(
-        "pointer-events-none absolute inset-0 h-full w-full text-neutral-400/80",
-        className
-      )}
-      {...props}
-    >
+    <svg ref={containerRef} aria-hidden="true" className={styles} {...props}>
       <defs>
         <radialGradient id={`${id}-gradient`}>
           <stop offset="0%" stopColor="currentColor" stopOpacity="1" />

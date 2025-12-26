@@ -1,10 +1,7 @@
-"use client";
-
-import * as React from "react";
+import { isValidElement, useMemo } from "react";
 
 import { motion, isMotionComponent, type HTMLMotionProps } from "motion/react";
-
-import { cn } from "@/lib/utils";
+import { cn } from "tailwind-variants";
 
 type AnyProps = Record<string, unknown>;
 
@@ -13,7 +10,10 @@ type DOMMotionProps<T extends HTMLElement = HTMLElement> = Omit<
   "ref"
 > & { ref?: React.Ref<T> };
 
-type WithAsChild<Base extends object> =
+/**
+ * @public
+ */
+export type WithAsChild<Base extends object> =
   | (Base & { asChild: true; children: React.ReactElement })
   | (Base & { asChild?: false | undefined });
 
@@ -60,7 +60,10 @@ function mergeProps<T extends HTMLElement>(
   return merged;
 }
 
-function Slot<T extends HTMLElement = HTMLElement>({
+/**
+ * @public
+ */
+export function Slot<T extends HTMLElement = HTMLElement>({
   children,
   ref,
   ...props
@@ -70,7 +73,7 @@ function Slot<T extends HTMLElement = HTMLElement>({
     children.type !== null &&
     isMotionComponent(children.type);
 
-  const Base = React.useMemo(
+  const Base = useMemo(
     () =>
       isAlreadyMotion
         ? (children.type as React.ElementType)
@@ -78,7 +81,7 @@ function Slot<T extends HTMLElement = HTMLElement>({
     [isAlreadyMotion, children.type]
   );
 
-  if (!React.isValidElement(children)) return null;
+  if (!isValidElement(children)) return null;
 
   const { ref: childRef, ...childProps } = children.props as AnyProps;
 
@@ -88,11 +91,3 @@ function Slot<T extends HTMLElement = HTMLElement>({
     <Base {...mergedProps} ref={mergeRefs(childRef as React.Ref<T>, ref)} />
   );
 }
-
-export {
-  Slot,
-  type SlotProps,
-  type WithAsChild,
-  type DOMMotionProps,
-  type AnyProps,
-};
