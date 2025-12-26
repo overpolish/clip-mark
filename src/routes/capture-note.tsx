@@ -86,6 +86,7 @@ function CaptureNote() {
   useEffect(() => {
     const unlisten = listen(events.CaptureNoteWillShow, () => {
       setValue("date", new Date());
+      setValue("note", "");
       setFocus("note");
     });
 
