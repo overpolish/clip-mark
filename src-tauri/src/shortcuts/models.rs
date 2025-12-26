@@ -53,22 +53,33 @@ impl AppShortcut {
          Self::CaptureNote => {
             let recording_state =
                app_handle.state::<crate::state::RecordingStateMutex>();
-            let is_recording = if let Ok(state) = recording_state.lock() {
-               state.recording_status.active
-            } else {
-               false
-            };
+            let is_recording = recording_state
+               .lock()
+               .map(|state| state.recording_status.active)
+               .unwrap_or(false);
 
             if !is_recording {
                return;
             }
 
-            super::actions::show_window(
-               app_handle,
-               WindowLabel::CaptureNote.as_ref(),
-               Some(WindowEvent::CaptureNoteWillShow.as_ref()),
-               Some(Position::Center),
-            )
+            let win = app_handle
+               .get_webview_window(WindowLabel::CaptureNote.as_ref())
+               .unwrap();
+
+            // Needed for is_visible to work properly with alwaysOnTop windows
+            let _ = win.set_always_on_top(false);
+            if win.is_visible().unwrap_or(false) {
+               let _ = win.hide();
+            } else {
+               super::actions::show_window(
+                  app_handle,
+                  WindowLabel::CaptureNote.as_ref(),
+                  Some(WindowEvent::CaptureNoteWillShow.as_ref()),
+                  Some(Position::Center),
+               )
+            }
+
+            let _ = win.set_always_on_top(true);
          }
          Self::OpenConfiguration => {
             let win = app_handle
