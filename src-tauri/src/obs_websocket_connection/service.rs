@@ -157,6 +157,15 @@ fn event_handler(
          // hides recording status immediately feeling responsive
          if state == obws::events::OutputState::Stopping {
             emit_recording_status_change(app_handle, false, false);
+
+            let app_handle_clone = app_handle.clone();
+            tauri::async_runtime::spawn(async move {
+               hide_window(
+                  app_handle_clone,
+                  WindowLabel::CaptureNote.to_string(),
+               )
+               .await
+            });
          }
 
          Ok(())
@@ -248,14 +257,6 @@ fn handle_recording_lifecycle(
          }
       }
    } else if !active && was_active {
-      let app_handle_clone = app_handle.clone();
-      tauri::async_runtime::spawn(async move {
-         // TODO currently waits for stopped to disappear, feels sluggish
-         let _ =
-            hide_window(app_handle_clone, WindowLabel::CaptureNote.to_string())
-               .await;
-      });
-
       match stop_recording(state, app_handle, path) {
          Ok(_) => {}
          Err(err) => {
