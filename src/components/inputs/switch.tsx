@@ -1,6 +1,6 @@
-import type * as React from "react";
+import { type ReactElement } from "react";
 
-import { cx, scv } from "css-variants";
+import { tv, type VariantProps } from "tailwind-variants";
 
 import {
   Switch as SwitchPrimitive,
@@ -8,32 +8,33 @@ import {
   SwitchIcon as SwitchIconPrimitive,
   type SwitchProps as SwitchPrimitiveProps,
 } from "@/components/inputs/switch.primitives";
+import { separateVariantProps } from "@/lib/variants";
 
-const switchStyles = scv({
-  base: {
-    icon: [
-      "absolute top-1/2 -translate-y-1/2",
-      "flex items-center",
-      "text-neutral-400 dark:text-neutral-500",
-    ],
-    root: [
-      "peer relative flex shrink-0 items-center justify-start px-px",
-      "rounded-full border border-transparent shadow-xs transition-colors outline-none",
-      "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
-      "disabled:cursor-not-allowed disabled:opacity-50",
-      "data-[state=checked]:justify-end data-[state=checked]:bg-primary",
-      "data-[state=unchecked]:bg-input dark:data-[state=unchecked]:bg-input/80",
-    ],
-    thumb: [
-      "pointer-events-none relative z-10 block rounded-full",
-      "bg-background ring-0",
-      "dark:data-[state=checked]:bg-primary-foreground dark:data-[state=unchecked]:bg-foreground",
-    ],
-  },
+const switchVariants = tv({
   defaultVariants: {
     size: "default",
   },
-  slots: ["root", "thumb", "icon"],
+  slots: {
+    base: `
+      peer relative flex shrink-0 items-center justify-start rounded-full border
+      border-transparent px-px shadow-xs transition-colors outline-none
+      focus-visible:border-ring focus-visible:ring-[3px]
+      focus-visible:ring-ring/50
+      disabled:cursor-not-allowed disabled:opacity-50
+      data-[state=checked]:justify-end data-[state=checked]:bg-primary
+      data-[state=unchecked]:bg-input
+      dark:data-[state=unchecked]:bg-input/80
+    `,
+    icon: `
+      absolute top-1/2 flex -translate-y-1/2 items-center text-neutral-400
+      dark:text-neutral-500
+    `,
+    thumb: `
+      pointer-events-none relative z-10 block rounded-full bg-background ring-0
+      dark:data-[state=checked]:bg-primary-foreground
+      dark:data-[state=unchecked]:bg-foreground
+    `,
+  },
   variants: {
     size: {
       default: {
@@ -51,33 +52,32 @@ const switchStyles = scv({
 });
 
 type SwitchProps = SwitchPrimitiveProps &
-  Parameters<typeof switchStyles>[0] & {
-    endIcon?: React.ReactElement;
+  VariantProps<typeof switchVariants> & {
+    endIcon?: ReactElement;
     pressedWidth?: number;
-    startIcon?: React.ReactElement;
-    thumbIcon?: React.ReactElement;
+    startIcon?: ReactElement;
+    thumbIcon?: ReactElement;
   };
 
-function Switch({
+export function Switch({
   className,
   endIcon,
   pressedWidth = 19,
-  size,
   startIcon,
   thumbIcon,
-  ...props
+  ...allProps
 }: SwitchProps) {
-  const { icon, root, thumb } = switchStyles({ size });
-
+  const [variants, props] = separateVariantProps(allProps, switchVariants);
+  const { base, icon, thumb } = switchVariants({ ...variants });
   return (
-    <SwitchPrimitive className={cx(root, className)} {...props}>
+    <SwitchPrimitive className={base({ className })} {...props}>
       <SwitchThumbPrimitive
-        className={thumb}
+        className={thumb()}
         pressedAnimation={{ width: pressedWidth }}
       >
         {thumbIcon && (
           <SwitchIconPrimitive
-            className={cx(icon, "left-1/2 -translate-1/2")}
+            className={icon({ className: "left-1/2 -translate-1/2" })}
             position="thumb"
           >
             {thumbIcon}
@@ -85,16 +85,21 @@ function Switch({
         )}
       </SwitchThumbPrimitive>
 
-      <SwitchIconPrimitive className={cx(icon, "left-0.5")} position="left">
+      <SwitchIconPrimitive
+        className={icon({ className: "left-0.5" })}
+        position="left"
+      >
         {startIcon ?? <span className="justify-self-center">ON</span>}
       </SwitchIconPrimitive>
+
       {endIcon && (
-        <SwitchIconPrimitive className={cx(icon, "right-0.5")} position="right">
+        <SwitchIconPrimitive
+          className={icon({ className: "right-0.5" })}
+          position="right"
+        >
           {endIcon}
         </SwitchIconPrimitive>
       )}
     </SwitchPrimitive>
   );
 }
-
-export { Switch, type SwitchProps };

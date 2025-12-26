@@ -2,11 +2,13 @@ import { type TSESLint } from "@typescript-eslint/utils";
 import { type Linter } from "eslint";
 
 import { rule as limitedInlineClassName } from "./rules/limited-inline-classname";
+import { rule as noInlineComponentProps } from "./rules/no-inline-component-props";
 import { rule as requireTvVariantsSuffix } from "./rules/require-tv-variants-suffix";
 import { rule as requireVariantsCallStylesName } from "./rules/require-variants-call-styles-name";
 
 const rules: TSESLint.FlatConfig.Plugin["rules"] = {
   "limited-inline-classname": limitedInlineClassName,
+  "no-inline-component-props": noInlineComponentProps,
   "require-tv-variants-suffix": requireTvVariantsSuffix,
   "require-variants-call-styles-name": requireVariantsCallStylesName,
 };
@@ -24,6 +26,7 @@ const recommended: Linter.Config = {
   },
   rules: {
     "clip-mark/limited-inline-classname": "error",
+    "clip-mark/no-inline-component-props": "error",
     "clip-mark/require-tv-variants-suffix": "warn",
     "clip-mark/require-variants-call-styles-name": "warn",
   },

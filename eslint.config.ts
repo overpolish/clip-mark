@@ -20,6 +20,7 @@ export default defineConfig([
   tseslint.configs.recommended,
   {
     rules: {
+      "@typescript-eslint/consistent-type-definitions": ["error", "type"],
       "@typescript-eslint/consistent-type-imports": [
         "error",
         { fixStyle: "inline-type-imports", prefer: "type-imports" },
@@ -38,6 +39,14 @@ export default defineConfig([
   {
     rules: {
       "func-style": ["error", "declaration"],
+      "no-restricted-syntax": [
+        "error",
+        {
+          message:
+            "Import directly from 'react' instead of accessing members via React namespace.",
+          selector: "MemberExpression[object.name='React']",
+        },
+      ],
       "react/jsx-sort-props": [
         "error",
         {

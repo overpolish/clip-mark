@@ -1,6 +1,10 @@
-"use client";
-
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  type ReactNode,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 
 import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
 import {
@@ -44,7 +48,7 @@ const comboboxVariants = tv({
 export type ComboboxData = {
   label: string;
   value: string;
-  left?: React.ReactNode;
+  left?: ReactNode;
 };
 
 type ComboboxProps = VariantProps<typeof comboboxVariants> & {

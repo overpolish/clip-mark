@@ -1,3 +1,5 @@
+import { type ComponentProps } from "react";
+
 import { Slot } from "@radix-ui/react-slot";
 import { tv, type VariantProps } from "tailwind-variants";
 
@@ -45,6 +47,11 @@ const buttonGroupVariants = tv({
   },
 });
 
+type ButtonGroupProps = ComponentProps<"div"> &
+  VariantProps<typeof buttonGroupVariants> & {
+    pulsate?: boolean;
+  };
+
 /**
  *
  * @public
@@ -53,10 +60,7 @@ export function ButtonGroup({
   className,
   pulsate,
   ...allProps
-}: React.ComponentProps<"div"> &
-  VariantProps<typeof buttonGroupVariants> & {
-    pulsate?: boolean;
-  }) {
+}: ButtonGroupProps) {
   const [variants, props] = separateVariantProps(allProps, buttonGroupVariants);
   const { base, pulsate: pulsateStyles } = buttonGroupVariants({ ...variants });
   return (
@@ -82,6 +86,10 @@ const buttonGroupTextVariants = tv({
   `,
 });
 
+type ButtonGroupTextProps = ComponentProps<"div"> & {
+  asChild?: boolean;
+};
+
 /**
  *
  * @public
@@ -90,9 +98,7 @@ export function ButtonGroupText({
   asChild = false,
   className,
   ...props
-}: React.ComponentProps<"div"> & {
-  asChild?: boolean;
-}) {
+}: ButtonGroupTextProps) {
   const Comp = asChild ? Slot : "div";
   const styles = buttonGroupTextVariants({ className });
   return <Comp className={styles} {...props} />;
@@ -112,7 +118,7 @@ export function ButtonGroupSeparator({
   className,
   orientation = "vertical",
   ...props
-}: React.ComponentProps<typeof Separator>) {
+}: ComponentProps<typeof Separator>) {
   const styles = buttonGroupSeparatorVariants({ className });
   return (
     <Separator

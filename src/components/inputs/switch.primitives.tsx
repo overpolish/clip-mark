@@ -1,6 +1,4 @@
-"use client";
-
-import * as React from "react";
+import { useMemo, useState } from "react";
 
 import {
   motion,
@@ -34,7 +32,7 @@ type SwitchProps = Omit<
  * @public
  */
 export function Switch(props: SwitchProps) {
-  const [isPressed, setIsPressed] = React.useState(false);
+  const [isPressed, setIsPressed] = useState(false);
   const [isChecked, setIsChecked] = useControlledState({
     defaultValue: props.defaultChecked,
     onChange: props.onCheckedChange,
@@ -112,7 +110,7 @@ export function SwitchIcon({
 }: SwitchIconProps) {
   const { isChecked } = useSwitch();
 
-  const isAnimated = React.useMemo(() => {
+  const isAnimated = useMemo(() => {
     if (position === "right") return !isChecked;
     if (position === "left") return isChecked;
     if (position === "thumb") return true;
