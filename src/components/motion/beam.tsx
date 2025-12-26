@@ -1,17 +1,31 @@
 import { type RefObject, useEffect, useId, useState } from "react";
 
 import { motion } from "motion/react";
+import { tv } from "tailwind-variants";
 
-import { cn } from "@/lib/utils";
+const beamVariants = tv({
+  slots: {
+    base: "pointer-events-none absolute top-0 left-0 transform-gpu stroke-2",
+    beam: "transform-gpu",
+    path: "transition-[stroke,stroke-opacity]",
+  },
+  variants: {
+    disabled: {
+      true: {
+        beam: "hidden",
+      },
+    },
+  },
+});
 
-export interface AnimatedBeamProps {
+type AnimatedBeamProps = {
   containerRef: RefObject<HTMLElement | null>; // Container ref
   fromRef: RefObject<HTMLElement | null>;
   toRef: RefObject<HTMLElement | null>;
   className?: string;
   curvature?: number;
   delay?: number;
-  disable?: boolean;
+  disabled?: boolean;
   duration?: number;
   endXOffset?: number;
   endYOffset?: number;
@@ -24,14 +38,17 @@ export interface AnimatedBeamProps {
   reverse?: boolean;
   startXOffset?: number;
   startYOffset?: number;
-}
+};
 
+/**
+ * @public
+ */
 export function AnimatedBeam({
   className,
   containerRef,
   curvature = 0,
   delay = 0,
-  disable = false,
+  disabled = false,
   duration = Math.random() * 3 + 4,
   endXOffset = 0,
   endYOffset = 0,
@@ -122,20 +139,18 @@ export function AnimatedBeam({
     endYOffset,
   ]);
 
+  const { base, beam, path } = beamVariants();
   return (
     <svg
+      className={base({ className })}
       fill="none"
       height={svgDimensions.height}
       viewBox={`0 0 ${svgDimensions.width} ${svgDimensions.height}`}
       width={svgDimensions.width}
       xmlns="http://www.w3.org/2000/svg"
-      className={cn(
-        "pointer-events-none absolute top-0 left-0 transform-gpu stroke-2",
-        className
-      )}
     >
       <path
-        className={cn("transition-[stroke,stroke-opacity]", pathClassName)}
+        className={path({ className: pathClassName })}
         d={pathD}
         stroke={pathColor}
         strokeLinecap="round"
@@ -151,8 +166,8 @@ export function AnimatedBeam({
       />
       <defs>
         <motion.linearGradient
-          // Hidden when disabled to prevent rendering issues
-          className={cn("transform-gpu", disable && "hidden")}
+          // Hidden when disabled to prevent re-rendering issues
+          className={beam({ disabled })}
           gradientUnits={"userSpaceOnUse"}
           id={id}
           animate={{

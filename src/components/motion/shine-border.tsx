@@ -1,8 +1,19 @@
-import type * as React from "react";
+import { type CSSProperties, type HTMLAttributes } from "react";
 
-import { cn } from "@/lib/utils";
+import { tv } from "tailwind-variants";
 
-interface ShineBorderProps extends React.HTMLAttributes<HTMLDivElement> {
+const shineBorderVariants = tv({
+  base: `
+    pointer-events-none absolute inset-0 size-full rounded-[inherit]
+    bg-[radial-gradient(transparent,transparent,var(--shine-color),transparent,transparent)]
+    mask-[linear-gradient(#fff_0_0)_content-box,linear-gradient(#fff_0_0)]
+    bg-size-[300%_300%] mask-exclude p-(--border-width)
+    will-change-[background-position]
+    motion-safe:animate-shine
+  `,
+});
+
+type ShineBorderProps = HTMLAttributes<HTMLDivElement> & {
   /**
    * Width of the border in pixels
    * @default 1
@@ -18,7 +29,7 @@ interface ShineBorderProps extends React.HTMLAttributes<HTMLDivElement> {
    * @default "#000000"
    */
   shineColor?: string | string[];
-}
+};
 
 /**
  * Shine Border
@@ -33,31 +44,19 @@ export function ShineBorder({
   style,
   ...props
 }: ShineBorderProps) {
+  const styles = shineBorderVariants({ className });
   return (
     <div
-      className={cn(
-        `
-          pointer-events-none absolute inset-0 size-full rounded-[inherit]
-          will-change-[background-position]
-          motion-safe:animate-shine
-        `,
-        className
-      )}
+      className={styles}
       style={
         {
           "--border-width": `${borderWidth}px`,
           "--duration": `${duration}s`,
-          backgroundImage: `radial-gradient(transparent,transparent, ${
-            Array.isArray(shineColor) ? shineColor.join(",") : shineColor
-          },transparent,transparent)`,
-          backgroundSize: "300% 300%",
-          mask: `linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)`,
-          maskComposite: "exclude",
-          padding: "var(--border-width)",
-          WebkitMask: `linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)`,
-          WebkitMaskComposite: "xor",
+          "--shine-color": Array.isArray(shineColor)
+            ? shineColor.join(",")
+            : shineColor,
           ...style,
-        } as React.CSSProperties
+        } as CSSProperties
       }
       {...props}
     />

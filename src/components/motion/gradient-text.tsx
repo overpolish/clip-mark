@@ -1,14 +1,24 @@
-import { type ComponentPropsWithoutRef } from "react";
+import { type CSSProperties, type ComponentPropsWithoutRef } from "react";
 
-import { cn } from "@/lib/utils";
+import { tv } from "tailwind-variants";
 
-export interface AnimatedGradientTextProps
-  extends ComponentPropsWithoutRef<"div"> {
+const animatedGradientTextVariants = tv({
+  base: `
+    inline animate-gradient bg-linear-to-r from-(--color-from) via-(--color-to)
+    to-(--color-from) bg-size-[var(--bg-size)_100%] bg-clip-text
+    text-transparent
+  `,
+});
+
+type AnimatedGradientTextProps = {
   colorFrom?: string;
   colorTo?: string;
   speed?: number;
-}
+} & ComponentPropsWithoutRef<"div">;
 
+/**
+ * @public
+ */
 export function AnimatedGradientText({
   children,
   className,
@@ -17,22 +27,16 @@ export function AnimatedGradientText({
   speed = 1,
   ...props
 }: AnimatedGradientTextProps) {
+  const styles = animatedGradientTextVariants({ className });
   return (
     <span
-      className={cn(
-        `
-          inline animate-gradient bg-linear-to-r from-(--color-from)
-          via-(--color-to) to-(--color-from) bg-size-[var(--bg-size)_100%]
-          bg-clip-text text-transparent
-        `,
-        className
-      )}
+      className={styles}
       style={
         {
           "--bg-size": `${speed * 300}%`,
           "--color-from": colorFrom,
           "--color-to": colorTo,
-        } as React.CSSProperties
+        } as CSSProperties
       }
       {...props}
     >

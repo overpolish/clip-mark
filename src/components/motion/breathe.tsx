@@ -1,9 +1,14 @@
+import { type ReactNode } from "react";
+
 import { motion, type MotionProps } from "motion/react";
 
 type BreatheProps = MotionProps & {
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
+/**
+ * @public
+ */
 export function Breathe({ children, ...props }: BreatheProps) {
   return (
     <motion.div
