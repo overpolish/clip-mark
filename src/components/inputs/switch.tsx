@@ -38,13 +38,13 @@ const switchVariants = tv({
   variants: {
     size: {
       default: {
+        base: "h-5 w-8",
         icon: "text-[8px]",
-        root: "h-5 w-8",
         thumb: "size-4",
       },
       sm: {
+        base: "h-4 w-7",
         icon: "text-[6px]",
-        root: "h-4 w-7",
         thumb: "size-3",
       },
     },

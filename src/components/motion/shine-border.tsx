@@ -1,19 +1,19 @@
-import { type CSSProperties, type HTMLAttributes } from "react";
+import { type HTMLAttributes } from "react";
 
 import { tv } from "tailwind-variants";
 
 const shineBorderVariants = tv({
   base: `
     pointer-events-none absolute inset-0 size-full rounded-[inherit]
-    bg-[radial-gradient(transparent,transparent,var(--shine-color),transparent,transparent)]
-    mask-[linear-gradient(#fff_0_0)_content-box,linear-gradient(#fff_0_0)]
+    bg-[radial-gradient(transparent,transparent,var(--color-shine),transparent,transparent)]
     bg-size-[300%_300%] mask-exclude p-(--border-width)
     will-change-[background-position]
+    [mask:linear-gradient(#fff_0_0)_content-box,linear-gradient(#fff_0_0)]
     motion-safe:animate-shine
   `,
 });
 
-type ShineBorderProps = HTMLAttributes<HTMLDivElement> & {
+type ShineBorderProps = {
   /**
    * Width of the border in pixels
    * @default 1
@@ -29,19 +29,19 @@ type ShineBorderProps = HTMLAttributes<HTMLDivElement> & {
    * @default "#000000"
    */
   shineColor?: string | string[];
-};
+} & HTMLAttributes<HTMLDivElement>;
 
 /**
  * Shine Border
  *
  * An animated background border effect component with configurable properties.
+ * @public
  */
 export function ShineBorder({
   borderWidth = 1,
   className,
   duration = 14,
   shineColor = "#000000",
-  style,
   ...props
 }: ShineBorderProps) {
   const styles = shineBorderVariants({ className });
@@ -51,12 +51,14 @@ export function ShineBorder({
       style={
         {
           "--border-width": `${borderWidth}px`,
-          "--duration": `${duration}s`,
-          "--shine-color": Array.isArray(shineColor)
+          "--color-shine": Array.isArray(shineColor)
             ? shineColor.join(",")
             : shineColor,
-          ...style,
-        } as CSSProperties
+          "--duration": `${duration}s`,
+          // Arbitrary tailwind does not support webkit mask properties
+          WebkitMask: `linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)`,
+          WebkitMaskComposite: "xor",
+        } as React.CSSProperties
       }
       {...props}
     />

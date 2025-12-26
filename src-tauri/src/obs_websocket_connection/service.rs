@@ -250,6 +250,7 @@ fn handle_recording_lifecycle(
    } else if !active && was_active {
       let app_handle_clone = app_handle.clone();
       tauri::async_runtime::spawn(async move {
+         // TODO currently waits for stopped to disappear, feels sluggish
          let _ =
             hide_window(app_handle_clone, WindowLabel::CaptureNote.to_string())
                .await;
