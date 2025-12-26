@@ -7,6 +7,7 @@ import {
   OverlayScrollbarsComponent,
   type OverlayScrollbarsComponentRef,
 } from "overlayscrollbars-react";
+import { tv, type VariantProps } from "tailwind-variants";
 
 import { Button } from "@/components/buttons/button/button";
 import {
@@ -22,7 +23,23 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/overlays/popover";
-import { cn } from "@/lib/utils";
+
+const comboboxVariants = tv({
+  slots: {
+    checkIcon: "text-[10px] opacity-0",
+    trigger: "w-full justify-between",
+  },
+  variants: {
+    selected: {
+      false: {
+        trigger: "text-muted-foreground",
+      },
+      true: {
+        checkIcon: "opacity-100",
+      },
+    },
+  },
+});
 
 export type ComboboxData = {
   label: string;
@@ -30,7 +47,7 @@ export type ComboboxData = {
   left?: React.ReactNode;
 };
 
-type ComboboxProps = {
+type ComboboxProps = VariantProps<typeof comboboxVariants> & {
   data: ComboboxData[];
   emptyMessage?: string;
   open?: boolean;
@@ -104,29 +121,26 @@ export function Combobox({
     }
   }, [open]);
 
+  const { checkIcon, trigger } = comboboxVariants({ selected: !!selected });
+
+  // TODO check if we are using animate ui popover
   return (
     <Popover onOpenChange={setOpen} open={open}>
       <PopoverTrigger asChild>
         <Button
           ref={triggerRef}
           aria-expanded={open}
+          className={trigger({ className: triggerClassName })}
           role="combobox"
           variant="outline"
-          className={cn(
-            "w-full justify-between",
-            !selected && "text-muted-foreground",
-            triggerClassName
-          )}
         >
           <div className="flex w-full items-center gap-2">
             {selected?.left && <div className="shrink-0">{selected.left}</div>}
-            <span className={"truncate"}>
+            <span className="truncate">
               {selected ? selected.label : placeholder}
             </span>
             <ChevronsUpDownIcon
-              className={`
-              ml-auto shrink-0 text-[10px] opacity-50
-            `}
+              className={`ml-auto shrink-0 text-[10px] opacity-50`}
             />
           </div>
         </Button>
@@ -134,12 +148,15 @@ export function Combobox({
       <PopoverContent className="p-0" style={{ width: triggerWidth }}>
         <Command>
           <CommandInput placeholder={searchPlaceholder} />
-          <CommandList className="">
+          <CommandList>
             <CommandEmpty>{emptyMessage}</CommandEmpty>
             <CommandGroup>
               <OverlayScrollbarsComponent
                 ref={osRef}
-                className={cn("max-h-40 w-full", hasOverflow && "pr-2.5")}
+                className={`
+                  max-h-40 w-full
+                  ${hasOverflow && "pr-2.5"}
+                `}
                 events={{
                   initialized: checkOverflow,
                   updated: checkOverflow,
@@ -169,10 +186,7 @@ export function Combobox({
                     </div>
 
                     <CheckIcon
-                      className={cn(
-                        "text-[10px]",
-                        value === item.value ? "opacity-100" : "opacity-0"
-                      )}
+                      className={checkIcon({ selected: item.value === value })}
                     />
                   </CommandItem>
                 ))}

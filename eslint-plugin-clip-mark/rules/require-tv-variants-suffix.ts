@@ -18,6 +18,9 @@ export const rule = createRule({
 
           if (id.type === "Identifier" && !id.name.endsWith("Variants")) {
             context.report({
+              fix: (fixer) => {
+                return fixer.insertTextAfter(id, "Variants");
+              },
               messageId: "requireTvVariantsSuffix",
               node: id,
             });
@@ -31,6 +34,7 @@ export const rule = createRule({
     docs: {
       description: "Require variables assigned from tv() to end with Variants.",
     },
+    fixable: "code",
     messages: {
       requireTvVariantsSuffix:
         "Variables assigned from tailwind-variants (tv) must have names ending with 'Variants'.",
