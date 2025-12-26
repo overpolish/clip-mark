@@ -1,9 +1,10 @@
 import { type ComponentProps, forwardRef, useRef } from "react";
 
+import { cn } from "tailwind-variants";
+
 import ClipMarkLogo from "@/assets/clip-mark.png";
 import ObsLogo from "@/assets/obsstudio.svg";
 import { AnimatedBeam } from "@/components/motion/beam";
-import { cn } from "@/lib/utils";
 
 import { type ConnectionStatus, connectionStatus } from "./connection-status";
 
@@ -53,7 +54,7 @@ function Beam({
     <AnimatedBeam
       containerRef={containerRef}
       curvature={curvature}
-      disable={status !== connectionStatus.connected}
+      disabled={status !== connectionStatus.connected}
       endYOffset={endYOffset}
       fromRef={fromRef}
       gradientStartColor="var(--color-green-300)"

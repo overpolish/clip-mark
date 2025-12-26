@@ -14,7 +14,11 @@ function getStrictContext<T>(
 ] {
   const Context = createContext<T | undefined>(undefined);
 
-  function Provider({ children, value }: { value: T; children?: ReactNode }) {
+  type ProviderProps = {
+    value: T;
+    children?: ReactNode;
+  };
+  function Provider({ children, value }: ProviderProps) {
     return <Context.Provider value={value}>{children}</Context.Provider>;
   }
 

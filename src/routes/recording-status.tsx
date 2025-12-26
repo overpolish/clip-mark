@@ -70,9 +70,9 @@ function RouteComponent() {
             <Breathe>
               <Circle
                 className={`
-                fill-red-500 stroke-red-500 text-6xl
-                drop-shadow-[0_0_8px_rgba(239,68,68,0.6)]
-              `}
+                  fill-red-500 stroke-red-500 text-6xl
+                  drop-shadow-[0_0_8px_rgba(239,68,68,0.6)]
+                `}
               />
             </Breathe>
           </Flip>

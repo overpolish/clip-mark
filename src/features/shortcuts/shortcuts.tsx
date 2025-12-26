@@ -57,8 +57,8 @@ export function Shortcuts({ className }: ShortcutsProps) {
       </DialogTrigger>
       <DialogContent
         className={`
-        flex h-full max-h-[calc(100%-4rem)] max-w-95 flex-col gap-2 p-4
-      `}
+          flex h-full max-h-[calc(100%-4rem)] max-w-95 flex-col gap-2 p-4
+        `}
       >
         <DialogHeader>
           <DialogTitle className="text-base text-muted-foreground">
