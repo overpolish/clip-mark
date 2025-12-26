@@ -4,6 +4,8 @@ import { invoke } from "@tauri-apps/api/core";
 import { Keyboard } from "lucide-react";
 import z from "zod";
 
+import { Button } from "@/components/buttons/button/button";
+import { ScrollArea } from "@/components/miscellaneous/scroll-area";
 import {
   Dialog,
   DialogContent,
@@ -11,9 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/animate-ui/components/radix/dialog";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
+} from "@/components/overlays/dialog";
 
 import { Shortcut } from "./shortcut";
 
@@ -55,7 +55,11 @@ export function Shortcuts({ className }: ShortcutsProps) {
           Shortcuts
         </Button>
       </DialogTrigger>
-      <DialogContent className="flex h-full max-h-[calc(100%-4rem)] max-w-95 flex-col gap-2 p-4">
+      <DialogContent
+        className={`
+          flex h-full max-h-[calc(100%-4rem)] max-w-95 flex-col gap-2 p-4
+        `}
+      >
         <DialogHeader>
           <DialogTitle className="text-base text-muted-foreground">
             Keyboard Shortcuts

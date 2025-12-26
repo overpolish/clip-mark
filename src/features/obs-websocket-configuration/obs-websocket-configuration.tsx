@@ -5,16 +5,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { invoke } from "@tauri-apps/api/core";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { Book, EthernetPort, KeyRound, Plug } from "lucide-react";
+import { cn } from "tailwind-variants";
 import z from "zod";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/buttons/button/button";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
-} from "@/components/ui/input-group";
-import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
+} from "@/components/inputs/input-group";
+import { Label } from "@/components/typography/label";
 
 const commands = {
   GetServerDetails: "get_server_details",

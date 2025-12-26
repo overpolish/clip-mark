@@ -7,6 +7,8 @@ import { defineConfig, globalIgnores } from "eslint/config";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 
+import eslintPluginClipMark from "./eslint-plugin-clip-mark/index.ts";
+
 export default defineConfig([
   globalIgnores(["routeTree.gen.ts"]),
   {
@@ -18,6 +20,7 @@ export default defineConfig([
   tseslint.configs.recommended,
   {
     rules: {
+      "@typescript-eslint/consistent-type-definitions": ["error", "type"],
       "@typescript-eslint/consistent-type-imports": [
         "error",
         { fixStyle: "inline-type-imports", prefer: "type-imports" },
@@ -36,6 +39,14 @@ export default defineConfig([
   {
     rules: {
       "func-style": ["error", "declaration"],
+      "no-restricted-syntax": [
+        "error",
+        {
+          message:
+            "Import directly from 'react' instead of accessing members via React namespace.",
+          selector: "MemberExpression[object.name='React']",
+        },
+      ],
       "react/jsx-sort-props": [
         "error",
         {
@@ -66,6 +77,7 @@ export default defineConfig([
     },
   },
   {
+    files: ["**/*.{jsx,tsx}"],
     languageOptions: {
       parserOptions: {
         ecmaFeatures: {
@@ -79,25 +91,9 @@ export default defineConfig([
     rules: {
       ...eslintPluginBetterTailwindcss.configs["recommended-warn"].rules,
       ...eslintPluginBetterTailwindcss.configs["recommended-error"].rules,
-      "better-tailwindcss/enforce-consistent-line-wrapping": "off",
     },
     settings: {
       "better-tailwindcss": {
-        callees: [
-          [
-            "scv",
-            [
-              {
-                match: "objectValues",
-                pathPattern: "^(?!slots|defaultVariants)(?!compoundVariants).*",
-              },
-              {
-                match: "objectValues",
-                pathPattern: "^compoundVariants\\[\\d+\\]\\.classNames\\.",
-              },
-            ],
-          ],
-        ],
         entryPoint: "src/index.css",
       },
     },
@@ -220,4 +216,5 @@ export default defineConfig([
       ],
     },
   },
+  eslintPluginClipMark.configs.recommended,
 ]);

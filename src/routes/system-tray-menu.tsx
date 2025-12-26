@@ -6,9 +6,9 @@ import { exit } from "@tauri-apps/plugin-process";
 import { EyeOff, X, Zap } from "lucide-react";
 import z from "zod";
 
-import { Switch } from "@/components/animate-ui/components/radix/switch";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+import { Button } from "@/components/buttons/button/button";
+import { Switch } from "@/components/inputs/switch";
+import { Label } from "@/components/typography/label";
 
 const commands = {
   GetAppSettings: "get_app_settings",
@@ -107,7 +107,12 @@ type SwitchItemProps = {
 function SwitchItem({ checked, icon, label, onChange }: SwitchItemProps) {
   return (
     <Label className="w-full justify-between px-3 py-2 text-xs">
-      <span className="flex items-center gap-1.5 [&_svg]:text-[10px]">
+      <span
+        className={`
+          flex items-center gap-1.5
+          [&_svg]:text-[10px]
+        `}
+      >
         {icon}
         {label}
       </span>

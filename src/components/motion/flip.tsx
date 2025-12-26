@@ -1,7 +1,9 @@
+import { type ReactNode } from "react";
+
 import { motion, type MotionProps } from "motion/react";
 
 type FlipProps = MotionProps & {
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 export function Flip({ children, ...props }: FlipProps) {

@@ -4,8 +4,8 @@ import { convertFileSrc, invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import z from "zod";
 
-import { Combobox, type ComboboxData } from "@/components/ui/combobox";
-import { Separator } from "@/components/ui/separator";
+import { Combobox, type ComboboxData } from "@/components/inputs/combobox";
+import { Separator } from "@/components/miscellaneous/separator";
 
 import { Toolbar } from "./toolbar";
 
@@ -146,7 +146,12 @@ export function WindowUtilities({ className }: AppUtilitiesProps) {
     <div className={className}>
       <div>
         <div className="relative flex items-center">
-          <span className="absolute left-3 -translate-y-[50%] bg-background px-1 text-xs text-muted-foreground">
+          <span
+            className={`
+              absolute left-3 -translate-y-[50%] bg-background px-1 text-xs
+              text-muted-foreground
+            `}
+          >
             Window Utilities
           </span>
           <Separator className="mb-3" />

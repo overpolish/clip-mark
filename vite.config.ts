@@ -1,8 +1,9 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
+import path from "path";
+
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
-import path from "path";
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
 
 const host = process.env.TAURI_DEV_HOST;
 
@@ -10,8 +11,8 @@ const host = process.env.TAURI_DEV_HOST;
 export default defineConfig(async () => ({
   plugins: [
     tanstackRouter({
-      target: "react",
       autoCodeSplitting: true,
+      target: "react",
     }),
     react(),
     tailwindcss(),
@@ -29,16 +30,16 @@ export default defineConfig(async () => ({
   clearScreen: false,
   // 2. tauri expects a fixed port, fail if that port is not available
   server: {
-    port: 1420,
-    strictPort: true,
-    host: host || false,
     hmr: host
       ? {
-          protocol: "ws",
           host,
           port: 1421,
+          protocol: "ws",
         }
       : undefined,
+    host: host || false,
+    port: 1420,
+    strictPort: true,
     watch: {
       // 3. tell vite to ignore watching `src-tauri`
       ignored: ["**/src-tauri/**"],

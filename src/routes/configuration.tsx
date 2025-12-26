@@ -2,12 +2,11 @@ import { useEffect } from "react";
 
 import { createFileRoute } from "@tanstack/react-router";
 
-import { DotPattern } from "@/components/ui/dot-pattern";
+import { DotPattern } from "@/components/miscellaneous/dot-pattern";
 import { ConnectionStatus } from "@/features/connection-status/connection-status";
 import { ObsWebsocketConfiguration } from "@/features/obs-websocket-configuration/obs-websocket-configuration";
 import { Shortcuts } from "@/features/shortcuts/shortcuts";
 import { WindowUtilities } from "@/features/window-utilities/window-utilities";
-import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/configuration")({
   component: Configuration,
@@ -34,10 +33,10 @@ function Configuration() {
         cy={1}
         height={20}
         width={20}
-        className={cn(
-          "-z-1",
-          "mask-[linear-gradient(to_top_right,white,transparent,transparent)]"
-        )}
+        className={`
+          -z-1
+          mask-[linear-gradient(to_top_right,white,transparent,transparent)]
+        `}
       />
       <WindowUtilities className="col-span-2" />
     </div>
