@@ -1,42 +1,43 @@
-import { type ComponentProps } from "react";
-
-import * as PopoverPrimitive from "@radix-ui/react-popover";
 import { tv } from "tailwind-variants";
 
-type PopoverProps = ComponentProps<typeof PopoverPrimitive.Root>;
+import {
+  Popover as PopoverPrimitive,
+  PopoverTrigger as PopoverTriggerPrimitive,
+  PopoverContent as PopoverContentPrimitive,
+  PopoverPortal as PopoverPortalPrimitive,
+  PopoverClose as PopoverClosePrimitive,
+  type PopoverProps as PopoverPrimitiveProps,
+  type PopoverTriggerProps as PopoverTriggerPrimitiveProps,
+  type PopoverContentProps as PopoverContentPrimitiveProps,
+  type PopoverCloseProps as PopoverClosePrimitiveProps,
+} from "./popover.primitive";
+
+type PopoverProps = PopoverPrimitiveProps;
 
 /**
  * @public
  */
-export function Popover({ ...props }: PopoverProps) {
-  return <PopoverPrimitive.Root data-slot="popover" {...props} />;
+export function Popover(props: PopoverProps) {
+  return <PopoverPrimitive {...props} />;
 }
 
-type PopoverTriggerProps = ComponentProps<typeof PopoverPrimitive.Trigger>;
+type PopoverTriggerProps = PopoverTriggerPrimitiveProps;
 
 /**
  * @public
  */
-export function PopoverTrigger({ ...props }: PopoverTriggerProps) {
-  return <PopoverPrimitive.Trigger data-slot="popover-trigger" {...props} />;
+export function PopoverTrigger(props: PopoverTriggerProps) {
+  return <PopoverTriggerPrimitive {...props} />;
 }
 
 const popoverContentVariants = tv({
   base: `
     z-50 w-72 origin-(--radix-popover-content-transform-origin) rounded-md
     border bg-popover p-4 text-popover-foreground shadow-md outline-hidden
-    data-[side=bottom]:slide-in-from-top-2
-    data-[side=left]:slide-in-from-right-2
-    data-[side=right]:slide-in-from-left-2
-    data-[side=top]:slide-in-from-bottom-2
-    data-[state=closed]:animate-out data-[state=closed]:fade-out-0
-    data-[state=closed]:zoom-out-95
-    data-[state=open]:animate-in data-[state=open]:fade-in-0
-    data-[state=open]:zoom-in-95
   `,
 });
 
-type PopoverContentProps = ComponentProps<typeof PopoverPrimitive.Content>;
+type PopoverContentProps = PopoverContentPrimitiveProps;
 
 /**
  * @public
@@ -49,23 +50,22 @@ export function PopoverContent({
 }: PopoverContentProps) {
   const styles = popoverContentVariants({ className });
   return (
-    <PopoverPrimitive.Portal>
-      <PopoverPrimitive.Content
+    <PopoverPortalPrimitive>
+      <PopoverContentPrimitive
         align={align}
         className={styles}
-        data-slot="popover-content"
         sideOffset={sideOffset}
         {...props}
       />
-    </PopoverPrimitive.Portal>
+    </PopoverPortalPrimitive>
   );
 }
 
-type PopoverAnchorProps = ComponentProps<typeof PopoverPrimitive.Anchor>;
+type PopoverCloseProps = PopoverClosePrimitiveProps;
 
 /**
  * @public
  */
-export function PopoverAnchor({ ...props }: PopoverAnchorProps) {
-  return <PopoverPrimitive.Anchor data-slot="popover-anchor" {...props} />;
+export function PopoverClose(props: PopoverCloseProps) {
+  return <PopoverClosePrimitive {...props} />;
 }
