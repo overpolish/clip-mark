@@ -1,3 +1,5 @@
+import { type ComponentProps } from "react";
+
 import { tv } from "tailwind-variants";
 
 const inputVariants = tv({
@@ -17,7 +19,7 @@ const inputVariants = tv({
   `,
 });
 
-type InputProps = React.ComponentProps<"input"> & {};
+type InputProps = ComponentProps<"input"> & {};
 
 export function Input({ className, ref, type, ...props }: InputProps) {
   const styles = inputVariants({ className });

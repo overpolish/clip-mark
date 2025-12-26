@@ -1,3 +1,5 @@
+import { type ComponentProps } from "react";
+
 import * as SeparatorPrimitive from "@radix-ui/react-separator";
 import { tv } from "tailwind-variants";
 
@@ -9,7 +11,7 @@ const separatorVariants = tv({
   `,
 });
 
-type SeparatorProps = React.ComponentProps<typeof SeparatorPrimitive.Root>;
+type SeparatorProps = ComponentProps<typeof SeparatorPrimitive.Root>;
 
 /**
  * @public

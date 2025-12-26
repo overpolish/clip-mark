@@ -87,8 +87,8 @@ export function ConnectionGraph({ status }: ConnectionGraphProps) {
     >
       <div
         className={`
-        flex size-full flex-col items-stretch justify-between gap-10
-      `}
+          flex size-full flex-col items-stretch justify-between gap-10
+        `}
       >
         <div className="flex flex-row justify-between">
           <Circle ref={clipMarkRef}>

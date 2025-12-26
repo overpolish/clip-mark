@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { type ComponentProps, useMemo, useState } from "react";
 
 import {
   motion,
@@ -22,8 +22,11 @@ type SwitchContextType = {
 const [SwitchProvider, useSwitch] =
   getStrictContext<SwitchContextType>("SwitchContext");
 
-type SwitchProps = Omit<
-  React.ComponentProps<typeof SwitchPrimitives.Root>,
+/**
+ * @public
+ */
+export type SwitchProps = Omit<
+  ComponentProps<typeof SwitchPrimitives.Root>,
   "asChild"
 > &
   HTMLMotionProps<"button">;
@@ -58,8 +61,11 @@ export function Switch(props: SwitchProps) {
   );
 }
 
-type SwitchThumbProps = Omit<
-  React.ComponentProps<typeof SwitchPrimitives.Thumb>,
+/**
+ * @public
+ */
+export type SwitchThumbProps = Omit<
+  ComponentProps<typeof SwitchPrimitives.Thumb>,
   "asChild"
 > &
   HTMLMotionProps<"div"> & {
@@ -94,9 +100,15 @@ export function SwitchThumb({
   );
 }
 
-type SwitchIconPosition = "left" | "right" | "thumb";
+/**
+ * @public
+ */
+export type SwitchIconPosition = "left" | "right" | "thumb";
 
-type SwitchIconProps = HTMLMotionProps<"div"> & {
+/**
+ * @public
+ */
+export type SwitchIconProps = HTMLMotionProps<"div"> & {
   position: SwitchIconPosition;
 };
 
@@ -126,11 +138,3 @@ export function SwitchIcon({
     />
   );
 }
-
-export {
-  type SwitchProps,
-  type SwitchThumbProps,
-  type SwitchIconProps,
-  type SwitchIconPosition,
-  type SwitchContextType,
-};

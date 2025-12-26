@@ -1,5 +1,4 @@
-import type * as React from "react";
-import { type ComponentProps } from "react";
+import { type ComponentPropsWithoutRef, type ComponentProps } from "react";
 
 import { tv, type VariantProps } from "tailwind-variants";
 
@@ -43,7 +42,7 @@ const inputGroupVariants = tv({
   },
 });
 
-type InputGroupProps = React.ComponentPropsWithoutRef<"div"> &
+type InputGroupProps = ComponentPropsWithoutRef<"div"> &
   VariantProps<typeof inputGroupVariants>;
 
 /**

@@ -1,6 +1,4 @@
-"use client";
-
-import type * as React from "react";
+import { type ComponentProps } from "react";
 
 import { AnimatePresence, motion, type HTMLMotionProps } from "motion/react";
 import { Dialog as DialogPrimitive } from "radix-ui";
@@ -8,7 +6,10 @@ import { Dialog as DialogPrimitive } from "radix-ui";
 import { useControlledState } from "@/hooks/use-controlled-state";
 import { getStrictContext } from "@/lib/get-strict-context";
 
-type DialogContextType = {
+/**
+ * @public
+ */
+export type DialogContextType = {
   isOpen: boolean;
   setIsOpen: DialogProps["onOpenChange"];
 };
@@ -16,7 +17,10 @@ type DialogContextType = {
 const [DialogProvider, useDialog] =
   getStrictContext<DialogContextType>("DialogContext");
 
-type DialogProps = React.ComponentProps<typeof DialogPrimitive.Root>;
+/**
+ * @public
+ */
+export type DialogProps = ComponentProps<typeof DialogPrimitive.Root>;
 
 /**
  * @public
@@ -39,7 +43,10 @@ export function Dialog(props: DialogProps) {
   );
 }
 
-type DialogTriggerProps = React.ComponentProps<typeof DialogPrimitive.Trigger>;
+/**
+ * @public
+ */
+export type DialogTriggerProps = ComponentProps<typeof DialogPrimitive.Trigger>;
 
 /**
  * @public
@@ -48,8 +55,11 @@ export function DialogTrigger(props: DialogTriggerProps) {
   return <DialogPrimitive.Trigger data-slot="dialog-trigger" {...props} />;
 }
 
-type DialogPortalProps = Omit<
-  React.ComponentProps<typeof DialogPrimitive.Portal>,
+/**
+ * @public
+ */
+export type DialogPortalProps = Omit<
+  ComponentProps<typeof DialogPrimitive.Portal>,
   "forceMount"
 >;
 
@@ -72,8 +82,11 @@ export function DialogPortal(props: DialogPortalProps) {
   );
 }
 
-type DialogOverlayProps = Omit<
-  React.ComponentProps<typeof DialogPrimitive.Overlay>,
+/**
+ * @public
+ */
+export type DialogOverlayProps = Omit<
+  ComponentProps<typeof DialogPrimitive.Overlay>,
   "forceMount" | "asChild"
 > &
   HTMLMotionProps<"div">;
@@ -99,10 +112,16 @@ export function DialogOverlay({
   );
 }
 
-type DialogFlipDirection = "top" | "bottom" | "left" | "right";
+/**
+ * @public
+ */
+export type DialogFlipDirection = "top" | "bottom" | "left" | "right";
 
-type DialogContentProps = Omit<
-  React.ComponentProps<typeof DialogPrimitive.Content>,
+/**
+ * @public
+ */
+export type DialogContentProps = Omit<
+  ComponentProps<typeof DialogPrimitive.Content>,
   "forceMount" | "asChild"
 > &
   HTMLMotionProps<"div"> & {
@@ -162,7 +181,10 @@ export function DialogContent({
   );
 }
 
-type DialogCloseProps = React.ComponentProps<typeof DialogPrimitive.Close>;
+/**
+ * @public
+ */
+export type DialogCloseProps = ComponentProps<typeof DialogPrimitive.Close>;
 
 /**
  * @public
@@ -171,7 +193,10 @@ export function DialogClose(props: DialogCloseProps) {
   return <DialogPrimitive.Close data-slot="dialog-close" {...props} />;
 }
 
-type DialogHeaderProps = React.ComponentProps<"div">;
+/**
+ * @public
+ */
+export type DialogHeaderProps = ComponentProps<"div">;
 
 /**
  * @public
@@ -180,7 +205,10 @@ export function DialogHeader(props: DialogHeaderProps) {
   return <div data-slot="dialog-header" {...props} />;
 }
 
-type DialogFooterProps = React.ComponentProps<"div">;
+/**
+ * @public
+ */
+export type DialogFooterProps = ComponentProps<"div">;
 
 /**
  * @public
@@ -189,7 +217,10 @@ export function DialogFooter(props: DialogFooterProps) {
   return <div data-slot="dialog-footer" {...props} />;
 }
 
-type DialogTitleProps = React.ComponentProps<typeof DialogPrimitive.Title>;
+/**
+ * @public
+ */
+export type DialogTitleProps = ComponentProps<typeof DialogPrimitive.Title>;
 
 /**
  * @public
@@ -198,7 +229,10 @@ export function DialogTitle(props: DialogTitleProps) {
   return <DialogPrimitive.Title data-slot="dialog-title" {...props} />;
 }
 
-type DialogDescriptionProps = React.ComponentProps<
+/**
+ * @public
+ */
+export type DialogDescriptionProps = ComponentProps<
   typeof DialogPrimitive.Description
 >;
 
@@ -210,18 +244,3 @@ export function DialogDescription(props: DialogDescriptionProps) {
     <DialogPrimitive.Description data-slot="dialog-description" {...props} />
   );
 }
-
-export {
-  type DialogProps,
-  type DialogTriggerProps,
-  type DialogPortalProps,
-  type DialogCloseProps,
-  type DialogOverlayProps,
-  type DialogContentProps,
-  type DialogHeaderProps,
-  type DialogFooterProps,
-  type DialogTitleProps,
-  type DialogDescriptionProps,
-  type DialogContextType,
-  type DialogFlipDirection,
-};

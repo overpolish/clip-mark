@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { type CSSProperties, type ReactNode, useEffect, useRef } from "react";
 
 import {
   OverlayScrollbarsComponent,
@@ -100,12 +100,12 @@ const scrollAreaVariants = tv({
 });
 
 type ScrollAreaProps = VariantProps<typeof scrollAreaVariants> & {
-  children?: React.ReactNode;
+  children?: ReactNode;
   className?: string;
   hideScrollbar?: boolean;
   osClassName?: string;
   startAtEnd?: boolean;
-  style?: React.CSSProperties | undefined;
+  style?: CSSProperties | undefined;
   viewportClassName?: string;
 };
 

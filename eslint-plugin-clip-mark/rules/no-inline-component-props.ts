@@ -16,11 +16,49 @@ function isDisallowedType(node: TSESTree.TypeNode | null | undefined): boolean {
   }
 }
 
+function isReactComponent(node: TSESTree.FunctionDeclaration): boolean {
+  if (!node.id?.name || !/^[A-Z]/.test(node.id.name)) {
+    return false;
+  }
+
+  if (node.returnType) {
+    const returnType = node.returnType.typeAnnotation;
+
+    if (returnType.type === "TSTypeReference") {
+      const typeName = returnType.typeName;
+      if (typeName.type === "Identifier") {
+        const name = typeName.name;
+        if (
+          name === "Element" ||
+          name === "ReactElement" ||
+          name === "ReactNode" ||
+          name === "JSX"
+        ) {
+          return true;
+        }
+      }
+
+      if (typeName.type === "TSQualifiedName") {
+        if (
+          typeName.left.type === "Identifier" &&
+          (typeName.left.name === "JSX" || typeName.left.name === "React")
+        ) {
+          return true;
+        }
+      }
+    }
+  }
+
+  return true;
+}
+
 export const rule = createRule({
   create: (context) => {
     return {
       FunctionDeclaration(node) {
         if (node.params.length === 0) return;
+
+        if (!isReactComponent(node)) return;
 
         const param = node.params[0];
         if (

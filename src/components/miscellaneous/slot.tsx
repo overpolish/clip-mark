@@ -1,4 +1,13 @@
-import { isValidElement, useMemo } from "react";
+import {
+  type CSSProperties,
+  type ElementType,
+  isValidElement,
+  type ReactElement,
+  type Ref,
+  type RefCallback,
+  type RefObject,
+  useMemo,
+} from "react";
 
 import { motion, isMotionComponent, type HTMLMotionProps } from "motion/react";
 import { cn } from "tailwind-variants";
@@ -8,13 +17,13 @@ type AnyProps = Record<string, unknown>;
 type DOMMotionProps<T extends HTMLElement = HTMLElement> = Omit<
   HTMLMotionProps<keyof HTMLElementTagNameMap>,
   "ref"
-> & { ref?: React.Ref<T> };
+> & { ref?: Ref<T> };
 
 /**
  * @public
  */
 export type WithAsChild<Base extends object> =
-  | (Base & { asChild: true; children: React.ReactElement })
+  | (Base & { asChild: true; children: ReactElement })
   | (Base & { asChild?: false | undefined });
 
 type SlotProps<T extends HTMLElement = HTMLElement> = {
@@ -22,16 +31,14 @@ type SlotProps<T extends HTMLElement = HTMLElement> = {
   children?: any;
 } & DOMMotionProps<T>;
 
-function mergeRefs<T>(
-  ...refs: (React.Ref<T> | undefined)[]
-): React.RefCallback<T> {
+function mergeRefs<T>(...refs: (Ref<T> | undefined)[]): RefCallback<T> {
   return (node) => {
     refs.forEach((ref) => {
       if (!ref) return;
       if (typeof ref === "function") {
         ref(node);
       } else {
-        (ref as React.RefObject<T | null>).current = node;
+        (ref as RefObject<T | null>).current = node;
       }
     });
   };
@@ -52,8 +59,8 @@ function mergeProps<T extends HTMLElement>(
 
   if (childProps.style || slotProps.style) {
     merged.style = {
-      ...(childProps.style as React.CSSProperties),
-      ...(slotProps.style as React.CSSProperties),
+      ...(childProps.style as CSSProperties),
+      ...(slotProps.style as CSSProperties),
     };
   }
 
@@ -76,8 +83,8 @@ export function Slot<T extends HTMLElement = HTMLElement>({
   const Base = useMemo(
     () =>
       isAlreadyMotion
-        ? (children.type as React.ElementType)
-        : motion.create(children.type as React.ElementType),
+        ? (children.type as ElementType)
+        : motion.create(children.type as ElementType),
     [isAlreadyMotion, children.type]
   );
 
@@ -87,7 +94,5 @@ export function Slot<T extends HTMLElement = HTMLElement>({
 
   const mergedProps = mergeProps(childProps, props);
 
-  return (
-    <Base {...mergedProps} ref={mergeRefs(childRef as React.Ref<T>, ref)} />
-  );
+  return <Base {...mergedProps} ref={mergeRefs(childRef as Ref<T>, ref)} />;
 }

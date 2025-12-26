@@ -1,4 +1,5 @@
 import { XIcon } from "lucide-react";
+import { tv } from "tailwind-variants";
 
 import {
   Dialog as DialogPrimitive,
@@ -21,7 +22,6 @@ import {
   type DialogOverlayProps as DialogOverlayPrimitiveProps,
   type DialogCloseProps as DialogClosePrimitiveProps,
 } from "@/components/overlays/dialog.primitives";
-import { cn } from "@/lib/utils";
 
 type DialogProps = DialogPrimitiveProps;
 
@@ -50,19 +50,37 @@ export function DialogClose(props: DialogCloseProps) {
   return <DialogClosePrimitive {...props} />;
 }
 
+const dialogOverlayVariants = tv({
+  base: "fixed inset-0 z-50 bg-black/50 backdrop-blur-xs",
+});
+
 type DialogOverlayProps = DialogOverlayPrimitiveProps;
 
 function DialogOverlay({ className, ...props }: DialogOverlayProps) {
-  return (
-    <DialogOverlayPrimitive
-      className={cn(
-        "fixed inset-0 z-50 bg-black/50 backdrop-blur-xs",
-        className
-      )}
-      {...props}
-    />
-  );
+  const styles = dialogOverlayVariants({ className });
+  return <DialogOverlayPrimitive className={styles} {...props} />;
 }
+
+const dialogContentVariants = tv({
+  slots: {
+    base: `
+      fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)]
+      translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border
+      bg-background p-6 shadow-lg
+      sm:max-w-lg
+    `,
+    close: `
+      absolute top-4 right-4 rounded-xs opacity-70 ring-offset-background
+      transition-opacity
+      hover:opacity-100
+      focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-hidden
+      disabled:pointer-events-none
+      data-[state=open]:bg-accent data-[state=open]:text-muted-foreground
+      [&_svg]:pointer-events-none [&_svg]:shrink-0
+      [&_svg:not([class*='size-'])]:size-4
+    `,
+  },
+});
 
 type DialogContentProps = DialogContentPrimitiveProps & {
   showCloseButton?: boolean;
@@ -77,36 +95,14 @@ export function DialogContent({
   showCloseButton = true,
   ...props
 }: DialogContentProps) {
+  const { base, close } = dialogContentVariants();
   return (
     <DialogPortalPrimitive>
       <DialogOverlay />
-      <DialogContentPrimitive
-        className={cn(
-          `
-            fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)]
-            translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border
-            bg-background p-6 shadow-lg
-            sm:max-w-lg
-          `,
-          className
-        )}
-        {...props}
-      >
+      <DialogContentPrimitive className={base({ className })} {...props}>
         {children}
         {showCloseButton && (
-          <DialogClosePrimitive
-            className={`
-            absolute top-4 right-4 rounded-xs opacity-70 ring-offset-background
-            transition-opacity
-            hover:opacity-100
-            focus:ring-2 focus:ring-ring focus:ring-offset-2
-            focus:outline-hidden
-            disabled:pointer-events-none
-            data-[state=open]:bg-accent data-[state=open]:text-muted-foreground
-            [&_svg]:pointer-events-none [&_svg]:shrink-0
-            [&_svg:not([class*='size-'])]:size-4
-          `}
-          >
+          <DialogClosePrimitive className={close()}>
             <XIcon className="text-xs" />
             <span className="sr-only">Close</span>
           </DialogClosePrimitive>
@@ -116,19 +112,26 @@ export function DialogContent({
   );
 }
 
+const dialogHeaderVariants = tv({
+  base: "flex flex-col gap-2 text-left",
+});
+
 type DialogHeaderProps = DialogHeaderPrimitiveProps;
 
 /**
  * @public
  */
 export function DialogHeader({ className, ...props }: DialogHeaderProps) {
-  return (
-    <DialogHeaderPrimitive
-      className={cn("flex flex-col gap-2 text-left", className)}
-      {...props}
-    />
-  );
+  const styles = dialogHeaderVariants({ className });
+  return <DialogHeaderPrimitive className={styles} {...props} />;
 }
+
+const dialogFooterVariants = tv({
+  base: `
+    flex flex-col-reverse gap-2
+    sm:flex-row sm:justify-end
+  `,
+});
 
 type DialogFooterProps = DialogFooterPrimitiveProps;
 
@@ -136,19 +139,13 @@ type DialogFooterProps = DialogFooterPrimitiveProps;
  * @public
  */
 export function DialogFooter({ className, ...props }: DialogFooterProps) {
-  return (
-    <DialogFooterPrimitive
-      className={cn(
-        `
-          flex flex-col-reverse gap-2
-          sm:flex-row sm:justify-end
-        `,
-        className
-      )}
-      {...props}
-    />
-  );
+  const styles = dialogFooterVariants({ className });
+  return <DialogFooterPrimitive className={styles} {...props} />;
 }
+
+const dialogTitleVariants = tv({
+  base: "text-lg leading-none font-semibold",
+});
 
 type DialogTitleProps = DialogTitlePrimitiveProps;
 
@@ -156,13 +153,13 @@ type DialogTitleProps = DialogTitlePrimitiveProps;
  * @public
  */
 export function DialogTitle({ className, ...props }: DialogTitleProps) {
-  return (
-    <DialogTitlePrimitive
-      className={cn("text-lg leading-none font-semibold", className)}
-      {...props}
-    />
-  );
+  const styles = dialogTitleVariants({ className });
+  return <DialogTitlePrimitive className={styles} {...props} />;
 }
+
+const dialogDescriptionVariants = tv({
+  base: "text-sm text-muted-foreground",
+});
 
 type DialogDescriptionProps = DialogDescriptionPrimitiveProps;
 
@@ -173,21 +170,6 @@ export function DialogDescription({
   className,
   ...props
 }: DialogDescriptionProps) {
-  return (
-    <DialogDescriptionPrimitive
-      className={cn("text-sm text-muted-foreground", className)}
-      {...props}
-    />
-  );
+  const styles = dialogDescriptionVariants({ className });
+  return <DialogDescriptionPrimitive className={styles} {...props} />;
 }
-
-export {
-  type DialogProps,
-  type DialogTriggerProps,
-  type DialogCloseProps,
-  type DialogContentProps,
-  type DialogHeaderProps,
-  type DialogFooterProps,
-  type DialogTitleProps,
-  type DialogDescriptionProps,
-};
