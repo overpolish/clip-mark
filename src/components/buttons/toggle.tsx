@@ -38,17 +38,27 @@ const toggleVariants = tv({
   },
   variants: {
     size: {
-      default: "h-9 min-w-9 px-2",
-      icon: "size-9 text-[12px]",
-      lg: "h-10 min-w-10 px-2.5",
-      sm: "h-8 min-w-8 px-1.5",
+      default: {
+        content: "h-9 min-w-9 px-2",
+      },
+      icon: {
+        content: "size-9 text-[12px]",
+      },
+      lg: {
+        content: "h-10 min-w-10 px-2.5",
+      },
+      sm: {
+        content: "h-8 min-w-8 px-1.5",
+      },
     },
     variant: {
-      default: "bg-transparent",
-      outline: `
-        border border-input bg-transparent shadow-xs
-        hover:bg-accent/40 hover:text-accent-foreground
-      `,
+      default: { content: "bg-transparent" },
+      outline: {
+        content: `
+          border border-input bg-transparent shadow-xs
+          hover:bg-accent/40 hover:text-accent-foreground
+        `,
+      },
     },
   },
 });
@@ -78,7 +88,7 @@ export function Toggle({
       onPressedChange={onPressedChange}
       pressed={pressed}
     >
-      <ToggleHighlightPrimitive className="rounded-md bg-accent" />
+      <ToggleHighlightPrimitive className="rounded-md" />
       <ToggleItemPrimitive className={content({ className })} {...props} />
     </TogglePrimitive>
   );
