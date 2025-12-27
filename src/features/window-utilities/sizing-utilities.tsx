@@ -3,8 +3,8 @@ import {
   useState,
   type ComponentProps,
   type FormEvent,
-  useEffect,
   useRef,
+  useEffect,
 } from "react";
 
 import { Link, Unlink, Wand2 } from "lucide-react";
@@ -75,11 +75,13 @@ type SizingUtilitiesProps = {
 
 export function SizingUtilities({ onApply }: SizingUtilitiesProps) {
   const [maintainAspectRatio, setMaintainAspectRatio] = useState(false);
+
   const [width, setWidth] = useState(1920);
   const [height, setHeight] = useState(1080);
+  const widthRef = useRef(width);
+  const heightRef = useRef(height);
 
-  const [lastChanged, setLastChanged] = useState<"width" | "height">("width");
-  const aspectRatioRef = useRef(width / height);
+  const [aspectRatio, setAspectRatio] = useState(width / height);
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -88,28 +90,52 @@ export function SizingUtilities({ onApply }: SizingUtilitiesProps) {
 
   function createDimensionSetter(dimension: "width" | "height") {
     return (setter: (val: number) => void) => (val: number) => {
-      setLastChanged(dimension);
       setter(val);
+
+      if (maintainAspectRatio && aspectRatio > 0 && isFinite(aspectRatio)) {
+        if (dimension === "width") {
+          setHeight(Math.round(val / aspectRatio));
+        } else {
+          setWidth(Math.round(val * aspectRatio));
+        }
+      } else {
+        // Update aspect ratio when unlocked
+        if (dimension === "width") {
+          setAspectRatio(val / heightRef.current);
+        } else {
+          setAspectRatio(widthRef.current / val);
+        }
+      }
     };
   }
 
-  useEffect(() => {
-    if (maintainAspectRatio && height !== 0) {
-      aspectRatioRef.current = width / height;
+  function formatAspectRatio(ratio: number): string {
+    const maxDenominator = 100;
+    let bestNumerator = 1;
+    let bestDenominator = 1;
+    let minError = Math.abs(ratio - 1);
+
+    for (let denom = 1; denom <= maxDenominator; denom++) {
+      const numer = Math.round(ratio * denom);
+      const currentRatio = numer / denom;
+      const error = Math.abs(currentRatio - ratio);
+
+      if (error < minError) {
+        minError = error;
+        bestNumerator = numer;
+        bestDenominator = denom;
+      }
+
+      if (error < 0.001) break;
     }
-  }, [maintainAspectRatio]);
+
+    return `${bestNumerator}:${bestDenominator}`;
+  }
 
   useEffect(() => {
-    if (!maintainAspectRatio) return;
-    if (aspectRatioRef.current === 0 || !isFinite(aspectRatioRef.current))
-      return;
-
-    if (lastChanged === "width") {
-      setHeight(Math.round(width / aspectRatioRef.current));
-    } else {
-      setWidth(Math.round(height * aspectRatioRef.current));
-    }
-  }, [width, height, lastChanged, maintainAspectRatio]);
+    widthRef.current = width;
+    heightRef.current = height;
+  }, [width, height]);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -123,13 +149,25 @@ export function SizingUtilities({ onApply }: SizingUtilitiesProps) {
           value={width}
         />
         <InputGroupButton
-          deselectedContent={<Unlink className="text-[10px]" />}
           onPressedChange={setMaintainAspectRatio}
           pressed={maintainAspectRatio}
           size="icon-sm"
+          deselectedContent={
+            <div className="flex flex-col items-center justify-center">
+              <Unlink className="text-[9px]" />
+              <span className="text-[9px] text-muted-foreground">
+                {formatAspectRatio(aspectRatio)}
+              </span>
+            </div>
+          }
           asToggle
         >
-          <Link className="text-[10px]" />
+          <div className="flex flex-col items-center justify-center">
+            <Link className="text-[9px]" />
+            <span className="text-[9px] text-muted-foreground">
+              {formatAspectRatio(aspectRatio)}
+            </span>
+          </div>
         </InputGroupButton>
         <SizeInput
           label="Height"
@@ -143,7 +181,7 @@ export function SizingUtilities({ onApply }: SizingUtilitiesProps) {
                 <Wand2 />
               </InputGroupButton>
             </TooltipTrigger>
-            <TooltipContent>Windows may have own constraints</TooltipContent>
+            <TooltipContent>Window may have own constraints</TooltipContent>
           </Tooltip>
         </InputGroupAddon>
       </InputGroup>
