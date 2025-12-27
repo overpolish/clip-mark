@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Clip Mark",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "identifier": "com.clip-mark",
   "build": {
     "beforeDevCommand": "pnpm dev",
@@ -24,12 +24,15 @@
     "windows": [
       {
         "url": "/configuration",
-        "label": "clip-mark",
-        "title": "Clip Mark",
+        "label": "configuration",
+        "title": "Configuration",
+        "width": 450,
+        "height": 336,
         "decorations": false,
         "visible": false,
         "skipTaskbar": true,
-        "resizable": false
+        "resizable": false,
+        "contentProtected": false
       },
       {
         "url": "/recording-status",
@@ -43,7 +46,8 @@
         "alwaysOnTop": true,
         "transparent": true,
         "shadow": false,
-        "visible": false
+        "visible": false,
+        "contentProtected": false
       },
       {
         "url": "/capture-note",
@@ -57,6 +61,19 @@
         "alwaysOnTop": true,
         "transparent": true,
         "shadow": false,
+        "visible": false,
+        "contentProtected": false
+      },
+      {
+        "url": "/system-tray-menu",
+        "label": "system-tray-menu",
+        "title": "System Tray Menu",
+        "width": 200,
+        "height": 105,
+        "skipTaskbar": true,
+        "resizable": false,
+        "decorations": false,
+        "alwaysOnTop": true,
         "visible": false
       }
     ]

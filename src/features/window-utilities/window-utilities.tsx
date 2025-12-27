@@ -4,9 +4,11 @@ import { convertFileSrc, invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import z from "zod";
 
-import { Combobox, type ComboboxData } from "@/components/ui/combobox";
-import { Separator } from "@/components/ui/separator";
+import { Combobox, type ComboboxData } from "@/components/inputs/combobox";
+import { Separator } from "@/components/miscellaneous/separator";
+import { TooltipProvider } from "@/components/overlays/tooltip";
 
+import { SizingUtilities } from "./sizing-utilities";
 import { Toolbar } from "./toolbar";
 
 const _windowInfoSchema = z.object({
@@ -32,6 +34,7 @@ const commands = {
   FullscreenWindow: "fullscreen_window",
   ListWindows: "list_windows",
   MakeBorderless: "make_borderless",
+  ResizeWindow: "resize_window",
   RestoreBorder: "restore_border",
 } as const;
 
@@ -53,6 +56,10 @@ async function restoreBorder(hwnd: number) {
 
 async function fullscreenWindow(hwnd: number) {
   invoke<void>(commands.FullscreenWindow, { hwnd });
+}
+
+async function resizeWindow(hwnd: number, width: number, height: number) {
+  invoke<void>(commands.ResizeWindow, { height, hwnd, width });
 }
 
 export function WindowUtilities({ className }: AppUtilitiesProps) {
@@ -143,38 +150,59 @@ export function WindowUtilities({ className }: AppUtilitiesProps) {
   }, [windowOptions, selectedWindow]);
 
   return (
-    <div className={className}>
-      <div>
-        <div className="relative flex items-center">
-          <span className="absolute left-3 -translate-y-[50%] bg-background px-1 text-xs text-muted-foreground">
-            Window Utilities
-          </span>
-          <Separator className="mb-3" />
+    <TooltipProvider>
+      <div className={className}>
+        <div>
+          <div className="relative flex items-center">
+            <span
+              className={`
+                absolute left-3 -translate-y-[50%] bg-background px-1 text-xs
+                text-muted-foreground
+              `}
+            >
+              Window Utilities
+            </span>
+            <Separator className="mb-3" />
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <div className="flex max-w-full gap-2">
+            <Combobox
+              data={windowOptions}
+              emptyMessage="No Windows found."
+              onOpen={getWindows}
+              onValueChange={setSelectedWindow}
+              open={comboboxOpen}
+              placeholder="Select a Window"
+              searchPlaceholder="Search Windows..."
+              setOpen={setComboboxOpen}
+              triggerClassName="shrink min-w-0"
+              value={selectedWindow}
+            />
+
+            <Toolbar
+              isWindowSelected={selectedWindow !== null}
+              onClickBorderless={() => onClick(selectedWindow)(makeBorderless)}
+              onClickCenter={() => onClick(selectedWindow)(centerWindow)}
+              onClickFullscreen={() =>
+                onClick(selectedWindow)(fullscreenWindow)
+              }
+              onClickRestoreBorder={() =>
+                onClick(selectedWindow)(restoreBorder)
+              }
+            />
+          </div>
+
+          <SizingUtilities
+            onApply={(width, height) =>
+              onClick(selectedWindow)((hwnd) =>
+                resizeWindow(hwnd, width, height)
+              )
+            }
+          />
         </div>
       </div>
-
-      <div className="flex max-w-full gap-2">
-        <Combobox
-          data={windowOptions}
-          emptyMessage="No Windows found."
-          onOpen={getWindows}
-          onValueChange={setSelectedWindow}
-          open={comboboxOpen}
-          placeholder="Select a Window"
-          searchPlaceholder="Search Windows..."
-          setOpen={setComboboxOpen}
-          triggerClassName="shrink min-w-0"
-          value={selectedWindow}
-        />
-
-        <Toolbar
-          isWindowSelected={selectedWindow !== null}
-          onClickBorderless={() => onClick(selectedWindow)(makeBorderless)}
-          onClickCenter={() => onClick(selectedWindow)(centerWindow)}
-          onClickFullscreen={() => onClick(selectedWindow)(fullscreenWindow)}
-          onClickRestoreBorder={() => onClick(selectedWindow)(restoreBorder)}
-        />
-      </div>
-    </div>
+    </TooltipProvider>
   );
 }

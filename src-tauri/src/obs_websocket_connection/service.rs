@@ -3,14 +3,16 @@ use std::{sync::Mutex, time::Duration};
 use futures::StreamExt;
 use log::{info, warn};
 use tauri::{Emitter, Manager};
+use tauri_plugin_positioner::{Position, WindowExt};
 
 use crate::{
+   constants::WindowLabel,
    obs_websocket_connection::models::{
       ConnectionEvents, ConnectionStatus, RecordingEvents, RecordingStatus,
    },
    state::{RecordingState, RecordingStateMutex},
    system_tray::service::{update_system_tray_icon, SystemTrayIcon},
-   window_utilities::commands::hide_window,
+   window_utilities::{commands::hide_window, WindowUtilitiesExt},
    GlobalState, ServerConfigState,
 };
 
@@ -155,6 +157,15 @@ fn event_handler(
          // hides recording status immediately feeling responsive
          if state == obws::events::OutputState::Stopping {
             emit_recording_status_change(app_handle, false, false);
+
+            let app_handle_clone = app_handle.clone();
+            tauri::async_runtime::spawn(async move {
+               hide_window(
+                  app_handle_clone,
+                  WindowLabel::CaptureNote.to_string(),
+               )
+               .await
+            });
          }
 
          Ok(())
@@ -168,6 +179,8 @@ fn event_handler(
 
 fn connection_changed(app_handle: &tauri::AppHandle, status: ConnectionStatus) {
    info!("Connection status changed: {:?}", status);
+
+   emit_recording_status_change(app_handle, false, false);
 
    update_system_tray_icon(
       app_handle,
@@ -244,13 +257,7 @@ fn handle_recording_lifecycle(
          }
       }
    } else if !active && was_active {
-      let app_handle_clone = app_handle.clone();
-      tauri::async_runtime::spawn(async move {
-         let _ =
-            hide_window(app_handle_clone, "capture-note".to_string()).await;
-      });
-
-      match stop_recording(state, path) {
+      match stop_recording(state, app_handle, path) {
          Ok(_) => {}
          Err(err) => {
             warn!("Failed to finalize notes: {}", err);
@@ -270,11 +277,19 @@ fn start_recording(
    state.pause_start = None;
    state.note_file_path = Some(resolve_note_file_path(app_handle, path, now)?);
 
+   let recording_status_win = app_handle
+      .get_webview_window(WindowLabel::RecordingStatus.as_ref())
+      .expect("Failed to get recording status window");
+   let _ = recording_status_win.move_window(Position::BottomLeft);
+   recording_status_win.position_above_taskbar();
+   let _ = recording_status_win.show();
+
    Ok(())
 }
 
 fn stop_recording(
    state: &mut RecordingState,
+   app_handle: &tauri::AppHandle,
    output_file_path: Option<String>,
 ) -> Result<(), std::io::Error> {
    state.recording_start = None;
@@ -283,6 +298,12 @@ fn stop_recording(
 
    if let Some(note_path) = state.note_file_path.take() {
       if let Some(output_path) = output_file_path {
+         let metadata = std::fs::metadata(&note_path);
+         if metadata.is_err() || metadata.unwrap().len() == 0 {
+            std::fs::remove_file(&note_path)?;
+            return Ok(());
+         }
+
          let final_note_path = std::path::Path::new(&output_path)
             .with_extension("txt")
             .to_string_lossy()
@@ -299,6 +320,11 @@ fn stop_recording(
          }
       }
    }
+
+   let recording_status_win = app_handle
+      .get_webview_window(WindowLabel::RecordingStatus.as_ref())
+      .expect("Failed to get recording status window");
+   let _ = recording_status_win.hide();
 
    Ok(())
 }

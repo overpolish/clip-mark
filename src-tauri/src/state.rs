@@ -61,6 +61,30 @@ impl ServerConfigState {
    }
 }
 
+#[derive(Clone, Default)]
+pub struct AppSettingsState {
+   pub start_at_login: bool,
+   pub hide_from_capture: bool,
+}
+
+impl AppSettingsState {
+   pub fn from_store<R: tauri::Runtime>(
+      store: &tauri_plugin_store::Store<R>,
+   ) -> Self {
+      Self {
+         start_at_login: store
+            .get("start_at_login")
+            .and_then(|v| v.as_bool())
+            .unwrap_or(false),
+
+         hide_from_capture: store
+            .get("hide_from_capture")
+            .and_then(|v| v.as_bool())
+            .unwrap_or(false),
+      }
+   }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct RecordingState {
    pub recording_status: RecordingStatus,
