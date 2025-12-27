@@ -78,8 +78,9 @@ export function ObsWebsocketConfiguration({
               type="button"
               variant="outline"
               onClick={() => {
-                // TODO link to specific header
-                openUrl("https://github.com/domingasp/clip-mark");
+                openUrl(
+                  "https://github.com/domingasp/clip-mark?tab=readme-ov-file#-required-enable-obs-websocket"
+                );
               }}
             >
               <Book />

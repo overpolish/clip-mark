@@ -127,7 +127,6 @@ export function Combobox({
 
   const { checkIcon, trigger } = comboboxVariants({ selected: !!selected });
 
-  // TODO check if we are using animate ui popover
   return (
     <Popover onOpenChange={setOpen} open={open}>
       <PopoverTrigger asChild>
