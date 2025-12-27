@@ -21,7 +21,7 @@ import {
   type DialogTriggerProps as DialogTriggerPrimitiveProps,
   type DialogOverlayProps as DialogOverlayPrimitiveProps,
   type DialogCloseProps as DialogClosePrimitiveProps,
-} from "@/components/overlays/dialog.primitives";
+} from "@/components/overlays/dialog.primitive";
 
 type DialogProps = DialogPrimitiveProps;
 

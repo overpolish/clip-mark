@@ -7,7 +7,7 @@ import {
   SwitchThumb as SwitchThumbPrimitive,
   SwitchIcon as SwitchIconPrimitive,
   type SwitchProps as SwitchPrimitiveProps,
-} from "@/components/inputs/switch.primitives";
+} from "@/components/inputs/switch.primitive";
 import { separateVariantProps } from "@/lib/variants";
 
 const switchVariants = tv({

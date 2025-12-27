@@ -8,7 +8,7 @@ import { Book, EthernetPort, KeyRound, Plug } from "lucide-react";
 import { cn } from "tailwind-variants";
 import z from "zod";
 
-import { Button } from "@/components/buttons/button/button";
+import { Button } from "@/components/buttons/button";
 import {
   InputGroup,
   InputGroupAddon,

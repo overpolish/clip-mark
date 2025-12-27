@@ -5,8 +5,8 @@ import {
   SquareDot,
 } from "lucide-react";
 
-import { Button } from "@/components/buttons/button/button";
-import { ButtonGroup } from "@/components/buttons/button/button-group";
+import { Button } from "@/components/buttons/button";
+import { ButtonGroup } from "@/components/buttons/button-group";
 import {
   Tooltip,
   TooltipContent,

@@ -7,6 +7,7 @@ import z from "zod";
 import { Combobox, type ComboboxData } from "@/components/inputs/combobox";
 import { Separator } from "@/components/miscellaneous/separator";
 
+import { SizingUtilities } from "./sizing-utilities";
 import { Toolbar } from "./toolbar";
 
 const _windowInfoSchema = z.object({
@@ -158,27 +159,31 @@ export function WindowUtilities({ className }: AppUtilitiesProps) {
         </div>
       </div>
 
-      <div className="flex max-w-full gap-2">
-        <Combobox
-          data={windowOptions}
-          emptyMessage="No Windows found."
-          onOpen={getWindows}
-          onValueChange={setSelectedWindow}
-          open={comboboxOpen}
-          placeholder="Select a Window"
-          searchPlaceholder="Search Windows..."
-          setOpen={setComboboxOpen}
-          triggerClassName="shrink min-w-0"
-          value={selectedWindow}
-        />
+      <div className="flex flex-col gap-2">
+        <div className="flex max-w-full gap-2">
+          <Combobox
+            data={windowOptions}
+            emptyMessage="No Windows found."
+            onOpen={getWindows}
+            onValueChange={setSelectedWindow}
+            open={comboboxOpen}
+            placeholder="Select a Window"
+            searchPlaceholder="Search Windows..."
+            setOpen={setComboboxOpen}
+            triggerClassName="shrink min-w-0"
+            value={selectedWindow}
+          />
 
-        <Toolbar
-          isWindowSelected={selectedWindow !== null}
-          onClickBorderless={() => onClick(selectedWindow)(makeBorderless)}
-          onClickCenter={() => onClick(selectedWindow)(centerWindow)}
-          onClickFullscreen={() => onClick(selectedWindow)(fullscreenWindow)}
-          onClickRestoreBorder={() => onClick(selectedWindow)(restoreBorder)}
-        />
+          <Toolbar
+            isWindowSelected={selectedWindow !== null}
+            onClickBorderless={() => onClick(selectedWindow)(makeBorderless)}
+            onClickCenter={() => onClick(selectedWindow)(centerWindow)}
+            onClickFullscreen={() => onClick(selectedWindow)(fullscreenWindow)}
+            onClickRestoreBorder={() => onClick(selectedWindow)(restoreBorder)}
+          />
+        </div>
+
+        <SizingUtilities />
       </div>
     </div>
   );

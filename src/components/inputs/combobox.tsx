@@ -13,7 +13,7 @@ import {
 } from "overlayscrollbars-react";
 import { tv, type VariantProps } from "tailwind-variants";
 
-import { Button } from "@/components/buttons/button/button";
+import { Button } from "@/components/buttons/button";
 import {
   Command,
   CommandEmpty,
@@ -31,7 +31,7 @@ import {
 const comboboxVariants = tv({
   slots: {
     checkIcon: "text-[10px] opacity-0",
-    trigger: "w-full justify-between",
+    trigger: "w-full justify-between px-3",
   },
   variants: {
     selected: {
