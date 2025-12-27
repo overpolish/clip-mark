@@ -79,7 +79,7 @@ export function ObsWebsocketConfiguration({
               variant="outline"
               onClick={() => {
                 openUrl(
-                  "https://github.com/domingasp/clip-mark?tab=readme-ov-file#-required-enable-obs-websocket"
+                  "https://github.com/overpolish/clip-mark?tab=readme-ov-file#-required-enable-obs-websocket"
                 );
               }}
             >

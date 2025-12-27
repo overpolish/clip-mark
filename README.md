@@ -1,6 +1,6 @@
 <div align="center">
   <h1 align="center">
-    <img src="https://github.com/domingasp/clip-mark/blob/main/src/assets/clip-mark.png" alt="Clip Mark Logo" height="34" style="vertical-align: sub;" />
+    <img src="https://github.com/overpolish/clip-mark/blob/main/src/assets/clip-mark.png" alt="Clip Mark Logo" height="34" style="vertical-align: sub;" />
     Clip Mark
   </h1>
 
