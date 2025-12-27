@@ -13,7 +13,7 @@ import {
   type TooltipProps as TooltipPrimitiveProps,
   type TooltipTriggerProps as TooltipTriggerPrimitiveProps,
   type TooltipContentProps as TooltipContentPrimitiveProps,
-} from "@/components/overlays/tooltip.primitives";
+} from "@/components/overlays/tooltip.primitive";
 
 type TooltipProviderProps = TooltipProviderPrimitiveProps;
 

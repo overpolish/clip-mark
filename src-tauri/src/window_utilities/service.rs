@@ -671,6 +671,33 @@ pub fn fullscreen_window(hwnd: isize) -> ::windows::core::Result<()> {
 
 // #endregion
 
+// #region Resize
+
+pub fn resize_window(
+   hwnd: isize,
+   width: i32,
+   height: i32,
+) -> ::windows::core::Result<()> {
+   unsafe {
+      info!("Resizing window: {} to {}x{}", hwnd, width, height);
+      let hwnd = HWND(hwnd as _);
+
+      SetWindowPos(
+         hwnd,
+         None,
+         0,
+         0,
+         width,
+         height,
+         SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOMOVE,
+      )?;
+
+      Ok(())
+   }
+}
+
+// #endregion
+
 // #region WebviewWindow Functions
 
 pub trait WindowUtilitiesExt {

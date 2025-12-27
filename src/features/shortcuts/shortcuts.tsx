@@ -4,7 +4,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { Keyboard } from "lucide-react";
 import z from "zod";
 
-import { Button } from "@/components/buttons/button/button";
+import { Button } from "@/components/buttons/button";
 import { ScrollArea } from "@/components/miscellaneous/scroll-area";
 import {
   Dialog,
@@ -31,7 +31,6 @@ export type Shortcut = z.infer<typeof shortcutSchema>;
 
 async function getShortcuts(): Promise<Shortcut[]> {
   const shortcuts = await invoke(commands.GetShortcuts);
-  console.log("Shortcuts fetched:", shortcuts);
   return z.array(shortcutSchema).parse(shortcuts);
 }
 

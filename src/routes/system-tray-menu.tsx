@@ -6,7 +6,7 @@ import { exit } from "@tauri-apps/plugin-process";
 import { EyeOff, X, Zap } from "lucide-react";
 import z from "zod";
 
-import { Button } from "@/components/buttons/button/button";
+import { Button } from "@/components/buttons/button";
 import { Switch } from "@/components/inputs/switch";
 import { Label } from "@/components/typography/label";
 

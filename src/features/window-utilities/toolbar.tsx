@@ -5,12 +5,11 @@ import {
   SquareDot,
 } from "lucide-react";
 
-import { Button } from "@/components/buttons/button/button";
-import { ButtonGroup } from "@/components/buttons/button/button-group";
+import { Button } from "@/components/buttons/button";
+import { ButtonGroup } from "@/components/buttons/button-group";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/overlays/tooltip";
 
@@ -49,30 +48,28 @@ export function Toolbar({
   onClickRestoreBorder,
 }: ToolbarProps) {
   return (
-    <TooltipProvider>
-      <ButtonGroup aria-label="Window Utilities" pulsate={isWindowSelected}>
-        <ToolButton
-          icon={<SquareDot />}
-          onClick={onClickCenter}
-          tooltip="Center"
-        />
+    <ButtonGroup aria-label="Window Utilities" pulsate={isWindowSelected}>
+      <ToolButton
+        icon={<SquareDot />}
+        onClick={onClickCenter}
+        tooltip="Center"
+      />
 
-        <ToolButton
-          icon={<SquareDashed />}
-          onClick={onClickBorderless}
-          tooltip="Borderless"
-        />
-        <ToolButton
-          icon={<SquareDashedBottom />}
-          onClick={onClickRestoreBorder}
-          tooltip="Restore Border"
-        />
-        <ToolButton
-          icon={<Maximize />}
-          onClick={onClickFullscreen}
-          tooltip="Fullscreen"
-        />
-      </ButtonGroup>
-    </TooltipProvider>
+      <ToolButton
+        icon={<SquareDashed />}
+        onClick={onClickBorderless}
+        tooltip="Borderless"
+      />
+      <ToolButton
+        icon={<SquareDashedBottom />}
+        onClick={onClickRestoreBorder}
+        tooltip="Restore Border"
+      />
+      <ToolButton
+        icon={<Maximize />}
+        onClick={onClickFullscreen}
+        tooltip="Fullscreen"
+      />
+    </ButtonGroup>
   );
 }

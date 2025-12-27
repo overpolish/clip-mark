@@ -2,10 +2,12 @@ import { type ComponentPropsWithoutRef, type ComponentProps } from "react";
 
 import { tv, type VariantProps } from "tailwind-variants";
 
-import { Button } from "@/components/buttons/button/button";
+import { Button } from "@/components/buttons/button";
 import { Input } from "@/components/inputs/input";
 import { Textarea } from "@/components/inputs/textarea";
 import { separateVariantProps } from "@/lib/variants";
+
+import { Toggle } from "../buttons/toggle";
 
 const inputGroupVariants = tv({
   base: `
@@ -25,10 +27,13 @@ const inputGroupVariants = tv({
     has-[>[data-align=inline-end]]:[&>input]:pr-2
     has-[>[data-align=inline-start]]:[&>input]:pl-2
   `,
+  defaultVariants: {
+    size: "default",
+  },
   variants: {
     size: {
       default: `
-        h-9 min-w-0
+        h-9 min-w-0 py-0.5
         has-[>textarea]:h-auto
       `,
       spotlight: `
@@ -126,14 +131,14 @@ export function InputGroupAddon({
 }
 
 const inputGroupButtonVariants = tv({
-  base: "flex items-center gap-2 text-sm shadow-none",
+  base: "flex min-w-0 items-center gap-2 text-sm shadow-none",
   defaultVariants: {
     size: "xs",
   },
   variants: {
     size: {
       "icon-sm": `
-        size-8 p-0
+        size-8 p-0 text-[12px]
         has-[>svg]:p-0
       `,
       "icon-xs": `
@@ -153,13 +158,27 @@ const inputGroupButtonVariants = tv({
   },
 });
 
-type InputGroupButtonProps = Omit<ComponentProps<typeof Button>, "size"> &
-  VariantProps<typeof inputGroupButtonVariants>;
+type InputGroupButtonBaseProps = VariantProps<typeof inputGroupButtonVariants>;
+
+type InputGroupButtonAsToggle = InputGroupButtonBaseProps &
+  Omit<ComponentProps<typeof Toggle>, "size"> & {
+    asToggle: true;
+  };
+
+type InputGroupButtonAsButton = InputGroupButtonBaseProps &
+  Omit<ComponentProps<typeof Button>, "size"> & {
+    asToggle?: false;
+  };
+
+type InputGroupButtonProps =
+  | InputGroupButtonAsToggle
+  | InputGroupButtonAsButton;
 
 /**
  * @public
  */
 export function InputGroupButton({
+  asToggle,
   className,
   type = "button",
   variant = "ghost",
@@ -169,14 +188,33 @@ export function InputGroupButton({
     allProps,
     inputGroupButtonVariants
   );
+
   const styles = inputGroupButtonVariants({ ...variants, className });
+
+  if (asToggle) {
+    return (
+      <Toggle
+        className={styles}
+        data-size={variants.size}
+        type={type}
+        {...(props as Omit<
+          ComponentProps<typeof Toggle>,
+          "size" | "className" | "type"
+        >)}
+      />
+    );
+  }
+
   return (
     <Button
       className={styles}
       data-size={variants.size}
       type={type}
       variant={variant}
-      {...props}
+      {...(props as Omit<
+        ComponentProps<typeof Button>,
+        "size" | "className" | "type" | "variant"
+      >)}
     />
   );
 }

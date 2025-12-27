@@ -51,6 +51,7 @@ pub fn run() {
       crate::app_settings::commands::get_app_settings,
       crate::app_settings::commands::update_start_at_login,
       crate::app_settings::commands::update_hide_from_capture,
+      crate::window_utilities::commands::resize_window,
    ]);
 
    // State
