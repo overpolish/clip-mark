@@ -2,7 +2,7 @@ import {
   type ChangeEvent,
   useState,
   type ComponentProps,
-  useEffect,
+  type FormEvent,
 } from "react";
 
 import { Link, Unlink, Wand2 } from "lucide-react";
@@ -14,6 +14,11 @@ import {
   InputGroupInput,
   InputGroupText,
 } from "@/components/inputs/input-group";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/overlays/tooltip";
 import { Label } from "@/components/typography/label";
 
 type SizeInputProps = Omit<
@@ -61,37 +66,47 @@ function SizeInput({ label, onChange, ...props }: SizeInputProps) {
   );
 }
 
-export function SizingUtilities() {
+type SizingUtilitiesProps = {
+  onApply: (width: number, height: number) => void;
+};
+
+export function SizingUtilities({ onApply }: SizingUtilitiesProps) {
   const [width, setWidth] = useState(1920);
   const [height, setHeight] = useState(1080);
 
-  function onApply() {
-    console.log({ height, width });
+  function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    onApply(width, height);
   }
 
-  useEffect(() => {
-    console.log(width);
-  }, [width]);
+  // TODO lock aspect ratio
 
   return (
-    <InputGroup>
-      <InputGroupAddon>
-        <InputGroupText>Size</InputGroupText>
-      </InputGroupAddon>
-      <SizeInput label="Width" onChange={setWidth} value={width} />
-      <InputGroupButton
-        deselectedContent={<Unlink className="text-[10px]" />}
-        size="icon-sm"
-        asToggle
-      >
-        <Link className="text-[10px]" />
-      </InputGroupButton>
-      <SizeInput label="Height" onChange={setHeight} value={height} />
-      <InputGroupAddon align="inline-end">
-        <InputGroupButton onClick={onApply} size="icon-sm">
-          <Wand2 />
+    <form onSubmit={handleSubmit}>
+      <InputGroup>
+        <InputGroupAddon>
+          <InputGroupText>Size</InputGroupText>
+        </InputGroupAddon>
+        <SizeInput label="Width" onChange={setWidth} value={width} />
+        <InputGroupButton
+          deselectedContent={<Unlink className="text-[10px]" />}
+          size="icon-sm"
+          asToggle
+        >
+          <Link className="text-[10px]" />
         </InputGroupButton>
-      </InputGroupAddon>
-    </InputGroup>
+        <SizeInput label="Height" onChange={setHeight} value={height} />
+        <InputGroupAddon align="inline-end">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <InputGroupButton size="icon-sm" type="submit">
+                <Wand2 />
+              </InputGroupButton>
+            </TooltipTrigger>
+            <TooltipContent>Windows may have own constraints</TooltipContent>
+          </Tooltip>
+        </InputGroupAddon>
+      </InputGroup>
+    </form>
   );
 }

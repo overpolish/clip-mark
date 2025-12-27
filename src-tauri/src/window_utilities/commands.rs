@@ -51,6 +51,11 @@ pub async fn fullscreen_window(hwnd: isize) {
 }
 
 #[tauri::command]
+pub async fn resize_window(hwnd: isize, width: i32, height: i32) {
+   let _ = service::resize_window(hwnd, width, height);
+}
+
+#[tauri::command]
 pub async fn hide_window(
    app_handle: tauri::AppHandle,
    label: String,
