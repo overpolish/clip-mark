@@ -14,7 +14,7 @@ This tool enhances your OBS recording workflow with the ability to quickly captu
 ### 📝 Capture Notes While Recording
 
 Drop quick notes at any point during your recording.
-![2025-12-2714-52-49-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/02be6d1d-5fcc-462b-9828-913fa6b4aedf)
+![clip-mark-demo](https://github.com/user-attachments/assets/bdbfb41e-c89a-4a93-b771-4b1c70b09d71)
 
 ### 🪟 Window Management Utilities
 
